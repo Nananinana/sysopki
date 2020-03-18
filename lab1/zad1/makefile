@@ -1,7 +1,7 @@
 CC = gcc
 FLAGS = -Wall
-LIB_NAME = lib_diff
-SOURCE_NAME = lib_diff
+LIB_NAME = library
+SOURCE_NAME = library
 
 
 static:
