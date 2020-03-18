@@ -42,14 +42,21 @@ int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie
     {
         if (Table->blocks[index] == NULL) //jesli dany indeks w tablicy glownej jest pusty, to zaczyna tworzenie bloku edycyjnego
         {
-            //?
-            /*int load_status = load_file(&diff_handler->block_array[i]);
+            int load_status = load_file(&Table->blocks[index]);
             if (load_status < 0)
             {
                 fprintf(stderr, "can't load into array\n");
                 return load_status;
-            }*/
-            block_of_operations *new_block = &Table->blocks[index];
+            }  
+            return index;
+        }
+    }
+    fprintf(stderr, "main table is already full\n");
+    return -1;
+}
+
+int load_file(operations **new_block)
+{
             char *buffer = NULL;
             FILE *file_to_convert = fopen(tmp_file, "rb");
             if (!file_to_convert)
@@ -85,11 +92,7 @@ int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie
             }
 
             load_buffer_into_block(buffer, &((*new_block)->operations), number_of_operations);
-            return index;
-        }
-    }
-    fprintf(stderr, "main table is already full\n");
-    return -1;
+            return 0;
 }
 
 void load_buffer_into_block(char *buffer, editing_operation ***operations, int number_of_operations) 
