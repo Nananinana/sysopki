@@ -108,7 +108,7 @@ int parse_remove_operation(char *argv[], int i, int argc)
 {
     int block_idx = atoi(argv[i + 1]);
     int op_idx = atoi(argv[i + 2]);
-    remove_operation(block_idx, op_idx);
+    delete_operation(block_idx, op_idx);
     return 1;
 }
 

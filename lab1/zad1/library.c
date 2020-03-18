@@ -130,7 +130,7 @@ int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie
 
 
 
-/*void compare_pair(char *pair)
+void compare_pair(char *pair)
 {
     char *string = strdup(pair);
 
@@ -138,14 +138,13 @@ int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie
     char *f2 = strtok(NULL, "");
 
     compare_files(f1, f2);
-    tmp_to_array();
+    create_block_of_operations();
 }
 
 void compare_pairs()
 {
 
     char *string = strdup(files_sequence);
-
     char *token = strtok(string, " ");
     int count = 0;
     while (token != NULL)
@@ -171,7 +170,7 @@ void compare_pairs()
         compare_pair(pairs[j]);
     }
 }
- */
+
 int get_number_of_operations_in_block(int index)
 {
     if (Table->blocks[index] == NULL)
@@ -238,37 +237,36 @@ char *get_operation(int block_idx, int operation_idx)
 }
 */
 
-/*
-void delete_array()
+void delete_main_table()
 {
-    for (int i = 0; i < main_table->size; i++)
+    for (int i = 0; i < Table->size; i++)
     {
-        delete_block(i);
+        delete_block_of_operations(i);
     }
-    free(main_table->blocks);
-    free(main_table);
-}*/
+    free(Table->blocks);
+    free(Table);
+}
 
-// int main()
-// {
-//     define_pair_sequence("txt/a.txt:txt/b.txt txt/c.txt:txt/d.txt txt/a.txt:txt/c.txt txt/e.txt:txt/f.txt txt/f.txt:txt/c.txt");
-//     create_table(20);
-//     compare_pairs();
-//     tmp_to_array();
+int main()
+{
+    define_file_pairs("txt/a.txt:txt/b.txt txt/c.txt:txt/d.txt txt/a.txt:txt/c.txt");
+    create_main_table(10);
+    compare_pairs();
+    create_block_of_operations();
 
-//     // printf("%s", diff_handler->blocks[0]->operations[2]->content);
-//     delete_block(0);
-//     // printf("%s", diff_handler->blocks[2]->operations[0]->content);
-//     // compare_pairs();
-//     tmp_to_array();
-//     remove_operation(0, 0);
-//     // remove_operation(0, 0);
-//     // remove_operation(0, 23);
-//     // remove_operation(0, 3);
-//     // tmp_to_array();
+    printf("%s", Table->blocks[0]->operations[2]->content);
+    delete_block_of_operations(0);
+    printf("%s", Table->blocks[2]->operations[0]->content);
+    compare_pairs();
+    create_block_of_operations();
+    delete_operation(0, 0);
+    delete_operation(0, 0);
+    delete_operation(0, 23);
+    delete_operation(0, 3);
+    create_block_of_operations();
 
-//     compare_pairs();
-//     // printf("%d\n", get_operations_count(0));
+    compare_pairs();
+    printf("%d\n", get_number_of_operations_in_block(0));
 
 //     Operations *ope = get_block(0);
 //     for (int i = 0; i < ope->count; i++)
@@ -277,5 +275,5 @@ void delete_array()
 //     }
 
 //     // printf("\n\n\n\n\n%s\n\n", get_operation(0, 1));
-//     delete_array();
-// }
+    delete_main_table();
+ }
