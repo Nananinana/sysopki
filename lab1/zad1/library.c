@@ -65,26 +65,6 @@ void load_buffer_into_block(char *buffer, editing_operation ***tab, int number_o
     }
 }
 
-
-int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie pliku tymczasowgo, ustawia wskazniki, zwraca indeks elementu z tablicy glownej ktory wskazuje na stworzony blok
-{
-    for (int index = 0; index < Table->size; index++)
-    {
-        if (Table->blocks[index] == NULL) //jesli dany indeks w tablicy glownej jest pusty, to zaczyna tworzenie bloku edycyjnego
-        {
-            int load_status = load_file(&Table->blocks[index]);
-            if (load_status < 0)
-            {
-                fprintf(stderr, "can't load into array\n");
-                return load_status;
-            }  
-            return index;
-        }
-    }
-    fprintf(stderr, "main table is already full\n");
-    return -1;
-}
-
 int load_file(block_of_operations **new_block)
 {
             char *buffer = NULL;
@@ -124,6 +104,28 @@ int load_file(block_of_operations **new_block)
             load_buffer_into_block(buffer, &((*new_block)->operations), number_of_operations);
             return 0;
 }
+
+
+int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie pliku tymczasowgo, ustawia wskazniki, zwraca indeks elementu z tablicy glownej ktory wskazuje na stworzony blok
+{
+    for (int index = 0; index < Table->size; index++)
+    {
+        if (Table->blocks[index] == NULL) //jesli dany indeks w tablicy glownej jest pusty, to zaczyna tworzenie bloku edycyjnego
+        {
+            int load_status = load_file(&Table->blocks[index]);
+            if (load_status < 0)
+            {
+                fprintf(stderr, "can't load into array\n");
+                return load_status;
+            }  
+            return index;
+        }
+    }
+    fprintf(stderr, "main table is already full\n");
+    return -1;
+}
+
+
 
 
 
