@@ -1,17 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include "library.h"
 
 char *files_sequence = NULL;  //sekwencja par plikow, ktore beda porownywane
-main_table *main_table;   //tablica glowna
+main_table *Table;   //tablica glowna
 char *tmp_file = "tmp.txt";    //tymczasowy plik na wyniki operacji
 
 void create_main_table(int size)
 {
-    main_table = calloc(1, sizeof(main_table));  //alokujemy tablice glowna
-    main_table->size = size; 
-    main_table->block_of_operations = calloc(size, sizeof(block_of_operations *)); //ustawiamy wskaznik na blok operacji edycyjnych, ktory juz jest odpowiedniego rozmiaru
+    Table = calloc(1, sizeof(Table));  //alokujemy tablice glowna
+    Table->size = size; 
+    Table->blocks = calloc(size, sizeof(block_of_operations *)); //ustawiamy wskaznik na blok operacji edycyjnych, ktory juz jest odpowiedniego rozmiaru
 }
 
 int get_file_size(FILE *file_pointer)  //znajduje rozmiar pliku, nie zdefiniowane w pliku naglowkowym bo nie jest potrzebne "na zewnatrz"
@@ -37,12 +38,11 @@ void compare_files(char *file1, char *file2)  //porownuje pliki i zwraca plik ty
 
 int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie pliku tymczasowgo, ustawia wskazniki, zwraca indeks elementu z tablicy glownej ktory wskazuje na stworzony blok
 {
-    for (int index = 0; index < main_table->size; index++)
+    for (int index = 0; index < Table->size; index++)
     {
-        if (main_table->blocks[index] == NULL) //jesli dany indeks w tablicy glownej jest pusty, to zaczyna tworzenie bloku edycyjnego
+        if (Table->blocks[index] == NULL) //jesli dany indeks w tablicy glownej jest pusty, to zaczyna tworzenie bloku edycyjnego
         {
-            int load_status = load_file(&main_table->blocks[index]);
-
+            //?
             char *buffer = NULL;
             FILE *file_to_convert = fopen(tmp_file, "rb");
             if (!file_to_convert)
@@ -58,7 +58,7 @@ int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie
             //sprawdza liczbe operacji w buforze
             char *buffer_pointer = buffer;
             int number_of_operations = 0;
-            bool buffer_not_emty = 0;
+            bool buffer_not_empty = 0;
             while (*buffer_pointer != '\0')
             {
                 if (*buffer_pointer == '\n' && (*(++buffer_pointer) > '0' && *(buffer_pointer) < '9'))
@@ -69,14 +69,14 @@ int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie
             if (buffer_not_empty)
                 number_of_operations++;
             
-            (*new_block) = calloc(1, sizeof(block_of_operations));
-            (*new_block)-> size = number_of_operations;
-            (*new_block)->operations = calloc(count, sizeof(editing_operation *));
+            Table->blocks[index] = calloc(1, sizeof(block_of_operations));
+            Table->blocks[index]-> size = number_of_operations;
+            Table->blocks[index]->operations = calloc(number_of_operations, sizeof(editing_operation *));
             for (int i = 0; i < number_of_operations; i++)
             {
-                (*new_block)->operations[i] = calloc(1, sizeof(editing_operation));
+                Table->blocks[index]->operations[i] = calloc(1, sizeof(editing_operation));
             }
-            load_buffer_into_block(buffer, &((*new_block)->operations), number_of_operations);
+            load_buffer_into_block(buffer, &(Table->blocks[index]->operations), number_of_operations);
             return index;
         }
     }
@@ -159,43 +159,43 @@ void compare_pairs()
  */
 int get_number_of_operations_in_block(int index)
 {
-    if (main_table->blocks[index] == NULL)
+    if (Table->blocks[index] == NULL)
         return 0;
-    return main_table->blocks[index]->size;
+    return Table->blocks[index]->size;
 }
 
 void delete_block_of_operations(int index)
 {
-    if (main_table->blocks[index] == NULL)
+    if (Table->blocks[index] == NULL)
         return;
-    for (int i = 0; i < main_table->blocks[index]->size; i++)
+    for (int i = 0; i < Table->blocks[index]->size; i++)
     {
-        free(main_table->blocks[index]->operations[i]);
-        main_table->blocks[index]->operations[i] = NULL;
+        free(Table->blocks[index]->operations[i]);
+        Table->blocks[index]->operations[i] = NULL;
     }
-    free(main_table->blocks[index]->operations);
-    main_table->blocks[index]->operations = NULL;
-    free(main_table->blocks[index]);
-    main_table->blocks[index] = NULL;
+    free(Table->blocks[index]->operations);
+    Table->blocks[index]->operations = NULL;
+    free(Table->blocks[index]);
+    Table->blocks[index] = NULL;
 }
 
 void delete_operation(int block_index, int operation_index)
 {
-    if (main_table->blocks[block_index] == NULL)
+    if (Table->blocks[block_index] == NULL)
     {
         fprintf(stderr, "there is no such block of operations\n");
         return;     }
-    if (main_table->blocks[block_index]->operations[operation_index] == NULL)
+    if (Table->blocks[block_index]->operations[operation_index] == NULL)
     {
         fprintf(stderr, "there is no such operation\n");
         return;     }
-    free(main_table->blocks[block_index]->operations[operation_index]);
-    main_table->blocks[block_index]->operations[operation_index] = NULL;
-    int block_size = main_table->blocks[block_index]->size;
+    free(Table->blocks[block_index]->operations[operation_index]);
+    Table->blocks[block_index]->operations[operation_index] = NULL;
+    int block_size = Table->blocks[block_index]->size;
     if (block_size < 1)
         delete_block_of_operations(block_index);
     else
-        main_table->blocks[block_index]-> size = size - 1;
+        Table->blocks[block_index]-> size = block_size - 1;
 }
 
 /*Operations *get_block(int idx)
