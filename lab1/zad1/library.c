@@ -43,7 +43,13 @@ int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie
         if (Table->blocks[index] == NULL) //jesli dany indeks w tablicy glownej jest pusty, to zaczyna tworzenie bloku edycyjnego
         {
             //?
-            block_of_operations *new_block = Table->blocks[index];
+            /*int load_status = load_file(&diff_handler->block_array[i]);
+            if (load_status < 0)
+            {
+                fprintf(stderr, "can't load into array\n");
+                return load_status;
+            }*/
+            block_of_operations *new_block = &Table->blocks[index];
             char *buffer = NULL;
             FILE *file_to_convert = fopen(tmp_file, "rb");
             if (!file_to_convert)
