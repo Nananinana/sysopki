@@ -55,7 +55,7 @@ int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie
     return -1;
 }
 
-int load_file(operations **new_block)
+int load_file(block_of_operations **new_block)
 {
             char *buffer = NULL;
             FILE *file_to_convert = fopen(tmp_file, "rb");
