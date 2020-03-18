@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
         }
         else if (!strcmp(argv[i], "tmp_to_array"))
         {
-            tmp_to_array();
+            create_block_of_operations();
             i++;
             parse_remove_block(argv, i, argc);
             i += 2;
