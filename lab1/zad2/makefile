@@ -1,6 +1,6 @@
 CC = gcc
 FLAGS = -std=c99 -Wall
-LIB_NAME = lib_diff
+LIB_NAME = library
 LIB_PATH = ../zad1
 REPORT_FILE = raport2.txt
 

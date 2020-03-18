@@ -1,7 +1,7 @@
 #ifdef DYNAMIC
-#include "diff_dynamic.h"
+#include "dynamic_library.h"
 #else
-#include "lib_diff.h"
+#include "library.h"
 #endif
 
 #include <stdio.h>
@@ -14,7 +14,7 @@
 
 clock_t st_time, en_time;
 struct tms st_cpu, en_cpu;
-FILE *report_file;
+FILE *report;
 
 void start_timer()
 {
@@ -32,9 +32,7 @@ void write_file_header(FILE *f)
             "Name",
             "Real [s]",
             "User [s]",
-            "System [s]",
-            "Child User [s]",
-            "Child System [s]");
+            "System [s]";
 }
 
 void save_timer(char *name, FILE *f)
@@ -44,17 +42,13 @@ void save_timer(char *name, FILE *f)
     double real_time = (double)(en_time - st_time) / clk_tics;
     double user_time = (double)(en_cpu.tms_utime - st_cpu.tms_utime) / clk_tics;
     double system_time = (double)(en_cpu.tms_stime - st_cpu.tms_stime) / clk_tics;
-    double child_user_time = (double)(en_cpu.tms_cutime - st_cpu.tms_cutime) / clk_tics;
-    double child_system_time = (double)(en_cpu.tms_cstime - st_cpu.tms_cstime) / clk_tics;
     fprintf(f, "%30s:\t\t%15f\t%15f\t%15f\t%15f\t%15f\t\n",
             name,
             real_time,
             user_time,
-            system_time,
-            child_user_time,
-            child_system_time);
+            system_time;
 }
-int parse_create_table(char *argv[], int i, int argc)
+int parse_create_main_table(char *argv[], int i, int argc)
 {
     if (i + 1 >= argc)
     {
@@ -63,7 +57,7 @@ int parse_create_table(char *argv[], int i, int argc)
     }
     int size = atoi(argv[i + 1]);
 
-    return create_table(size);
+    return create_main_table(size);
 }
 int parse_end_timer(char *argv[], int i, int argc)
 {
@@ -75,11 +69,11 @@ int parse_end_timer(char *argv[], int i, int argc)
     end_timer();
     char *timer_name = argv[i + 1];
 
-    save_timer(timer_name, report_file);
+    save_timer(timer_name, report);
     return 0;
 }
 
-int parse_remove_block(char *argv[], int i, int argc)
+int parse_delete_block(char *argv[], int i, int argc)
 {
 
     if (i + 1 >= argc)
@@ -87,8 +81,8 @@ int parse_remove_block(char *argv[], int i, int argc)
         fprintf(stderr, "remove block wrong number of arguments\n");
         return -1;
     }
-    int idx = atoi(argv[i + 1]);
-    delete_block(idx);
+    int index = atoi(argv[i + 1]);
+    delete_block(index);
     return 1;
 }
 int parse_compare_pairs(char *argv[], int i, int argc)
@@ -100,38 +94,38 @@ int parse_compare_pairs(char *argv[], int i, int argc)
     }
     char *pairs = argv[i + 1];
 
-    define_pair_sequence(pairs);
+    define_file_pairs(pairs);
     compare_pairs();
     return 1;
 }
-int parse_remove_operation(char *argv[], int i, int argc)
+int parse_delete_operation(char *argv[], int i, int argc)
 {
-    int block_idx = atoi(argv[i + 1]);
-    int op_idx = atoi(argv[i + 2]);
-    delete_operation(block_idx, op_idx);
+    int block_index = atoi(argv[i + 1]);
+    int operation_index = atoi(argv[i + 2]);
+    delete_operation(block_index, operation_index);
     return 1;
 }
 
 int main(int argc, char *argv[])
 {
 #ifdef DYNAMIC
-    init_dynamic_library();
+    init();
 #endif
 
     char file_name[] = "raport.txt";
-    report_file = fopen(file_name, "a");
+    report = fopen(file_name, "a");
 
-    write_file_header(report_file);
+    write_file_header(report);
 
     int i = 1;
     while (i < argc)
     {
-        if (!strcmp(argv[i], "create_table"))
+        if (!strcmp(argv[i], "create__main_table"))
         {
-            int err = parse_create_table(argv, i, argc);
+            int err = parse_create_main_table(argv, i, argc);
             if (err < 0)
             {
-                fprintf(stderr, "function create_table returned error, stopping\n");
+                fprintf(stderr, "function create_main_table returned error, stopping\n");
                 return -1;
             }
             i += 2;
@@ -147,32 +141,32 @@ int main(int argc, char *argv[])
 
             i += 2;
         }
-        else if (!strcmp(argv[i], "remove_operation"))
+        else if (!strcmp(argv[i], "delete_operation"))
         {
-            int err = parse_remove_operation(argv, i, argc);
+            int err = parse_delete_operation(argv, i, argc);
             if (err < 0)
             {
-                fprintf(stderr, "function load_to_array returned error, stopping\n");
+                fprintf(stderr, "function delete_operation returned error, stopping\n");
                 return -1;
             }
             i += 3;
         }
-        else if (!strcmp(argv[i], "remove_block"))
+        else if (!strcmp(argv[i], "delete_block"))
         {
 
-            int err = parse_remove_block(argv, i, argc);
+            int err = parse_delete_block(argv, i, argc);
             if (err < 0)
             {
-                fprintf(stderr, "function remove_block returned error, stopping\n");
+                fprintf(stderr, "function delete_block returned error, stopping\n");
                 return -1;
             }
             i += 2;
         }
-        else if (!strcmp(argv[i], "tmp_to_array"))
+        else if (!strcmp(argv[i], "create_block_of_operations"))
         {
             create_block_of_operations();
             i++;
-            parse_remove_block(argv, i, argc);
+            parse_delete_block(argv, i, argc);
             i += 2;
         }
         else if (!strcmp(argv[i], "start"))
@@ -192,7 +186,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    delete_array();
+    delete_main_table();
 
     return 0;
 }

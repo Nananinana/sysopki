@@ -247,7 +247,7 @@ void delete_main_table()
     free(Table);
 }
 
-int main()
+/*int main()
 {
     define_file_pairs("txt/a.txt:txt/b.txt txt/c.txt:txt/d.txt txt/a.txt:txt/c.txt");
     create_main_table(10);
@@ -276,4 +276,4 @@ int main()
 
 //     // printf("\n\n\n\n\n%s\n\n", get_operation(0, 1));
     delete_main_table();
- }
+ }*/
