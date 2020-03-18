@@ -35,6 +35,36 @@ void compare_files(char *file1, char *file2)  //porownuje pliki i zwraca plik ty
     system(buff);   //powoduje wywolanie w powloce (linuxowej) odpowiedniego polecenia, w tym przypadku polecenia porownania i zapisania do pliku wynikowego
 }
 
+void load_buffer_into_block(char *buffer, editing_operation ***tab, int number_of_operations) 
+{
+    char *tmp_array[number_of_operations]; //tablica wskaznikow podanej wielkosci
+    char *buffer_pointer = buffer; //wskaznik na bufor ktory dostalismy
+    int index = 0;
+    tmp_array[index] = buffer_pointer; //ustawiamy pierwszy wskazik z tablicy (stosu) na pierwszy element bufora(?)
+ 
+    while (*buffer_pointer != '\0') //znak null
+    {
+        if (*buffer_pointer == '\n' && (*(++buffer_pointer) > '0' && *(buffer_pointer) < '9'))  //n-przejscie do nastepnej linii, ???
+        {
+            index++;
+            tmp_array[index] = buffer_pointer;   //to przesuwamy sie do nastepego elementu tablicy
+        }
+        buffer_pointer++;  //a jesli nie, to tylko przesuwamy sie po buforze
+    }
+//czyli elementami tablicy są wskaźniki na miejsca w buforze, gdzie zaczynaja sie kolejne operacje
+    for (int j = 0; j < number_of_operations; j++)
+    {
+        if (j == number_of_operations - 1)
+        {
+            (*tab)[j]->content = calloc(strlen(tmp_array[j]) + 1, sizeof(char));
+            memcpy((*tab)[j]->content, tmp_array[j], strlen(tmp_array[j]));
+            return;
+        }
+        (*tab)[j]->content = calloc(strlen(tmp_array[j]) - strlen(tmp_array[j + 1]) + 1, sizeof(char));
+        memcpy((*tab)[j]->content, tmp_array[j], strlen(tmp_array[j]) - strlen(tmp_array[j + 1]));
+    }
+}
+
 
 int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie pliku tymczasowgo, ustawia wskazniki, zwraca indeks elementu z tablicy glownej ktory wskazuje na stworzony blok
 {
@@ -95,35 +125,7 @@ int load_file(block_of_operations **new_block)
             return 0;
 }
 
-void load_buffer_into_block(char *buffer, editing_operation ***operations, int number_of_operations) 
-{
-    char *tmp_array[number_of_operations]; //tablica wskaznikow podanej wielkosci
-    char *buffer_pointer = buffer; //wskaznik na bufor ktory dostalismy
-    int index = 0;
-    tmp_array[index] = buffer_pointer; //ustawiamy pierwszy wskazik z tablicy (stosu) na pierwszy element bufora(?)
- 
-    while (*buffer_pointer != '\0') //znak null
-    {
-        if (*buffer_pointer == '\n' && (*(++buffer_pointer) > '0' && *(buffer_pointer) < '9'))  //n-przejscie do nastepnej linii, ???
-        {
-            index++;
-            tmp_array[index] = buffer_pointer;   //to przesuwamy sie do nastepego elementu tablicy
-        }
-        buffer_pointer++;  //a jesli nie, to tylko przesuwamy sie po buforze
-    }
-//czyli elementami tablicy są wskaźniki na miejsca w buforze, gdzie zaczynaja sie kolejne operacje
-    for (int j = 0; j < number_of_operations; j++)
-    {
-        if (j == number_of_operations - 1)
-        {
-            (*operations)[j]->content = calloc(strlen(tmp_array[j]) + 1, sizeof(char));
-            memcpy((*operations)[j]->content, tmp_array[j], strlen(tmp_array[j]));
-            return;
-        }
-        (*operations)[j]->content = calloc(strlen(tmp_array[j]) - strlen(tmp_array[j + 1]) + 1, sizeof(char));
-        memcpy((*operations)[j]->content, tmp_array[j], strlen(tmp_array[j]) - strlen(tmp_array[j + 1]));
-    }
-}
+
 
 
 /*void compare_pair(char *pair)
