@@ -69,14 +69,14 @@ int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie
             if (buffer_not_empty)
                 number_of_operations++;
             
-            Table->blocks[index] = calloc(1, sizeof(block_of_operations));
-            Table->blocks[index]-> size = number_of_operations;
-            Table->blocks[index]->operations = calloc(number_of_operations, sizeof(editing_operation *));
+            (*Table->blocks[index]) = calloc(1, sizeof(block_of_operations));
+            (*Table->blocks[index])-> size = number_of_operations;
+            (*Table->blocks[index])->operations = calloc(number_of_operations, sizeof(editing_operation *));
             for (int i = 0; i < number_of_operations; i++)
             {
-                Table->blocks[index]->operations[i] = calloc(1, sizeof(editing_operation));
+                (*Table->blocks[index])->operations[i] = calloc(1, sizeof(editing_operation));
             }
-            load_buffer_into_block(buffer, &(Table->blocks[index]->operations), number_of_operations);
+            load_buffer_into_block(buffer, &((*Table->blocks[index])->operations), number_of_operations);
             return index;
         }
     }
