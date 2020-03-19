@@ -157,10 +157,10 @@ int main(int argc, char *argv[])
         else if (!strcmp(argv[i], "delete_block"))
         {
 
-            int err = parse_delete_block(argv, i, argc);
+            int err = parse_delete_block_of_operations(argv, i, argc);
             if (err < 0)
             {
-                fprintf(stderr, "function delete_block returned error, stopping\n");
+                fprintf(stderr, "function delete_block_of_operations returned error, stopping\n");
                 return -1;
             }
             i += 2;
