@@ -29,11 +29,11 @@ void end_timer()
 
 void write_file_header(FILE *f)
 {
-    fprintf(f, "%30s\t\t%15s\t%15s\t%15s\t%15s\t%15s\n",
+    fprintf(f, "%30s\t\t%15s\t%15s\t%15s\n",
             "name",
             "real_time [s]",
             "user_time [s]",
-            "sys_time [s]");
+            "system_time [s]");
 }
 
 void save_timer(char *name, FILE *f)
@@ -47,7 +47,7 @@ void save_timer(char *name, FILE *f)
             name,
             real_time,
             user_time,
-            sys_time);
+            system_time);
 }
 int parse_create_main_table(char *argv[], int i, int argc)
 {
