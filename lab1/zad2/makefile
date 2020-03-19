@@ -1,6 +1,6 @@
 CC = gcc
 FLAGS = -std=c99 -Wall
-LIB_NAME = lib_library
+LIB_NAME = library
 LIB_PATH = ../zad1
 REPORT_FILE = raport2.txt
 
@@ -8,12 +8,12 @@ static:
 	$(CC) $(FLAGS)  main.c -o main -I$(LIB_PATH) $(LIB_PATH)/$(LIB_NAME).a
 
 shared:
-	$(CC) $(FLAGS) main.c -o main -L$(LIB_PATH) -I$(LIB_PATH) -l_diff
+	$(CC) $(FLAGS) main.c -o main -L$(LIB_PATH) -I$(LIB_PATH) -lib_library
 
 
 
 dynamic:
-	$(CC) $(FLAGS) main.c -o main -L$(LIB_PATH) -I$(LIB_PATH) -library.o
+	$(CC) $(FLAGS) main.c -o main -L$(LIB_PATH) -I$(LIB_PATH) -o main
 
 
 test:
