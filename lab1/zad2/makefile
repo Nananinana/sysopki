@@ -8,10 +8,13 @@ static:
 	$(CC) $(FLAGS)  main.c -o main -I$(LIB_PATH) $(LIB_PATH)/$(LIB_NAME).a
 
 shared:
-	$(CC) $(FLAGS) main.c -o main -L$(LIB_PATH) -I$(LIB_PATH) -library.o
+	$(CC) -c -fPIC library.c
+	$(CC) -shared -fPIC -o library.so library.o
+
 
 dynamic:
-	$(CC) $(FLAGS) -I$(LIB_PATH) main.c -ldl -D DYNAMIC -o main
+	$(CC) $(FLAGS) main.c -o main -L$(LIB_PATH) -I$(LIB_PATH) -library.o
+
 
 test:
 	make static
