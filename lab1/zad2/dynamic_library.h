@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void *handle = NULL;
+static void *library_handler = NULL;
 
 //char *(*_get_operation)(int block_block_index, int operation_block_index);
 int (*_create_main_table)(int size);
