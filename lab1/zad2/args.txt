@@ -1,7 +1,7 @@
 start create_main_table 75 end "creating main table of size 75"
 start compare_pairs "a.txt:b.txt c.txt:d.txt e.txt:f.txt g.txt:h.txt" end "comparing small amount of files"
 start delete_block_of_operations 0 end "deleting small block of operations"
-start delete operation 1 1 end "deleting small operation"
+start delete_operation 1 1 end "deleting small operation"
 start compare_pairs "long_text2.txt:long_text.txt long_text.txt:long_text2.txt c.txt:d.txt e.txt:long_text.txt g.txt:h.txt a.txt:b.txt 
 long_text2.txt:d.txt d.txt:h.txt f.txt:long_text2.txt a.txt:g.txt  " end "comparing medium amount of files"
 start delete_operation 4 1 end "deleting big operation from array"

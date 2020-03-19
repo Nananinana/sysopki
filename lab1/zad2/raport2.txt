@@ -1,4 +1,10 @@
                           Name		       Real [s]	       User [s]	     System [s]	 Child User [s]	Child System [s]
-              table create 100:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-                    small diff:		       0.250000	       0.000000	       0.000000	       0.090000	       0.020000	
-       small remove from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
+creating main table of size 75:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
+comparing small amount of files:		       0.140000	       0.000000	       0.000000	       0.050000	       0.010000	
+deleting small block of operations:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
+      deleting small operation:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
+comparing medium amount of files:		       0.400000	       0.000000	       0.000000	       0.150000	       0.040000	
+deleting big operation from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
+deleting big block of operations:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
+                      big diff:		       0.980000	       0.000000	       0.000000	       0.380000	       0.100000	
+adding and removing block of operations:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
