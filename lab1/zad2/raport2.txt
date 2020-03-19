@@ -1,1 +1,4 @@
-                          Name		       Real [s]	       User [s]	     System [s]
+                          Name		       Real [s]	       User [s]	     System [s]	 Child User [s]	Child System [s]
+              table create 100:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
+                    small diff:		       0.250000	       0.000000	       0.000000	       0.090000	       0.020000	
+       small remove from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	

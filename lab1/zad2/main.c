@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     init();
 #endif
 
-    char file_name[] = "raport2.txt";
+    char file_name[] = "raport.txt";
     report_file = fopen(file_name, "a");
 
     write_file_header(report_file);
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
             }
             i += 3;
         }
-        else if (!strcmp(argv[i], "delete_block"))
+        else if (!strcmp(argv[i], "delete_block_of_operations"))
         {
 
             int err = parse_delete_block_of_operations(argv, i, argc);

@@ -1,4 +1,3 @@
 start create_main_table 100 end "table create 100"
-start compare_pairs "txt/a.txt:txt/b.txt txt/c.txt:txt/d.txt txt/e.txt:txt/f.txt txt/g.txt:txt/h.txt" end "small diff"
+start compare_pairs "a.txt:b.txt c.txt:d.txt e.txt:f.txt g.txt:h.txt" end "small diff"
 start delete_block_of_operations 0 end "small remove from array"
-start delete_operation 2 0 end "small remove operation from array"
