@@ -6,7 +6,7 @@
 
 static void *library_handler = NULL;
 
-//char *(*_get_operation)(int block_block_index, int operation_block_index);
+
 int (*_create_main_table)(int size);
 void (*_define_file_pairs)(char *files);
 void (*_compare_pairs)();
@@ -24,7 +24,6 @@ void init()
         fprintf(stderr, "Can't open dynamic library");
         return;
     }
-    //_get_operation = dlsym(handle, "get_operation");
     _create_main_table = dlsym(library_handler, "create_main_table");
     _define_file_pairs = dlsym(library_handler, "define_file_pairs");
     _compare_pairs = dlsym(library_handler, "compare_pairs");
@@ -74,9 +73,6 @@ void delete_operation(int block_index, int operation_index)
 {
     return (*_delete_operation)(block_index, operation_index);
 }
-/*char *get_operation(int block_index, int operation_index)
-{
-    return (*_get_operation)(block_block_index, operation_block_index);
-}*/
+
 
 #endif

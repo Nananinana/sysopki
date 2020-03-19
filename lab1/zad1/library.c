@@ -4,18 +4,18 @@
 #include <stdbool.h>
 #include "library.h"
 
-char *files_sequence = NULL;  //sekwencja par plikow, ktore beda porownywane
-main_table *Table;   //tablica glowna
-char *tmp_file = "tmp.txt";    //tymczasowy plik na wyniki operacji
+char *files_sequence = NULL; 
+main_table *Table;   
+char *tmp_file = "tmp.txt";    
 
 void create_main_table(int size)
 {
-    Table = calloc(1, sizeof(Table));  //alokujemy tablice glowna
+    Table = calloc(1, sizeof(Table));  
     Table->size = size; 
-    Table->blocks = calloc(size, sizeof(block_of_operations *)); //ustawiamy wskaznik na blok operacji edycyjnych, ktory juz jest odpowiedniego rozmiaru
+    Table->blocks = calloc(size, sizeof(block_of_operations *)); 
 }
 
-int get_file_size(FILE *file_pointer)  //znajduje rozmiar pliku, nie zdefiniowane w pliku naglowkowym bo nie jest potrzebne "na zewnatrz"
+int get_file_size(FILE *file_pointer)  
 {
     fseek(file_pointer, 0L, SEEK_END);  //ustawia pointer na koniec pliku (ustawia na seek_end i stamtąd przesuwa o 0)
     int file_size = ftell(file_pointer);      //zwraca aktualna pozycje pointera
@@ -28,7 +28,7 @@ void define_file_pairs(char *files)
     files_sequence = files;          //ustawia wskaznik (globalne files_sequence) na podane pliki
 }
 
-void compare_files(char *file1, char *file2)  //porownuje pliki i zwraca plik tymczasowy
+void compare_files(char *file1, char *file2)  
 {
     char buff[256];//?
     snprintf(buff, sizeof buff, "diff %s %s > %s", file1, file2, tmp_file);  //snprintf zapisuje stringa do bufora, w formacie diff plik jeden i plik2 > plik wynikowy, s to po prostu lancuch znakow
@@ -37,21 +37,21 @@ void compare_files(char *file1, char *file2)  //porownuje pliki i zwraca plik ty
 
 void load_buffer_into_block(char *buffer, editing_operation ***tab, int number_of_operations) 
 {
-    char *tmp_array[number_of_operations]; //tablica wskaznikow podanej wielkosci
-    char *buffer_pointer = buffer; //wskaznik na bufor ktory dostalismy
+    char *tmp_array[number_of_operations]; 
+    char *buffer_pointer = buffer; 
     int index = 0;
-    tmp_array[index] = buffer_pointer; //ustawiamy pierwszy wskazik z tablicy (stosu) na pierwszy element bufora(?)
+    tmp_array[index] = buffer_pointer; 
  
-    while (*buffer_pointer != '\0') //znak null
+    while (*buffer_pointer != '\0') 
     {
-        if (*buffer_pointer == '\n' && (*(++buffer_pointer) > '0' && *(buffer_pointer) < '9'))  //n-przejscie do nastepnej linii, ???
+        if (*buffer_pointer == '\n' && (*(++buffer_pointer) > '0' && *(buffer_pointer) < '9'))  
         {
             index++;
-            tmp_array[index] = buffer_pointer;   //to przesuwamy sie do nastepego elementu tablicy
+            tmp_array[index] = buffer_pointer;   
         }
-        buffer_pointer++;  //a jesli nie, to tylko przesuwamy sie po buforze
+        buffer_pointer++;  
     }
-//czyli elementami tablicy są wskaźniki na miejsca w buforze, gdzie zaczynaja sie kolejne operacje
+
     for (int j = 0; j < number_of_operations; j++)
     {
         if (j == number_of_operations - 1)
@@ -79,7 +79,6 @@ int load_file(block_of_operations **new_block)
             fread(buffer, sizeof(char), file_size, file_to_convert);
             fclose(file_to_convert);
 
-            //sprawdza liczbe operacji w buforze
             char *buffer_pointer = buffer;
             int number_of_operations = 0;
             bool buffer_not_empty = 0;
@@ -106,11 +105,11 @@ int load_file(block_of_operations **new_block)
 }
 
 
-int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie pliku tymczasowgo, ustawia wskazniki, zwraca indeks elementu z tablicy glownej ktory wskazuje na stworzony blok
+int create_block_of_operations()  
 {
     for (int index = 0; index < Table->size; index++)
     {
-        if (Table->blocks[index] == NULL) //jesli dany indeks w tablicy glownej jest pusty, to zaczyna tworzenie bloku edycyjnego
+        if (Table->blocks[index] == NULL) 
         {
             int load_status = load_file(&Table->blocks[index]);
             if (load_status < 0)
@@ -124,11 +123,6 @@ int create_block_of_operations()  //tworzy blok operacji edycyjnych na podstawie
     fprintf(stderr, "main table is already full\n");
     return -1;
 }
-
-
-
-
-
 
 void compare_pair(char *pair)
 {
@@ -212,31 +206,6 @@ void delete_operation(int block_index, int operation_index)
         Table->blocks[block_index]-> size = block_size - 1;
 }
 
-/*Operations *get_block(int idx)
-{
-    if (main_table->blocks[idx] == NULL)
-    {
-        fprintf(stderr, "index doesn't exist\n");
-    }
-
-    return main_table->blocks[idx];
-}*/
-
-/*
-char *get_operation(int block_idx, int operation_idx)
-{
-    if (main_table->blocks[block_idx] == NULL)
-    {
-        fprintf(stderr, "index in array doesn't exist\n");
-    }
-    if (main_table->blocks[block_idx]->operations[operation_idx] == NULL)
-    {
-        fprintf(stderr, "index in operation array doesn't exist\n");
-    }
-    return main_table->blocks[block_idx]->operations[operation_idx]->content;
-}
-*/
-
 void delete_main_table()
 {
     for (int i = 0; i < Table->size; i++)
@@ -246,34 +215,3 @@ void delete_main_table()
     free(Table->blocks);
     free(Table);
 }
-
-/*int main()
-{
-    define_file_pairs("txt/a.txt:txt/b.txt txt/c.txt:txt/d.txt txt/a.txt:txt/c.txt");
-    create_main_table(10);
-    compare_pairs();
-    create_block_of_operations();
-
-    printf("%s", Table->blocks[0]->operations[2]->content);
-    delete_block_of_operations(0);
-    printf("%s", Table->blocks[2]->operations[0]->content);
-    compare_pairs();
-    create_block_of_operations();
-    delete_operation(0, 0);
-    delete_operation(0, 0);
-    delete_operation(0, 23);
-    delete_operation(0, 3);
-    create_block_of_operations();
-
-    compare_pairs();
-    printf("%d\n", get_number_of_operations_in_block(0));
-
-//     Operations *ope = get_block(0);
-//     for (int i = 0; i < ope->count; i++)
-//     {
-//         printf("%d: \n%s\n\n", i, ope->operations[i]->content);
-//     }
-
-//     // printf("\n\n\n\n\n%s\n\n", get_operation(0, 1));
-    delete_main_table();
- }*/
