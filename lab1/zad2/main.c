@@ -14,7 +14,8 @@
 
 clock_t st_time, en_time;
 struct tms st_cpu, en_cpu;
-FILE *report;
+FILE *report_file;
+
 
 void start_timer()
 {
@@ -70,7 +71,7 @@ int parse_end_timer(char *argv[], int i, int argc)
     end_timer();
     char *timer_name = argv[i + 1];
 
-    save_timer(timer_name, report);
+    save_timer(timer_name, report_file);
     return 0;
 }
 
@@ -116,9 +117,9 @@ int main(int argc, char *argv[])
 #endif
 
     char file_name[] = "raport.txt";
-    report = fopen(file_name, "a");
+    report_file = fopen(file_name, "a");
 
-    write_file_header(report);
+    write_file_header(report_file);
 
     int i = 1;
     while (i < argc)
