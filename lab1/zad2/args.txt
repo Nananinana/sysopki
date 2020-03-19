@@ -1,3 +1,20 @@
 start create_main_table 100 end "table create 100"
 start compare_pairs "a.txt:b.txt c.txt:d.txt e.txt:f.txt g.txt:h.txt" end "small diff"
 start delete_block_of_operations 0 end "small remove from array"
+start delete_block_of_operations 0 end "small remove from array"
+start compare_pairs "big2.txt:big.txt c.txt:d.txt e.txt:big.txt g.txt:h.txt 
+a.txt:b.txt big2.txt:d.txt" end "medium diff"
+start delete_block_of_operations 6 end "medium remove from array"
+start delete_operation 10 1 end "medium remove operation from array"
+start compare_pairs "big2.txt:big.txt c.txt:d.txt e.txt:big.txt g.txt:h.txt a.txt:big2.txt c.txt:big.txt 
+big2.txt:b.txt c.txt:d.txt big2.txt:big.txt a.txt:h.txt a.txt:big2.txt c.txt:big.txt" end "big diff"
+start delete_block_of_operations 30 end "big remove from array"
+start delete_operation 25 1 end "big remove operation from array"
+start create_block_of_operations delete_block_of_operations 0
+create_block_of_operations delete_block_of_operations 0
+create_block_of_operations delete_block_of_operations 0
+create_block_of_operations delete_block_of_operations 0
+create_block_of_operations delete_block_of_operations 0
+create_block_of_operations delete_block_of_operations 0
+create_block_of_operations delete_block_of_operations 0
+end "add remove 7 times"
