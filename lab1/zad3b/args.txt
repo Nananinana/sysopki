@@ -9,7 +9,7 @@ start delete_block_of_operations 4 end "deleting big block of operations"
 start compare_pairs "long_text2.txt:long_text.txt c.txt:d.txt e.txt:long_text.txt g.txt:h.txt a.txt:long_text2.txt c.txt:long_text.txt 
 long_text2.txt:b.txt c.txt:d.txt long_text2.txt:long_text.txt a.txt:h.txt a.txt:long_text2.txt c.txt:long_text.txt long_text2.txt:long_text.txt 
 c.txt:d.txt e.txt:long_text.txt g.txt:h.txt a.txt:long_text2.txt c.txt:long_text.txt 
-long_text2.txt:b.txt c.txt:d.txt long_text2.txt:long_text.txt a.txt:h.txt a.txt:long_text2.txt c.txt:long_text.txt long_text2.txt:long_text.txt" end "big diff"
+long_text2.txt:b.txt c.txt:d.txt long_text2.txt:long_text.txt a.txt:h.txt a.txt:long_text2.txt c.txt:long_text.txt long_text2.txt:long_text.txt" end "comparing big amount of files"
 start create_block_of_operations delete_block_of_operations 0
 create_block_of_operations delete_block_of_operations 0
 create_block_of_operations delete_block_of_operations 0
