@@ -30,12 +30,10 @@ void end_timer()
 void write_file_header(FILE *f)
 {
     fprintf(f, "%30s\t\t%15s\t%15s\t%15s\t%15s\t%15s\n",
-            "Name",
-            "Real [s]",
-            "User [s]",
-            "System [s]",
-            "Child User [s]",
-            "Child System [s]");
+            "name",
+            "real_time [s]",
+            "user_time [s]",
+            "sys_time [s]");
 }
 
 void save_timer(char *name, FILE *f)
@@ -45,15 +43,11 @@ void save_timer(char *name, FILE *f)
     double real_time = (double)(en_time - st_time) / clk_tics;
     double user_time = (double)(en_cpu.tms_utime - st_cpu.tms_utime) / clk_tics;
     double system_time = (double)(en_cpu.tms_stime - st_cpu.tms_stime) / clk_tics;
-    double child_user_time = (double)(en_cpu.tms_cutime - st_cpu.tms_cutime) / clk_tics;
-    double child_system_time = (double)(en_cpu.tms_cstime - st_cpu.tms_cstime) / clk_tics;
-    fprintf(f, "%30s:\t\t%15f\t%15f\t%15f\t%15f\t%15f\t\n",
+    fprintf(f, "%30s:\t\t%15f\t%15f\t%15f\t\n",
             name,
             real_time,
             user_time,
-            system_time,
-            child_user_time,
-            child_system_time);
+            sys_time);
 }
 int parse_create_main_table(char *argv[], int i, int argc)
 {
