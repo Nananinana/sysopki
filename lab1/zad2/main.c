@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
         {
             create_block_of_operations();
             i++;
-            parse_delete_block(argv, i, argc);
+            parse_delete_block_of_operations(argv, i, argc);
             i += 2;
         }
         else if (!strcmp(argv[i], "start"))
