@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     init();
 #endif
 
-    char file_name[] = "raport.txt";
+    char file_name[] = "raport2.txt";
     report_file = fopen(file_name, "a");
 
     write_file_header(report_file);
