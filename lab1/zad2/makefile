@@ -13,7 +13,8 @@ shared:
 
 
 dynamic:
-	$(CC) $(FLAGS) -I$(LIB_PATH) main.c -ldl -D DYNAMIC -o main
+	$(CC) $(FLAGS) main.c -o main -L$(LIB_PATH) -I$(LIB_PATH) -library.o
+
 
 test:
 	make static
