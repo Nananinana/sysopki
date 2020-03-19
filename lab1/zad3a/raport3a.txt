@@ -4,10 +4,10 @@ creating main table of size 75:		       0.000000	       0.000000	       0.000000
 comparing small amount of files:		       0.140000	       0.000000	       0.000000	
 deleting small block of operations:		       0.000000	       0.000000	       0.000000	
       deleting small operation:		       0.000000	       0.000000	       0.000000	
-comparing medium amount of files:		       0.300000	       0.000000	       0.000000	
+comparing medium amount of files:		       0.370000	       0.000000	       0.000000	
 deleting big operation from array:		       0.000000	       0.000000	       0.000000	
 deleting big block of operations:		       0.000000	       0.000000	       0.000000	
-                      big diff:		       0.730000	       0.000000	       0.000000	
+ comparing big amount of files:		       1.050000	       0.010000	       0.010000	
 adding and removing block of operations:		       0.000000	       0.000000	       0.000000	
 shared:
                           name		  real_time [s]	  user_time [s]	system_time [s]
@@ -15,19 +15,19 @@ creating main table of size 75:		       0.000000	       0.000000	       0.000000
 comparing small amount of files:		       0.140000	       0.000000	       0.000000	
 deleting small block of operations:		       0.000000	       0.000000	       0.000000	
       deleting small operation:		       0.000000	       0.000000	       0.000000	
-comparing medium amount of files:		       0.290000	       0.000000	       0.000000	
-deleting big operation from array:		       0.000000	       0.000000	       0.000000	
+comparing medium amount of files:		       0.280000	       0.000000	       0.000000	
+deleting big operation from array:		       0.010000	       0.000000	       0.000000	
 deleting big block of operations:		       0.000000	       0.000000	       0.000000	
-                      big diff:		       1.000000	       0.000000	       0.010000	
+ comparing big amount of files:		       0.710000	       0.000000	       0.000000	
 adding and removing block of operations:		       0.000000	       0.000000	       0.000000	
 dynamic:
                           name		  real_time [s]	  user_time [s]	system_time [s]
 creating main table of size 75:		       0.000000	       0.000000	       0.000000	
-comparing small amount of files:		       0.190000	       0.000000	       0.000000	
+comparing small amount of files:		       0.140000	       0.000000	       0.000000	
 deleting small block of operations:		       0.000000	       0.000000	       0.000000	
       deleting small operation:		       0.000000	       0.000000	       0.000000	
-comparing medium amount of files:		       0.420000	       0.000000	       0.000000	
+comparing medium amount of files:		       0.280000	       0.000000	       0.000000	
 deleting big operation from array:		       0.000000	       0.000000	       0.000000	
 deleting big block of operations:		       0.000000	       0.000000	       0.000000	
-                      big diff:		       0.810000	       0.000000	       0.010000	
+ comparing big amount of files:		       0.710000	       0.010000	       0.010000	
 adding and removing block of operations:		       0.000000	       0.000000	       0.000000	
