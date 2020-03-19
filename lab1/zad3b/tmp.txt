@@ -1,0 +1,25 @@
+1,5c1,16
+< aaa
+< nnn ccc
+< ddd
+< zzz
+< hhgm iii
+\ Brak znaku nowej linii na końcu pliku
+---
+> Th e “demarcation problem,” the issue of how to separate science from pseudoscience,
+> has been around since fall 1919—at least according to Karl Popper’s
+> (1957) recollection of when he fi rst started thinking about it. In Popper’s
+> mind, the demarcation problem was intimately linked with one of the most
+> vexing issues in philosophy of science, David Hume’s problem of induction
+> (Vickers 2010) and, in particular, Hume’s contention that induction cannot
+> be logically justifi ed by appealing to the fact that “it works,” as that in itself is
+> an inductive argument, thereby potentially plunging the philosopher straight
+> into the abyss of a viciously circular argument.
+> Popper famously thought he had solved both the demarcation and induction
+> problems in one fell swoop, by invoking falsifi cation as the criterion that
+> separates science from pseudoscience. Not only, according to Popper, do scientifi
+> c hypotheses have to be falsifi able (while pseudoscientifi c ones are not),
+> but since falsifi cation is an application of modus tollens, and hence a type of
+> deductive thinking, we can get rid of induction altogether as the basis for scientifi
+> c reasoning and set Hume’s ghost to rest once and for all.
+\ Brak znaku nowej linii na końcu pliku
