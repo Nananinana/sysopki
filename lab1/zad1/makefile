@@ -1,6 +1,6 @@
 CC = gcc
 FLAGS = -Wall
-LIB_NAME = library
+LIB_NAME = lib_library
 SOURCE_NAME = library
 
 
