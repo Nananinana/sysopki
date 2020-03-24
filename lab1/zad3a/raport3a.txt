@@ -1,39 +1,37 @@
 static:
-                          Name		       Real [s]	       User [s]	     System [s]	 Child User [s]	Child System [s]
-              table create 100:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-                    small diff:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-       small remove from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-small remove operation from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-                   medium diff:		       0.020000	       0.000000	       0.000000	       0.010000	       0.000000	
-      medium remove from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-medium remove operation from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-                      big diff:		       0.050000	       0.000000	       0.000000	       0.040000	       0.000000	
-         big remove from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-big remove operation from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-            add remove 7 times:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
+                          name		  real_time [s]	  user_time [s]	system_time [s]
+creating main table of size 75:		       	0.000000	       0.000000	       0.000000	
+comparing small amount of files:		0.140000	       0.000000	       0.000000	
+deleting small block of operations:		0.000000	       0.000000	       0.000000	
+      deleting small operation:		       	0.000000	       0.000000	       0.000000	
+comparing medium amount of files:		0.370000	       0.000000	       0.000000	
+deleting big operation from array:	      	0.000000	       0.000000	       0.000000	
+deleting big block of operations:		0.000000	       0.000000	       0.000000	
+ comparing big amount of files:		       	1.050000	       0.010000	       0.010000	
+adding and removing block of operations:	0.000000	       0.000000	       0.000000	
 shared:
-                          Name		       Real [s]	       User [s]	     System [s]	 Child User [s]	Child System [s]
-              table create 100:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-                    small diff:		       0.010000	       0.000000	       0.000000	       0.000000	       0.000000	
-       small remove from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-small remove operation from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-                   medium diff:		       0.020000	       0.000000	       0.000000	       0.020000	       0.000000	
-      medium remove from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-medium remove operation from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-                      big diff:		       0.050000	       0.000000	       0.000000	       0.030000	       0.010000	
-         big remove from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-big remove operation from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-            add remove 7 times:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
+                          name		  real_time [s]	  user_time [s]	system_time [s]
+creating main table of size 75:		        0.000000	       0.000000	       0.000000	
+comparing small amount of files:		0.140000	       0.000000	       0.000000	
+deleting small block of operations:		0.000000	       0.000000	       0.000000	
+      deleting small operation:		       	0.000000	       0.000000	       0.000000	
+comparing medium amount of files:		0.280000	       0.000000	       0.000000	
+deleting big operation from array:		0.010000	       0.000000	       0.000000	
+deleting big block of operations:		0.000000	       0.000000	       0.000000	
+ comparing big amount of files:		       	0.710000	       0.000000	       0.000000	
+adding and removing block of operations:        0.000000	       0.000000	       0.000000	
 dynamic:
-                          Name		       Real [s]	       User [s]	     System [s]	 Child User [s]	Child System [s]
-              table create 100:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-                    small diff:		       0.010000	       0.000000	       0.000000	       0.000000	       0.000000	
-       small remove from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-small remove operation from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-                   medium diff:		       0.010000	       0.000000	       0.000000	       0.010000	       0.000000	
-      medium remove from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-medium remove operation from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-                      big diff:		       0.050000	       0.000000	       0.000000	       0.040000	       0.000000	
-         big remove from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-big remove operation from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-            add remove 7 times:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
+                          name		  real_time [s]	  user_time [s]	system_time [s]
+creating main table of size 75:		       0.000000	       0.000000	       0.000000	
+comparing small amount of files:	       0.140000	       0.000000	       0.000000	
+deleting small block of operations:	       0.000000	       0.000000	       0.000000	
+      deleting small operation:		       0.000000	       0.000000	       0.000000	
+comparing medium amount of files:	       0.280000	       0.000000	       0.000000	
+deleting big operation from array:	       0.000000	       0.000000	       0.000000	
+deleting big block of operations:	       0.000000	       0.000000	       0.000000	
+ comparing big amount of files:		       0.710000	       0.010000	       0.010000	
+adding and removing block of operations:       0.000000	       0.000000	       0.000000	
+
+Jak widać w przypadku wykorzystania biliotek statycznych wszystkie operacje zajmują mniej czasu 
+niż w przypadku bibliotek dynamicznych i współdzielonych. Można też zaobserwować, że porównywanie plików
+jest najbardziej czasochłonną operacją (prawdopodobnie jest to spowodowane wykorzystaniem systemowej komendy diff).

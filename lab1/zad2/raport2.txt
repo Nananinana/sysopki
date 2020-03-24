@@ -1,10 +1,10 @@
-                          Name		       Real [s]	       User [s]	     System [s]	 Child User [s]	Child System [s]
-creating main table of size 75:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-comparing small amount of files:		       0.140000	       0.000000	       0.000000	       0.050000	       0.010000	
-deleting small block of operations:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-      deleting small operation:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-comparing medium amount of files:		       0.400000	       0.000000	       0.000000	       0.150000	       0.040000	
-deleting big operation from array:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-deleting big block of operations:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
-                      big diff:		       0.980000	       0.000000	       0.000000	       0.380000	       0.100000	
-adding and removing block of operations:		       0.000000	       0.000000	       0.000000	       0.000000	       0.000000	
+name		                  		real_time [s]	  user_time [s]	system_time [s]
+creating main table of size 75:		        0.000000	       0.000000	       0.000000	
+comparing small amount of files:		0.170000	       0.000000	       0.000000	
+deleting small block of operations:		0.000000	       0.000000	       0.000000	
+      deleting small operation:		        0.000000	       0.000000	       0.000000	
+comparing medium amount of files:		0.450000	       0.000000	       0.000000	
+deleting big operation from array:		0.000000	       0.000000	       0.000000	
+deleting big block of operations:		0.000000	       0.000000	       0.000000	
+ comparing big amount of files:		        1.110000	       0.000000	       0.000000	
+adding and removing block of operations:	0.000000	       0.000000	       0.000000	
