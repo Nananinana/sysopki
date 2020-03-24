@@ -89,7 +89,7 @@ void lib_sort(char *filename, int records_number, int record_size)
 
     FILE *file = fopen(filename, "r+");
     lib_quicksort(file, records_number, record_size, 0, records_number - 1);
-    fclose(f);
+    fclose(file);
 }
 
 void sys_swap_in_file(int f, int records_number, int record_size, int i, int j)
