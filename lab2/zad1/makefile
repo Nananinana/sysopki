@@ -16,18 +16,18 @@ test:
 	make program 
 	rm -f wyniki.txt
 
-	for byte_num in 1 4 512  1024  4096 8192 ; do \
-		for rec_num in 1000 5000 10000; do \
-			./$(PROGRAM_NAME) generate dane $$rec_num $$byte_num ; \
-			./$(PROGRAM_NAME) copy dane dane.$$rec_num.$$byte_num.lib $$rec_num $$byte_num lib ; \
-			./$(PROGRAM_NAME) copy dane dane.$$rec_num.$$byte_num.sys $$rec_num $$byte_num sys ; \
+	for record_size in 1 4 512  1024  4096 8192 ; do \
+		for records_number in 1000 5000 10000; do \
+			./$(PROGRAM_NAME) generate dane $$records_number $$record_size ; \
+			./$(PROGRAM_NAME) copy dane dane.$$records_number.$$record_size.lib $$records_number $$record_size lib ; \
+			./$(PROGRAM_NAME) copy dane dane.$$records_number.$$record_size.sys $$records_number $$record_size sys ; \
 		done; \
 	done
 	
-	for byte_num in 1 4 512  1024  4096 8192 ; do \
-		for rec_num in 1000 5000 10000; do \
-			./$(PROGRAM_NAME) sort dane.$$rec_num.$$byte_num.lib $$rec_num $$byte_num lib ; \
-			./$(PROGRAM_NAME) sort dane.$$rec_num.$$byte_num.sys $$rec_num $$byte_num sys ; \
+	for record_size in 1 4 512  1024  4096 8192 ; do \
+		for records_number in 1000 5000 10000; do \
+			./$(PROGRAM_NAME) sort dane.$$records_number.$$record_size.lib $$records_number $$record_size lib ; \
+			./$(PROGRAM_NAME) sort dane.$$records_number.$$record_size.sys $$records_number $$record_size sys ; \
 		done; \
 	done
 

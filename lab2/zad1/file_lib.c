@@ -6,11 +6,11 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-void generate(const char *file_name, const unsigned int num_records, const unsigned int byte_num)
+void generate(char *filename, int records_number, int record_size)
 {
     char buff[64];
 
-    snprintf(buff, sizeof buff, "</dev/urandom tr -dc 'A-Z0-9a-z' | head -c %d > %s", num_records * byte_num, file_name);
+    snprintf(buff, sizeof buff, "</dev/urandom tr -dc 'A-Z0-9a-z' | head -c %d > %s", records_number * record_size, filename);
     int find_status = system(buff);
     if (find_status != 0)
     {
@@ -19,52 +19,52 @@ void generate(const char *file_name, const unsigned int num_records, const unsig
     }
 }
 
-void swap_in_file_lib(FILE *f, const unsigned int num_records, const unsigned int byte_num, unsigned int i, unsigned int j)
+void lib_swap_in_file(FILE *f, int records_number, int record_size, int i, int j)
 {
 
-    char *tmp1 = malloc(byte_num);
-    char *tmp2 = malloc(byte_num);
-    if (fseek(f, i * byte_num, SEEK_SET) < 0)
+    char *tmp1 = malloc(record_size);
+    char *tmp2 = malloc(record_size);
+    if (fseek(f, i * record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "1cant seek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
-    if (fread(tmp1, 1, byte_num, f) != byte_num)
+    if (fread(tmp1, 1, record_size, f) != record_size)
     {
         fprintf(stderr, "2cant read sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (fseek(f, (j)*byte_num, SEEK_SET) < 0)
+    if (fseek(f, (j)*record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "3cant seek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
-    if (fread(tmp2, 1, byte_num, f) != byte_num)
+    if (fread(tmp2, 1, record_size, f) != record_size)
     {
         fprintf(stderr, "4cant read sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (fseek(f, i * byte_num, SEEK_SET) < 0)
+    if (fseek(f, i * record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "5cant fseek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (fwrite(tmp2, 1, byte_num, f) != byte_num)
+    if (fwrite(tmp2, 1, record_size, f) != record_size)
     {
         fprintf(stderr, "error while writing to file sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (fseek(f, (j)*byte_num, SEEK_SET) < 0)
+    if (fseek(f, (j)*record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "error while fseek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (fwrite(tmp1, 1, byte_num, f) != byte_num)
+    if (fwrite(tmp1, 1, record_size, f) != record_size)
     {
         fprintf(stderr, "error while fwrite sort lib: %s\n", strerror(errno));
         exit(-1);
@@ -72,35 +72,35 @@ void swap_in_file_lib(FILE *f, const unsigned int num_records, const unsigned in
     free(tmp1);
     free(tmp2);
 }
-int partition_lib(FILE *f, const unsigned int num_records, const unsigned int byte_num, unsigned int low, unsigned int high)
+int lib_partition(FILE *f, int records_number, int record_size, int low, int high)
 {
 
-    char *tmp1 = malloc(byte_num);
-    char *tmp2 = malloc(byte_num);
-    if (fseek(f, (high)*byte_num, SEEK_SET) < 0)
+    char *tmp1 = malloc(record_size);
+    char *tmp2 = malloc(record_size);
+    if (fseek(f, (high)*record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "cant seek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (fread(tmp1, 1, byte_num, f) != byte_num)
+    if (fread(tmp1, 1, record_size, f) != record_size)
     {
 
         fprintf(stderr, "6cant read sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    unsigned char min_char = tmp1[0];
+ char min_char = tmp1[0];
     int i = low - 1;
 
     for (int j = low; j < high; j++)
     {
-        if (fseek(f, j * byte_num, SEEK_SET) < 0)
+        if (fseek(f, j * record_size, SEEK_SET) < 0)
         {
             fprintf(stderr, "cant seek sort lib: %s\n", strerror(errno));
             exit(-1);
         }
-        if (fread(tmp2, 1, byte_num, f) != byte_num)
+        if (fread(tmp2, 1, record_size, f) != record_size)
         {
             fprintf(stderr, "7cant read sort lib: %s\n", strerror(errno));
             exit(-1);
@@ -109,89 +109,89 @@ int partition_lib(FILE *f, const unsigned int num_records, const unsigned int by
         if (tmp2[0] < min_char)
         {
             i++;
-            swap_in_file_lib(f, num_records, byte_num, i, j);
+            lib_swap_in_file(f, records_number, record_size, i, j);
         }
     }
-    swap_in_file_lib(f, num_records, byte_num, i + 1, high);
+    lib_swap_in_file(f, records_number, record_size, i + 1, high);
     free(tmp1);
     free(tmp2);
     return (i + 1);
 }
-void qSort_lib(FILE *f, const unsigned int num_records, const unsigned int byte_num, unsigned int low, unsigned int high)
+void lib_qsort(FILE *f, int records_number, int record_size, int low, int high)
 {
 
     if (low < high)
     {
-        int pi = partition_lib(f, num_records, byte_num, low, high);
+        int pi = lib_partition(f, records_number, record_size, low, high);
         if (pi != 0)
-            qSort_lib(f, num_records, byte_num, low, pi - 1);
-        if (pi != num_records)
-            qSort_lib(f, num_records, byte_num, pi + 1, high);
+            lib_qsort(f, records_number, record_size, low, pi - 1);
+        if (pi != records_number)
+            lib_qsort(f, records_number, record_size, pi + 1, high);
     }
 }
 
-void sort_lib(const char *file_name, const unsigned int num_records, const unsigned int byte_num)
+void lib_sort(char *filename, int records_number, int record_size)
 {
 
-    FILE *f = fopen(file_name, "r+");
+    FILE *f = fopen(filename, "r+");
 
     if (f == NULL)
     {
         fprintf(stderr, "Can't open file sort lib: %s \n", strerror(errno));
         exit(-1);
     }
-    qSort_lib(f, num_records, byte_num, 0, num_records - 1);
+    lib_qsort(f, records_number, record_size, 0, records_number - 1);
 
     fclose(f);
 }
 
-void swap_in_file_sys(int f, const unsigned int num_records, const unsigned int byte_num, unsigned int i, unsigned int j)
+void sys_swap_in_file(int f, int records_number, int record_size, int i, int j)
 {
 
-    char *tmp1 = malloc(byte_num);
-    char *tmp2 = malloc(byte_num);
-    if (lseek(f, i * byte_num, SEEK_SET) < 0)
+    char *tmp1 = malloc(record_size);
+    char *tmp2 = malloc(record_size);
+    if (lseek(f, i * record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "1cant seek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
-    if (read(f, tmp1, byte_num) < 0)
+    if (read(f, tmp1, record_size) < 0)
     {
         fprintf(stderr, "2cant read sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (lseek(f, (j)*byte_num, SEEK_SET) < 0)
+    if (lseek(f, (j)*record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "3cant seek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
-    if (read(f, tmp2, byte_num) < 0)
+    if (read(f, tmp2, record_size) < 0)
     {
 
         fprintf(stderr, "4cant read sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (lseek(f, i * byte_num, SEEK_SET) < 0)
+    if (lseek(f, i * record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "5cant fseek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (write(f, tmp2, byte_num) < 0)
+    if (write(f, tmp2, record_size) < 0)
     {
         fprintf(stderr, "error while writing to file sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (lseek(f, (j)*byte_num, SEEK_SET) < 0)
+    if (lseek(f, (j)*record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "error while fseek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (write(f, tmp1, byte_num) < 0)
+    if (write(f, tmp1, record_size) < 0)
     {
         fprintf(stderr, "error while fwrite sort lib: %s\n", strerror(errno));
         exit(-1);
@@ -200,35 +200,35 @@ void swap_in_file_sys(int f, const unsigned int num_records, const unsigned int 
     free(tmp2);
 }
 
-int partition_sys(int f, const unsigned int num_records, const unsigned int byte_num, unsigned int low, unsigned int high)
+int sys_partition(int f, int records_number, int record_size, int low, int high)
 {
 
-    char *tmp1 = malloc(byte_num);
-    char *tmp2 = malloc(byte_num);
-    if (lseek(f, (high)*byte_num, SEEK_SET) < 0)
+    char *tmp1 = malloc(record_size);
+    char *tmp2 = malloc(record_size);
+    if (lseek(f, (high)*record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "cant seek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (read(f, tmp1, byte_num) < 0)
+    if (read(f, tmp1, record_size) < 0)
     {
 
         fprintf(stderr, "6cant read sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    unsigned char min_char = tmp1[0];
+ char min_char = tmp1[0];
     int i = low - 1;
 
     for (int j = low; j < high; j++)
     {
-        if (lseek(f, j * byte_num, SEEK_SET) < 0)
+        if (lseek(f, j * record_size, SEEK_SET) < 0)
         {
             fprintf(stderr, "cant seek sort lib: %s\n", strerror(errno));
             exit(-1);
         }
-        if (read(f, tmp2, byte_num) < 0)
+        if (read(f, tmp2, record_size) < 0)
         {
             fprintf(stderr, "7cant read sort lib: %s\n", strerror(errno));
             exit(-1);
@@ -237,66 +237,66 @@ int partition_sys(int f, const unsigned int num_records, const unsigned int byte
         if (tmp2[0] < min_char)
         {
             i++;
-            swap_in_file_sys(f, num_records, byte_num, i, j);
+            sys_swap_in_file(f, records_number, record_size, i, j);
         }
     }
-    swap_in_file_sys(f, num_records, byte_num, i + 1, high);
+    sys_swap_in_file(f, records_number, record_size, i + 1, high);
     free(tmp1);
     free(tmp2);
     return (i + 1);
 }
 
-void qSort_sys(int f, const unsigned int num_records, const unsigned int byte_num, unsigned int low, unsigned int high)
+void sys_qsort(int f, int records_number, int record_size, int low, int high)
 {
 
     if (low < high)
     {
-        int pi = partition_sys(f, num_records, byte_num, low, high);
+        int pi = sys_partition(f, records_number, record_size, low, high);
         if (pi != 0)
-            qSort_sys(f, num_records, byte_num, low, pi - 1);
-        if (pi != num_records)
-            qSort_sys(f, num_records, byte_num, pi + 1, high);
+            sys_qsort(f, records_number, record_size, low, pi - 1);
+        if (pi != records_number)
+            sys_qsort(f, records_number, record_size, pi + 1, high);
     }
 }
 
-void sort_sys(const char *file_name, const unsigned int num_records, const unsigned int byte_num)
+void sys_sort(char *filename, int records_number, int record_size)
 {
-    int f = open(file_name, O_RDWR);
+    int f = open(filename, O_RDWR);
     if (f < 0)
     {
         fprintf(stderr, "cant open file sort sys: %s\n", strerror(errno));
         exit(-1);
     }
-    qSort_sys(f, num_records, byte_num, 0, num_records - 1);
+    sys_qsort(f, records_number, record_size, 0, records_number - 1);
 
     close(f);
 }
 
-void copy_sys(const char *file_from, const char *file_to, const unsigned int num_records, const unsigned int byte_num)
+void sys_copy(char *file1, char *file2, int records_number, int record_size)
 {
-    int from = open(file_from, O_RDONLY);
+    int from = open(file1, O_RDONLY);
     if (from < 0)
     {
         fprintf(stderr, "cant open source file copy sys: %s\n", strerror(errno));
         exit(-1);
     }
-    int to = open(file_to, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    int to = open(file2, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
     if (to < 0)
     {
         fprintf(stderr, "cant open destination file copy sys: %s\n", strerror(errno));
         exit(-1);
     }
 
-    unsigned char *holder = malloc(byte_num);
-    for (int i = 0; i < num_records; ++i)
+ char *holder = malloc(record_size);
+    for (int i = 0; i < records_number; ++i)
     {
 
-        if (read(from, holder, byte_num) < 0)
+        if (read(from, holder, record_size) < 0)
         {
             fprintf(stderr, "cant read from source file copy sys: %s\n", strerror(errno));
             exit(-1);
         }
-        if (write(to, holder, byte_num) < 0)
+        if (write(to, holder, record_size) < 0)
         {
             fprintf(stderr, "cant write to dst file copy sys: %s\n", strerror(errno));
             exit(-1);
@@ -307,30 +307,30 @@ void copy_sys(const char *file_from, const char *file_to, const unsigned int num
     close(to);
 }
 
-void copy_lib(const char *file_from, const char *file_to, const unsigned int num_records, const unsigned int byte_num)
+void lib_copy(char *file1, char *file2, int records_number, int record_size)
 {
-    FILE *src_file = fopen(file_from, "r");
+    FILE *src_file = fopen(file1, "r");
     if (src_file == NULL)
     {
         fprintf(stderr, "cant open source file copy lib: %s\n", strerror(errno));
         exit(-1);
     }
-    FILE *dst_file = fopen(file_to, "w");
+    FILE *dst_file = fopen(file2, "w");
     if (dst_file == NULL)
     {
         fprintf(stderr, "cant open dst file copy lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    unsigned char *holder = malloc(byte_num);
-    for (int i = 0; i < num_records; i++)
+ char *holder = malloc(record_size);
+    for (int i = 0; i < records_number; i++)
     {
-        if (fread(holder, 1, byte_num, src_file) != byte_num)
+        if (fread(holder, 1, record_size, src_file) != record_size)
         {
             fprintf(stderr, "cant read from source file copy lib: %s\n", strerror(errno));
             exit(-1);
         }
-        if (fwrite(holder, 1, byte_num, dst_file) != byte_num)
+        if (fwrite(holder, 1, record_size, dst_file) != record_size)
         {
             fprintf(stderr, "cant write to dst file copy lib: %s\n", strerror(errno));
             exit(-1);

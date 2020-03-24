@@ -1,14 +1,14 @@
 #ifndef FILE_LIB_H
 #define FILE_LIB_H
 
-void generate(const char *file_name, const unsigned int num_records, const unsigned int byte_num);
+void generate(char *filename, int records_number, int record_size);
 
-void copy_lib(const char *file_from, const char *file_to, const unsigned int num_records, const unsigned int byte_num);
+void lib_copy(char *file1, char *file2, int records_number, int record_size);
 
-void copy_sys(const char *file_from, const char *file_to, const unsigned int num_records, const unsigned int byte_num);
+void sys_copy(char *file1, char *file2, int records_number, int record_size);
 
-void sort_sys(const char *file_name, const unsigned int num_records, const unsigned int byte_num);
+void sys_sort(char *filename, int records_number, int record_size);
 
-void sort_lib(const char *file_name, const unsigned int num_records, const unsigned int byte_num);
+void lib_sort(char *filename, int records_number, int record_size);
 
 #endif

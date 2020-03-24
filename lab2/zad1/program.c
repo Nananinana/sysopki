@@ -49,10 +49,10 @@ int parse_generate(int argc, char *argv[], int i)
         fprintf(stderr, "generate command wrong args\n");
         exit(-1);
     }
-    char *file_name = argv[i + 1];
-    int rec_num = atoi(argv[i + 2]);
-    int byte_num = atoi(argv[i + 3]);
-    generate(file_name, rec_num, byte_num);
+    char *filename = argv[i + 1];
+    int records_number = atoi(argv[i + 2]);
+    int record_size = atoi(argv[i + 3]);
+    generate(filename, records_number, record_size);
     return i + 4;
 }
 
@@ -63,25 +63,25 @@ int parse_sort(int argc, char *argv[], int i)
         fprintf(stderr, "sort command wrong args\n");
         exit(-1);
     }
-    char *file_name = argv[i + 1];
-    int rec_num = atoi(argv[i + 2]);
-    int byte_num = atoi(argv[i + 3]);
+    char *filename = argv[i + 1];
+    int records_number = atoi(argv[i + 2]);
+    int record_size = atoi(argv[i + 3]);
     char *lib_sys = argv[i + 4];
 
     if (!strcmp(lib_sys, "lib"))
     {
         start_timer();
-        sort_lib(file_name, rec_num, byte_num);
+        lib_sort(filename, records_number, record_size);
         end_timer();
     }
     else if (!strcmp(lib_sys, "sys"))
     {
         start_timer();
-        sort_sys(file_name, rec_num, byte_num);
+        sys_sort(filename, records_number, record_size);
         end_timer();
     }
     char buff[64];
-    snprintf(buff, sizeof buff, "sort %s, records: %d, bytes: %d", lib_sys, rec_num, byte_num);
+    snprintf(buff, sizeof buff, "sort %s, records: %d, bytes: %d", lib_sys, records_number, record_size);
     save_timer(buff, report_file);
 
     return i + 5;
@@ -95,27 +95,27 @@ int parse_copy(int argc, char *argv[], int i)
         exit(-1);
     }
 
-    char *file_from = argv[i + 1];
-    char *file_to = argv[i + 2];
-    int rec_num = atoi(argv[i + 3]);
-    int byte_num = atoi(argv[i + 4]);
+    char *file1 = argv[i + 1];
+    char *file2 = argv[i + 2];
+    int records_number = atoi(argv[i + 3]);
+    int record_size = atoi(argv[i + 4]);
     char *lib_sys = argv[i + 5];
 
     if (!strcmp(lib_sys, "lib"))
     {
         start_timer();
-        copy_lib(file_from, file_to, rec_num, byte_num);
+        lib_copy(file1, file2, records_number, record_size);
         end_timer();
     }
     else if (!strcmp(lib_sys, "sys"))
     {
         start_timer();
-        copy_sys(file_from, file_to, rec_num, byte_num);
+        sys_copy(file1, file2, records_number, record_size);
         end_timer();
     }
 
     char buff[64];
-    snprintf(buff, sizeof buff, "copy %s, records: %d, bytes: %d", lib_sys, rec_num, byte_num);
+    snprintf(buff, sizeof buff, "copy %s, records: %d, bytes: %d", lib_sys, records_number, record_size);
     save_timer(buff, report_file);
 
     return i + 6;
@@ -123,16 +123,16 @@ int parse_copy(int argc, char *argv[], int i)
 
 int main(int argc, char *argv[])
 {
-    char file_name[] = "wyniki.txt";
+    char filename[] = "wyniki.txt";
 
-    if (access(file_name, F_OK) != 0)
+    if (access(filename, F_OK) != 0)
     {
-        report_file = fopen(file_name, "a");
+        report_file = fopen(filename, "a");
         write_file_header(report_file);
     }
     else
     {
-        report_file = fopen(file_name, "a");
+        report_file = fopen(filename, "a");
     }
 
     int i = 1;
