@@ -79,8 +79,8 @@ void lib_quicksort(FILE *file, int records_number, int record_size, int start, i
     if (start < end)
     {
         int pivot = lib_partition(file, records_number, record_size, start, end);
-        lib_quicksort(f, records_number, record_size, start, pivot - 1);
-        lib_quicksort(f, records_number, record_size, pivot + 1, end);
+        lib_quicksort(file, records_number, record_size, start, pivot - 1);
+        lib_quicksort(file, records_number, record_size, pivot + 1, end);
     }
 }
 
