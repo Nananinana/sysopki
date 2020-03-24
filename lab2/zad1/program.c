@@ -4,6 +4,7 @@
 #include <sys/times.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 clock_t st_time, en_time;
 struct tms st_cpu, en_cpu;
