@@ -9,111 +9,63 @@
 void generate(char *filename, int records_number, int record_size)
 {
     FILE * file = fopen(filename, "w");
-    
-    int seed;
+    /*int seed;
     time_t t;
-    seed = time(&t);
-    srand(seed);
+    seed = time(&t);*/
+    srand(time(NULL));
 
     for(int i = 0; i < records_number; i++)
     {
-        for(int i = 0; i < record_size; i++)
+        for(int j = 0; j < record_size; j++)
         {
-           int shift = rand()%26;
-           int choice = rand()%2;
-           if (choice == 0)
-           { fputc('A'+shift, file); }
+           int offset = rand()%26;
+           int character_size = rand()%2;
+           if (character_size == 0)
+           { fputc('A'+ offset, file); }
            else
-           { fputc('a'+shift, file); }           
+           { fputc('a'+ offset, file); }           
         }
         fputc('\n', file);
     }
     fclose(file);
-    return 1;
-
-    /*char buff[64];
-
-    snprintf(buff, sizeof buff, "</dev/urandom tr -dc 'A-Z0-9a-z' | head -c %d > %s", records_number * record_size, filename);
-    int find_status = system(buff);
-    if (find_status != 0)
-    {
-        fprintf(stderr, "error while generating: %s\n", strerror(errno));
-        exit(-1);
-    }*/
 }
 
-void lib_swap_in_file(FILE *f, int records_number, int record_size, int i, int j)
+void lib_swap_records(FILE *file, int records_number, int record_size, int record_index1, int record_index2)
 {
 
-    char *tmp1 = malloc(record_size);
-    char *tmp2 = malloc(record_size);
-    if (fseek(f, i * record_size, SEEK_SET) < 0)
-    {
-        fprintf(stderr, "1cant seek sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-    if (fread(tmp1, 1, record_size, f) != record_size)
-    {
-        fprintf(stderr, "2cant read sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    if (fseek(f, (j)*record_size, SEEK_SET) < 0)
-    {
-        fprintf(stderr, "3cant seek sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-    if (fread(tmp2, 1, record_size, f) != record_size)
-    {
-        fprintf(stderr, "4cant read sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    if (fseek(f, i * record_size, SEEK_SET) < 0)
-    {
-        fprintf(stderr, "5cant fseek sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    if (fwrite(tmp2, 1, record_size, f) != record_size)
-    {
-        fprintf(stderr, "error while writing to file sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    if (fseek(f, (j)*record_size, SEEK_SET) < 0)
-    {
-        fprintf(stderr, "error while fseek sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    if (fwrite(tmp1, 1, record_size, f) != record_size)
-    {
-        fprintf(stderr, "error while fwrite sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-    free(tmp1);
-    free(tmp2);
+    char *buffer1 = malloc(record_size);
+    char *buffer2 = malloc(record_size);
+    fseek(file, record_index1 * record_size, SEEK_SET);  //znajduje i odczytuje do dwoch buforow zadane rekordy
+    fread(buffer1, 1, record_size, file);
+    fseek(file, record_index2 * record_size, SEEK_SET);
+    fread(buffer2, 1, record_size, file);
+    fseek(file, record_index1 * record_size, SEEK_SET);  //potem z buforow wpisuje je w zamienione miejsca
+    fwrite(buffer2, 1, record_size, file);
+    fseek(file, record_index2*record_size, SEEK_SET);
+    fwrite(buffer1, 1, record_size, file);
+    free(buffer1);
+    free(buffer2);
 }
+
 int lib_partition(FILE *f, int records_number, int record_size, int low, int high)
 {
 
-    char *tmp1 = malloc(record_size);
-    char *tmp2 = malloc(record_size);
+    char *buffer1 = malloc(record_size);
+    char *buffer2 = malloc(record_size);
     if (fseek(f, (high)*record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "cant seek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (fread(tmp1, 1, record_size, f) != record_size)
+    if (fread(buffer1, 1, record_size, f) != record_size)
     {
 
         fprintf(stderr, "6cant read sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
- char min_char = tmp1[0];
+ char min_char = buffer1[0];
     int i = low - 1;
 
     for (int j = low; j < high; j++)
@@ -123,21 +75,21 @@ int lib_partition(FILE *f, int records_number, int record_size, int low, int hig
             fprintf(stderr, "cant seek sort lib: %s\n", strerror(errno));
             exit(-1);
         }
-        if (fread(tmp2, 1, record_size, f) != record_size)
+        if (fread(buffer2, 1, record_size, f) != record_size)
         {
             fprintf(stderr, "7cant read sort lib: %s\n", strerror(errno));
             exit(-1);
         }
 
-        if (tmp2[0] < min_char)
+        if (buffer2[0] < min_char)
         {
             i++;
-            lib_swap_in_file(f, records_number, record_size, i, j);
+            lib_swap_records(f, records_number, record_size, i, j);
         }
     }
-    lib_swap_in_file(f, records_number, record_size, i + 1, high);
-    free(tmp1);
-    free(tmp2);
+    lib_swap_records(f, records_number, record_size, i + 1, high);
+    free(buffer1);
+    free(buffer2);
     return (i + 1);
 }
 void lib_qsort(FILE *f, int records_number, int record_size, int low, int high)
@@ -171,14 +123,14 @@ void lib_sort(char *filename, int records_number, int record_size)
 void sys_swap_in_file(int f, int records_number, int record_size, int i, int j)
 {
 
-    char *tmp1 = malloc(record_size);
-    char *tmp2 = malloc(record_size);
+    char *buffer1 = malloc(record_size);
+    char *buffer2 = malloc(record_size);
     if (lseek(f, i * record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "1cant seek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
-    if (read(f, tmp1, record_size) < 0)
+    if (read(f, buffer1, record_size) < 0)
     {
         fprintf(stderr, "2cant read sort lib: %s\n", strerror(errno));
         exit(-1);
@@ -189,7 +141,7 @@ void sys_swap_in_file(int f, int records_number, int record_size, int i, int j)
         fprintf(stderr, "3cant seek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
-    if (read(f, tmp2, record_size) < 0)
+    if (read(f, buffer2, record_size) < 0)
     {
 
         fprintf(stderr, "4cant read sort lib: %s\n", strerror(errno));
@@ -202,7 +154,7 @@ void sys_swap_in_file(int f, int records_number, int record_size, int i, int j)
         exit(-1);
     }
 
-    if (write(f, tmp2, record_size) < 0)
+    if (write(f, buffer2, record_size) < 0)
     {
         fprintf(stderr, "error while writing to file sort lib: %s\n", strerror(errno));
         exit(-1);
@@ -214,34 +166,34 @@ void sys_swap_in_file(int f, int records_number, int record_size, int i, int j)
         exit(-1);
     }
 
-    if (write(f, tmp1, record_size) < 0)
+    if (write(f, buffer1, record_size) < 0)
     {
         fprintf(stderr, "error while fwrite sort lib: %s\n", strerror(errno));
         exit(-1);
     }
-    free(tmp1);
-    free(tmp2);
+    free(buffer1);
+    free(buffer2);
 }
 
 int sys_partition(int f, int records_number, int record_size, int low, int high)
 {
 
-    char *tmp1 = malloc(record_size);
-    char *tmp2 = malloc(record_size);
+    char *buffer1 = malloc(record_size);
+    char *buffer2 = malloc(record_size);
     if (lseek(f, (high)*record_size, SEEK_SET) < 0)
     {
         fprintf(stderr, "cant seek sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
-    if (read(f, tmp1, record_size) < 0)
+    if (read(f, buffer1, record_size) < 0)
     {
 
         fprintf(stderr, "6cant read sort lib: %s\n", strerror(errno));
         exit(-1);
     }
 
- char min_char = tmp1[0];
+ char min_char = buffer1[0];
     int i = low - 1;
 
     for (int j = low; j < high; j++)
@@ -251,21 +203,21 @@ int sys_partition(int f, int records_number, int record_size, int low, int high)
             fprintf(stderr, "cant seek sort lib: %s\n", strerror(errno));
             exit(-1);
         }
-        if (read(f, tmp2, record_size) < 0)
+        if (read(f, buffer2, record_size) < 0)
         {
             fprintf(stderr, "7cant read sort lib: %s\n", strerror(errno));
             exit(-1);
         }
 
-        if (tmp2[0] < min_char)
+        if (buffer2[0] < min_char)
         {
             i++;
             sys_swap_in_file(f, records_number, record_size, i, j);
         }
     }
     sys_swap_in_file(f, records_number, record_size, i + 1, high);
-    free(tmp1);
-    free(tmp2);
+    free(buffer1);
+    free(buffer2);
     return (i + 1);
 }
 
