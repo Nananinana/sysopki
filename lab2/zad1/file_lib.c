@@ -8,7 +8,30 @@
 
 void generate(char *filename, int records_number, int record_size)
 {
-    char buff[64];
+    FILE * file = fopen(filename, "w");
+    
+    int seed;
+    time_t t;
+    seed = time(&t);
+    srand(seed);
+
+    for(int i = 0; i < records_number; i++)
+    {
+        for(int i = 0; i < record_size; i++)
+        {
+           int shift = rand()%26;
+           int choice = rand()%2;
+           if (choice == 0)
+           { fputc('A'+shift, file); }
+           else
+           { fputc('a'+shift, file); }           
+        }
+        fputc('\n', file);
+    }
+    fclose(file);
+    return 1;
+
+    /*char buff[64];
 
     snprintf(buff, sizeof buff, "</dev/urandom tr -dc 'A-Z0-9a-z' | head -c %d > %s", records_number * record_size, filename);
     int find_status = system(buff);
@@ -16,7 +39,7 @@ void generate(char *filename, int records_number, int record_size)
     {
         fprintf(stderr, "error while generating: %s\n", strerror(errno));
         exit(-1);
-    }
+    }*/
 }
 
 void lib_swap_in_file(FILE *f, int records_number, int record_size, int i, int j)
