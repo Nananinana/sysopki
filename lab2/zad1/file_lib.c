@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <time.h>
 
 void generate(char *filename, int records_number, int record_size)
 {
