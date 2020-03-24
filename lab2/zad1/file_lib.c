@@ -52,8 +52,8 @@ int lib_partition(FILE *file, int records_number, int record_size, int start, in
 {
     char *buffer1 = malloc(record_size);
     char *buffer2 = malloc(record_size);
-    if (fseek(file, (end)*record_size, SEEK_SET);
-    if (fread(buffer1, 1, record_size, file);
+    fseek(file, (end)*record_size, SEEK_SET);
+    fread(buffer1, 1, record_size, file);
     int i = start - 1;
     char min = buffer1[0];
 
