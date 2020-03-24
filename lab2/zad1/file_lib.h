@@ -1,5 +1,5 @@
-#ifndef GENERATOR_LIB_H
-#define GENERATOR_LIB_H
+#ifndef FILE_LIB_H
+#define FILE_LIB_H
 
 void generate(const char *file_name, const unsigned int num_records, const unsigned int byte_num);
 
