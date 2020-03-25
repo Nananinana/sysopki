@@ -124,7 +124,7 @@ void atime(char *root, char mode, int number_of_days, time_t current_date)
     }
     struct dirent *file;
     char new_path[256];
-    while (file = readdir(dir))
+    while ((file = readdir(dir)))
     {
         strcpy(new_path, root);
         strcat(new_path, "/");
@@ -221,7 +221,8 @@ int main(int argc, char *argv[])
         struct tm *timeinfo;
         time (&rawtime);
         timeinfo = localtime(&rawtime);
-        mtime(dir, argv[3], atoi(argv[4]), timeinfo);
+        char *mode = argv[3];
+        mtime(dir, mode, atoi(argv[4]), timeinfo);
     }
     if (strcmp(command, "atime"))
     {
@@ -229,7 +230,8 @@ int main(int argc, char *argv[])
         struct tm *timeinfo;
         time (&rawtime);
         timeinfo = localtime(&rawtime);
-        atime(dir, argv[3], atoi(argv[4]), timeinfo);
+        char *mode = argv[3];
+        atime(dir, mode, atoi(argv[4]), timeinfo);
     }
     return 0;
 }
