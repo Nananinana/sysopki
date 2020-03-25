@@ -9,7 +9,7 @@
 
 char format[] = "%Y-%m-%d %H:%M:%S";
 
-void show_file_status(char *filename, struct stat *file_status)
+void show_file_status(char *path, struct stat *file_status)
 {
     char *type = "uknown";
 
@@ -39,7 +39,7 @@ void show_file_status(char *filename, struct stat *file_status)
     strftime(access_time_str, 255, format, &tm_access_time);
 
     printf("%s || type: %s, size: %ld, modification time: %s, access time: %s, nlinks: %ld\n",
-           filename, file_type, file_status->st_size, modif_time_str, access_time_str, file_status->st_nlink);*/
+           path, file_type, file_status->st_size, modif_time_str, access_time_str, file_status->st_nlink);*/
     
     char mtime[255];
     char atime[255];
@@ -54,7 +54,7 @@ void show_file_status(char *filename, struct stat *file_status)
            type,
            file.st_size,
            atime,
-           mtime,
+           mtime
     );
 }
 
