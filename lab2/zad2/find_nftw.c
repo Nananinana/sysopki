@@ -24,7 +24,7 @@ void date(time_t time, char *buffer){
 
 void print_from_stat(const char *path, const struct stat *file_status)
 {
-    char type[64] = "undefined";
+    char *type = "undefined";
 
     /*if (S_ISREG(file_status->st_mode))
         strcpy(type, "file");
