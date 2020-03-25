@@ -36,7 +36,7 @@ void print_from_stat(const char *filename, const struct stat *statptr)
     else if (S_ISSOCK(statptr->st_mode))
         strcpy(file_type, "socket");
 
-    struct tm tm_modif_time;
+    /*struct tm tm_modif_time;
     localtime_r(&statptr->st_mtime, &tm_modif_time);
     char modif_time_str[255];
     strftime(modif_time_str, 255, format, &tm_modif_time);
@@ -47,7 +47,22 @@ void print_from_stat(const char *filename, const struct stat *statptr)
     strftime(access_time_str, 255, format, &tm_access_time);
 
     printf("%s || type: %s, size: %ld, modification time: %s, access time: %s\n",
-           filename, file_type, statptr->st_size, modif_time_str, access_time_str);
+           filename, file_type, statptr->st_size, modif_time_str, access_time_str);*/
+    char mtime[255];
+    char atime[255];
+    time_t modification_time = file_status->st_mtime;
+    time_t access_time = file_status->st_atime;
+    date(modification_time, mtime);
+    date(access_time, atime);
+
+    printf("path: %s \n links: %ld \n file type: %s \n file size: %ld \n access time %s\n modification time: %s \n\n\n",
+           path,
+           file_status->st_nlink,
+           type,
+           file_status->st_size,
+           atime,
+           mtime
+    );
 }
 
 int file_info(const char *filename, const struct stat *statptr,
