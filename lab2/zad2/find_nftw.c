@@ -17,6 +17,11 @@ char *command;
 time_t follow_date;
 int maxdepth;
 
+void date(time_t time, char *buffer){
+    struct tm *times = localtime(&time);
+    strftime(buffer, 255*sizeof(char), "%c", times);
+}
+
 void print_from_stat(const char *path, const struct stat *file_status)
 {
     char type[64] = "undefined";
@@ -63,6 +68,7 @@ void print_from_stat(const char *path, const struct stat *file_status)
            atime,
            mtime
     );
+
 }
 
 int file_info(const char *filename, const struct stat *file_status,
