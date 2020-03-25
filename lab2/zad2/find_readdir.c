@@ -60,7 +60,7 @@ void maxdepth(char *root, int depth)
     }
     struct dirent *file;
     char new_path[256];
-    while (file = readdir(dir)) 
+    while ((file = readdir(dir))) 
     {
         struct stat file_status;
         strcpy(new_path, root);
@@ -89,7 +89,7 @@ void mtime(char *root, char mode, int number_of_days, time_t current_date)
     }
     struct dirent *file; 
     char new_path[256];
-    while (file = readdir(dir))
+    while ((file = readdir(dir)))
     {
         strcpy(new_path, root);
         strcat(new_path, "/");
@@ -109,7 +109,6 @@ void mtime(char *root, char mode, int number_of_days, time_t current_date)
             show_file_status(new_path, &file_status);
         else if (mode == '=' && days_from_modification == number_of_days)
                 show_file_status(new_path, &file_status);
-        }
     }
     closedir(dir);
 }
@@ -148,7 +147,6 @@ void atime(char *root, char mode, int number_of_days, time_t current_date)
             show_file_status(new_path, &file_status);
         else if (mode == '=' && days_from_access == number_of_days)
                 show_file_status(new_path, &file_status);
-        }
     }
     closedir(dir);
 }
@@ -215,20 +213,22 @@ int main(int argc, char *argv[])
     }*/
     char *dir = argv[1];
     char *command = argv[2];
-    if (command == "maxdepth")
+    if (strcmp(command, "maxdepth"))
         maxdepth(dir, atoi(argv[3]));
-    if (command == "mtime")
+    if (strcmp(command, "mtime"))
     {
         time_t rawtime;
         struct tm *timeinfo;
-        timeinfo = localtime(&rawtime)
+        time (&rawtime);
+        timeinfo = localtime(&rawtime);
         mtime(dir, argv[3], atoi(argv[4]), timeinfo);
     }
-    if (command == "atime")
+    if (strcmp(command, "atime"))
     {
         time_t rawtime;
         struct tm *timeinfo;
-        timeinfo = localtime(&rawtime)
+        time (&rawtime);
+        timeinfo = localtime(&rawtime);
         atime(dir, argv[3], atoi(argv[4]), timeinfo);
     }
     return 0;
