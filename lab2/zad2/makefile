@@ -3,6 +3,8 @@ dir:
 	./main ../../ mtime = 0 
 	./main ../../ mtime + 7 
 	./main ../../ atime - 3 
+	./main ../../ maxdepth 2 
+
 
 nftw:
 	gcc -Wall -o main find_nftw.c
