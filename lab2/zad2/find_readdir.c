@@ -60,7 +60,7 @@ void maxdepth(char *root, int depth)
     }
     struct dirent *file;
     char new_path[256];
-    while ((file = readdir(dir))) 
+    while ((file = readdir(dir)) != NULL) 
     {
         struct stat file_status;
         strcpy(new_path, root);
@@ -89,7 +89,7 @@ void mtime(char *root, char mode, int number_of_days, time_t current_date)
     }
     struct dirent *file; 
     char new_path[256];
-    while ((file = readdir(dir)))
+    while ((file = readdir(dir)) != NULL)
     {
         strcpy(new_path, root);
         strcat(new_path, "/");
@@ -124,7 +124,7 @@ void atime(char *root, char mode, int number_of_days, time_t current_date)
     }
     struct dirent *file;
     char new_path[256];
-    while ((file = readdir(dir)))
+    while ((file = readdir(dir)) != NULL)
     {
         strcpy(new_path, root);
         strcat(new_path, "/");
