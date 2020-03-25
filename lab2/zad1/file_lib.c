@@ -10,9 +10,6 @@
 void generate(char *filename, int records_number, int record_size)
 {
     FILE * file = fopen(filename, "w");
-    /*int seed;
-    time_t t;
-    seed = time(&t);*/
     srand(time(NULL));
 
     for(int i = 0; i < records_number; i++)

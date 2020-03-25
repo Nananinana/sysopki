@@ -17,21 +17,16 @@ test:
 	rm -f wyniki.txt
 
 	for record_size in 1 4 512  1024  4096 8192 ; do \
-		for records_number in 1000 5000 10000; do \
-			./$(PROGRAM_NAME) generate dane $$records_number $$record_size ; \
-			./$(PROGRAM_NAME) copy dane dane.$$records_number.$$record_size.lib $$records_number $$record_size lib ; \
-			./$(PROGRAM_NAME) copy dane dane.$$records_number.$$record_size.sys $$records_number $$record_size sys ; \
-		done; \
-	done
-	
-	for record_size in 1 4 512  1024  4096 8192 ; do \
-		for records_number in 1000 5000 10000; do \
-			./$(PROGRAM_NAME) sort dane.$$records_number.$$record_size.lib $$records_number $$record_size lib ; \
-			./$(PROGRAM_NAME) sort dane.$$records_number.$$record_size.sys $$records_number $$record_size sys ; \
+		for records_number in 5000 10000 20000; do \
+			./$(PROGRAM_NAME) generate data $$records_number $$record_size ; \
+			./$(PROGRAM_NAME) copy data data.$$records_number.$$record_size.lib $$records_number $$record_size lib ; \
+			./$(PROGRAM_NAME) sort data.$$records_number.$$record_size.lib $$records_number $$record_size lib ; \
+			./$(PROGRAM_NAME) copy data data.$$records_number.$$record_size.sys $$records_number $$record_size sys ; \
+			./$(PROGRAM_NAME) sort data.$$records_number.$$record_size.sys $$records_number $$record_size sys ; \
 		done; \
 	done
 
-	rm -rf dane*
+	rm -rf data*
 
 
 clean:
