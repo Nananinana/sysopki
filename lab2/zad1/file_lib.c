@@ -150,71 +150,32 @@ void sys_sort(char *filename, int records_number, int record_size)
     close(file);
 }
 
-void sys_copy(char *file1, char *file2, int records_number, int record_size)
+void sys_copy(char *filename1, char *filename2, int records_number, int record_size)
 {
-    int from = open(file1, O_RDONLY);
-    if (from < 0)
-    {
-        fprintf(stderr, "cant open source file copy sys: %s\n", strerror(errno));
-        exit(-1);
-    }
-    int to = open(file2, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
-    if (to < 0)
-    {
-        fprintf(stderr, "cant open destination file copy sys: %s\n", strerror(errno));
-        exit(-1);
-    }
-
- char *holder = malloc(record_size);
+    int file1 = open(filename1, O_RDONLY);
+    int file2 = open(filename2, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    char *buffer = malloc(record_size);
     for (int i = 0; i < records_number; ++i)
     {
-
-        if (read(from, holder, record_size) < 0)
-        {
-            fprintf(stderr, "cant read from source file copy sys: %s\n", strerror(errno));
-            exit(-1);
-        }
-        if (write(to, holder, record_size) < 0)
-        {
-            fprintf(stderr, "cant write to dst file copy sys: %s\n", strerror(errno));
-            exit(-1);
-        }
+        read(file1, buffer, record_size);
+        write(file2, buffer, record_size);
     }
-    free(holder);
-    close(from);
-    close(to);
+    free(buffer);
+    close(file1);
+    close(file2);
 }
 
-void lib_copy(char *file1, char *file2, int records_number, int record_size)
+void lib_copy(char *filename1, char *filename2, int records_number, int record_size)
 {
-    FILE *src_file = fopen(file1, "r");
-    if (src_file == NULL)
-    {
-        fprintf(stderr, "cant open source file copy lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-    FILE *dst_file = fopen(file2, "w");
-    if (dst_file == NULL)
-    {
-        fprintf(stderr, "cant open dst file copy lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
- char *holder = malloc(record_size);
+    FILE *file1 = fopen(filename1, "r");
+    FILE *file2 = fopen(filename2, "w");
+    char *buffer = malloc(record_size);
     for (int i = 0; i < records_number; i++)
     {
-        if (fread(holder, 1, record_size, src_file) != record_size)
-        {
-            fprintf(stderr, "cant read from source file copy lib: %s\n", strerror(errno));
-            exit(-1);
-        }
-        if (fwrite(holder, 1, record_size, dst_file) != record_size)
-        {
-            fprintf(stderr, "cant write to dst file copy lib: %s\n", strerror(errno));
-            exit(-1);
-        }
+        fread(buffer, 1, record_size, file1); 
+        fwrite(buffer, 1, record_size, file2);
     }
-    free(holder);
-    fclose(src_file);
-    fclose(dst_file);
+    free(buffer);
+    fclose(file1);
+    fclose(file2);
 }
