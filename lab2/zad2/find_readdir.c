@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <errno.h>
 
-//char format[] = "%Y-%m-%d %H:%M:%S";
-
 void date(time_t time, char *buffer){
     struct tm *times = localtime(&time);
     strftime(buffer, 255*sizeof(char), "%c", times);
@@ -30,21 +28,8 @@ void show_file_status(char *path, struct stat *file_status)
         type = "slink";
     else if (S_ISCHR(file_status->st_mode) != 0)
         type = "char dev";
-    else if (S_ISBLK(file_status->st_mode) != 0)
+    else if (S_Ifile_statusLK(file_status->st_mode) != 0)
         type = "block dev";
-    
-    /*struct tm modification_time;
-    localtime_r(&file_status->st_mtime, &modification_time);
-    char modif_time_str[255];
-    strftime(modif_time_str, 255, format, &modification_time);
-
-    struct tm tm_access_time;
-    localtime_r(&file_status->st_atime, &tm_access_time);
-    char access_time_str[255];
-    strftime(access_time_str, 255, format, &tm_access_time);
-
-    printf("%s || type: %s, size: %ld, modification time: %s, access time: %s, nlinks: %ld\n",
-           path, file_type, file_status->st_size, modif_time_str, access_time_str, file_status->st_nlink);*/
     
     char mtime[255];
     char atime[255];
@@ -63,59 +48,47 @@ void show_file_status(char *path, struct stat *file_status)
     );
 }
 
-void maxdepth(char *root_path, int depth)
+void maxdepth(char *root, int depth)
 {
-    if (depth == 0)
-        return;
-    if (root_path == NULL)
-        return;
-    DIR *dir = opendir(root_path);
-
+    if (depth == 0) return;
+    if (root == NULL) return;
+    DIR *dir = opendir(root);
     if (dir == NULL)
     {
-        fprintf(stderr, "error open dir: %s\n", strerror(errno));
+        fprintf(stderr, "error opening directory: %s\n", strerror(errno));
         exit(-1);
     }
-
     struct dirent *file;
-
     char new_path[256];
-    while ((file = readdir(dir)) != NULL)
+    while (file = readdir(dir))  // != NULL
     {
-        strcpy(new_path, root_path);
+        struct stat file_status;
+        strcpy(new_path, root);
         strcat(new_path, "/");
         strcat(new_path, file->d_name);
-
-        struct stat sb;
-
-        if (lstat(new_path, &sb) < 0)
+        /*if (lstat(new_path, &file_status) < 0)
         {
             fprintf(stderr, "unable to lstat file %s: %s\n", new_path, strerror(errno));
             exit(-1);
-        }
-
-        if (S_ISDIR(sb.st_mode))
+        }*/
+        if (S_ISDIR(file_status.st_mode))
         {
             if (strcmp(file->d_name, ".") == 0 || strcmp(file->d_name, "..") == 0)
-            {
                 continue;
-            }
-
             maxdepth(new_path, depth - 1);
         }
-
-        show_file_status(new_path, &sb);
+        show_file_status(new_path, &file_status);
     }
     closedir(dir);
 }
 
-void mtime(char *root_path, char mode, int count, time_t date)
+void mtime(char *root, char mode, int count, time_t date)
 {
     if (count == 0)
         return;
-    if (root_path == NULL)
+    if (root == NULL)
         return;
-    DIR *dir = opendir(root_path);
+    DIR *dir = opendir(root);
 
     if (dir == NULL)
     {
@@ -128,19 +101,19 @@ void mtime(char *root_path, char mode, int count, time_t date)
     char new_path[256];
     while ((file = readdir(dir)) != NULL)
     {
-        strcpy(new_path, root_path);
+        strcpy(new_path, root);
         strcat(new_path, "/");
         strcat(new_path, file->d_name);
 
-        struct stat sb;
+        struct stat file_status;
 
-        if (lstat(new_path, &sb) < 0)
+        if (lstat(new_path, &file_status) < 0)
         {
             fprintf(stderr, "unable to lstat file %s: %s\n", new_path, strerror(errno));
             exit(-1);
         }
 
-        if (S_ISDIR(sb.st_mode))
+        if (S_ISDIR(file_status.st_mode))
         {
             if (strcmp(file->d_name, ".") == 0 || strcmp(file->d_name, "..") == 0)
             {
@@ -149,14 +122,14 @@ void mtime(char *root_path, char mode, int count, time_t date)
 
             mtime(new_path, mode, count - 1, date);
         }
-        time_t modif_time = sb.st_mtime;
+        time_t modif_time = file_status.st_mtime;
         if (mode == '-')
         {
             int diff_modif = difftime(date, modif_time);
             if (!((diff_modif == 0 && mode == '=') || (diff_modif > 0 && mode == '+') || (diff_modif < 0 && mode == '-')))
                 continue;
 
-            show_file_status(new_path, &sb);
+            show_file_status(new_path, &file_status);
         }
         else if (mode == '+')
         {
@@ -164,7 +137,7 @@ void mtime(char *root_path, char mode, int count, time_t date)
             if (!((diff_modif == 0 && mode == '=') || (diff_modif > 0 && mode == '+') || (diff_modif < 0 && mode == '-')))
                 continue;
 
-            show_file_status(new_path, &sb);
+            show_file_status(new_path, &file_status);
         }
         else if (mode == '=')
         {
@@ -173,19 +146,19 @@ void mtime(char *root_path, char mode, int count, time_t date)
             int diff_modif2 = difftime(date, modif_time);
 
             if ((diff_modif == 0 && mode == '=') && !(diff_modif2 < 0 && mode == '='))
-                show_file_status(new_path, &sb);
+                show_file_status(new_path, &file_status);
         }
     }
     closedir(dir);
 }
 
-void atime(char *root_path, char mode, int count, time_t date)
+void atime(char *root, char mode, int count, time_t date)
 {
     if (count == 0)
         return;
-    if (root_path == NULL)
+    if (root == NULL)
         return;
-    DIR *dir = opendir(root_path);
+    DIR *dir = opendir(root);
 
     if (dir == NULL)
     {
@@ -198,19 +171,19 @@ void atime(char *root_path, char mode, int count, time_t date)
     char new_path[256];
     while ((file = readdir(dir)) != NULL)
     {
-        strcpy(new_path, root_path);
+        strcpy(new_path, root);
         strcat(new_path, "/");
         strcat(new_path, file->d_name);
 
-        struct stat sb;
+        struct stat file_status;
 
-        if (lstat(new_path, &sb) < 0)
+        if (lstat(new_path, &file_status) < 0)
         {
             fprintf(stderr, "unable to lstat file %s: %s\n", new_path, strerror(errno));
             exit(-1);
         }
 
-        if (S_ISDIR(sb.st_mode))
+        if (S_ISDIR(file_status.st_mode))
         {
             if (strcmp(file->d_name, ".") == 0 || strcmp(file->d_name, "..") == 0)
             {
@@ -219,14 +192,14 @@ void atime(char *root_path, char mode, int count, time_t date)
 
             atime(new_path, mode, count - 1, date);
         }
-        time_t modif_time = sb.st_atime;
+        time_t modif_time = file_status.st_atime;
         if (mode == '-')
         {
             int diff_modif = difftime(date, modif_time);
             if (!((diff_modif == 0 && mode == '=') || (diff_modif > 0 && mode == '+') || (diff_modif < 0 && mode == '-')))
                 continue;
 
-            show_file_status(new_path, &sb);
+            show_file_status(new_path, &file_status);
         }
         else if (mode == '+')
         {
@@ -234,7 +207,7 @@ void atime(char *root_path, char mode, int count, time_t date)
             if (!((diff_modif == 0 && mode == '=') || (diff_modif > 0 && mode == '+') || (diff_modif < 0 && mode == '-')))
                 continue;
 
-            show_file_status(new_path, &sb);
+            show_file_status(new_path, &file_status);
         }
         else if (mode == '=')
         {
@@ -243,18 +216,18 @@ void atime(char *root_path, char mode, int count, time_t date)
             int diff_modif2 = difftime(date, modif_time);
 
             if ((diff_modif == 0 && mode == '=') && !(diff_modif2 < 0 && mode == '='))
-                show_file_status(new_path, &sb);
+                show_file_status(new_path, &file_status);
         }
     }
     closedir(dir);
 }
 
-void print_files_handler(char *root_path, char *command, char mode, int count, int maxdep)
+void print_files_handler(char *root, char *command, char mode, int count, int maxdep)
 {
 
     if (strcmp(command, "maxdepth") == 0)
     {
-        maxdepth(root_path, count);
+        maxdepth(root, count);
     }
     else if (strcmp(command, "mtime") == 0)
     {
@@ -271,11 +244,11 @@ void print_files_handler(char *root_path, char *command, char mode, int count, i
 
         if (maxdep >= 0)
         {
-            mtime(root_path, mode, maxdep, mktime(timeinfo));
+            mtime(root, mode, maxdep, mktime(timeinfo));
         }
         else
         {
-            mtime(root_path, mode, -1, mktime(timeinfo));
+            mtime(root, mode, -1, mktime(timeinfo));
         }
     }
     else if (strcmp(command, "atime") == 0)
@@ -292,11 +265,11 @@ void print_files_handler(char *root_path, char *command, char mode, int count, i
         }
         if (maxdep >= 0)
         {
-            atime(root_path, mode, maxdep, mktime(timeinfo));
+            atime(root, mode, maxdep, mktime(timeinfo));
         }
         else
         {
-            atime(root_path, mode, -1, mktime(timeinfo));
+            atime(root, mode, -1, mktime(timeinfo));
         }
     }
 }
