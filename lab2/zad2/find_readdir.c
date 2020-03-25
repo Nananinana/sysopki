@@ -219,10 +219,9 @@ int main(int argc, char *argv[])
     }
     if (strcmp(command, "mtime")==0)
     {
-        time_t rawtime;
-        struct tm *timeinfo;
-        time (&rawtime);
-        timeinfo = localtime(&rawtime);
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+        tm.tm_mday -= atoi(argv[4]);
         char *mode = argv[3];
         int number_of_days = atoi(argv[4]);
         printf("\n  doing mtime \n");
@@ -230,10 +229,9 @@ int main(int argc, char *argv[])
     }
     if (strcmp(command, "atime")==0)
     {
-        time_t rawtime;
-        struct tm *timeinfo;
-        time (&rawtime);
-        timeinfo = localtime(&rawtime);
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+        tm.tm_mday -= atoi(argv[4]);
         char *mode = argv[3];
         int number_of_days = atoi(argv[4]);
         printf("\n  doing atime \n");
