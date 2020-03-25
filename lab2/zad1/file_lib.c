@@ -31,6 +31,21 @@ void generate(char *filename, int records_number, int record_size)
     fclose(file);
 }
 
+void lib_copy(char *filename1, char *filename2, int records_number, int record_size)
+{
+    FILE *file1 = fopen(filename1, "r");
+    FILE *file2 = fopen(filename2, "w");
+    char *buffer = malloc(record_size);
+    for (int i = 0; i < records_number; i++)
+    {
+        fread(buffer, 1, record_size, file1); 
+        fwrite(buffer, 1, record_size, file2);
+    }
+    free(buffer);
+    fclose(file1);
+    fclose(file2);
+}
+
 void lib_swap_records(FILE *file, int records_number, int record_size, int record_index1, int record_index2)
 {
 
@@ -92,6 +107,21 @@ void lib_sort(char *filename, int records_number, int record_size)
     fclose(file);
 }
 
+void sys_copy(char *filename1, char *filename2, int records_number, int record_size)
+{
+    int file1 = open(filename1, O_RDONLY);
+    int file2 = open(filename2, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+    char *buffer = malloc(record_size);
+    for (int i = 0; i < records_number; ++i)
+    {
+        read(file1, buffer, record_size);
+        write(file2, buffer, record_size);
+    }
+    free(buffer);
+    close(file1);
+    close(file2);
+}
+
 void sys_swap_records(int file, int records_number, int record_size, int record_index1, int record_index2)
 {
     char *buffer1 = malloc(record_size);
@@ -150,32 +180,6 @@ void sys_sort(char *filename, int records_number, int record_size)
     close(file);
 }
 
-void sys_copy(char *filename1, char *filename2, int records_number, int record_size)
-{
-    int file1 = open(filename1, O_RDONLY);
-    int file2 = open(filename2, O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
-    char *buffer = malloc(record_size);
-    for (int i = 0; i < records_number; ++i)
-    {
-        read(file1, buffer, record_size);
-        write(file2, buffer, record_size);
-    }
-    free(buffer);
-    close(file1);
-    close(file2);
-}
 
-void lib_copy(char *filename1, char *filename2, int records_number, int record_size)
-{
-    FILE *file1 = fopen(filename1, "r");
-    FILE *file2 = fopen(filename2, "w");
-    char *buffer = malloc(record_size);
-    for (int i = 0; i < records_number; i++)
-    {
-        fread(buffer, 1, record_size, file1); 
-        fwrite(buffer, 1, record_size, file2);
-    }
-    free(buffer);
-    fclose(file1);
-    fclose(file2);
-}
+
+
