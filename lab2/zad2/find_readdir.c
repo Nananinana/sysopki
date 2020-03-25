@@ -7,7 +7,12 @@
 #include <stdlib.h>
 #include <errno.h>
 
-char format[] = "%Y-%m-%d %H:%M:%S";
+//char format[] = "%Y-%m-%d %H:%M:%S";
+
+void date(time_t time, char *buffer){
+    struct tm *times = localtime(&time);
+    strftime(buffer, 255*sizeof(char), "%c", times);
+}
 
 void show_file_status(char *path, struct stat *file_status)
 {
