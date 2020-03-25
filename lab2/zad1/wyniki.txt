@@ -1,0 +1,288 @@
+Sys copy, records: 5000, record size: 1
+	user: 0.000000l
+	system: 0.060000l
+
+Lib copy, records: 5000, record size: 1
+	user: 0.000000l
+	system: 0.000000l
+
+Sys copy, records: 7000, record size: 1
+	user: 0.000000l
+	system: 0.090000l
+
+Lib copy, records: 7000, record size: 1
+	user: 0.000000l
+	system: 0.000000l
+
+Sys copy, records: 10000, record size: 1
+	user: 0.000000l
+	system: 0.100000l
+
+Lib copy, records: 10000, record size: 1
+	user: 0.000000l
+	system: 0.000000l
+
+Sys copy, records: 5000, record size: 4
+	user: 0.000000l
+	system: 0.050000l
+
+Lib copy, records: 5000, record size: 4
+	user: 0.000000l
+	system: 0.000000l
+
+Sys copy, records: 7000, record size: 4
+	user: 0.000000l
+	system: 0.070000l
+
+Lib copy, records: 7000, record size: 4
+	user: 0.000000l
+	system: 0.000000l
+
+Sys copy, records: 10000, record size: 4
+	user: 0.000000l
+	system: 0.110000l
+
+Lib copy, records: 10000, record size: 4
+	user: 0.000000l
+	system: 0.000000l
+
+Sys copy, records: 5000, record size: 512
+	user: 0.000000l
+	system: 0.060000l
+
+Lib copy, records: 5000, record size: 512
+	user: 0.000000l
+	system: 0.010000l
+
+Sys copy, records: 7000, record size: 512
+	user: 0.000000l
+	system: 0.080000l
+
+Lib copy, records: 7000, record size: 512
+	user: 0.000000l
+	system: 0.010000l
+
+Sys copy, records: 10000, record size: 512
+	user: 0.020000l
+	system: 0.130000l
+
+Lib copy, records: 10000, record size: 512
+	user: 0.000000l
+	system: 0.020000l
+
+Sys copy, records: 5000, record size: 1024
+	user: 0.000000l
+	system: 0.070000l
+
+Lib copy, records: 5000, record size: 1024
+	user: 0.000000l
+	system: 0.020000l
+
+Sys copy, records: 7000, record size: 1024
+	user: 0.000000l
+	system: 0.100000l
+
+Lib copy, records: 7000, record size: 1024
+	user: 0.010000l
+	system: 0.030000l
+
+Sys copy, records: 10000, record size: 1024
+	user: 0.000000l
+	system: 0.150000l
+
+Lib copy, records: 10000, record size: 1024
+	user: 0.010000l
+	system: 0.050000l
+
+Sys copy, records: 5000, record size: 4096
+	user: 0.000000l
+	system: 0.090000l
+
+Lib copy, records: 5000, record size: 4096
+	user: 0.000000l
+	system: 0.100000l
+
+Sys copy, records: 7000, record size: 4096
+	user: 0.000000l
+	system: 0.130000l
+
+Lib copy, records: 7000, record size: 4096
+	user: 0.010000l
+	system: 0.130000l
+
+Sys copy, records: 10000, record size: 4096
+	user: 0.000000l
+	system: 0.190000l
+
+Lib copy, records: 10000, record size: 4096
+	user: 0.000000l
+	system: 0.190000l
+
+Sys copy, records: 5000, record size: 8192
+	user: 0.010000l
+	system: 0.130000l
+
+Lib copy, records: 5000, record size: 8192
+	user: 0.000000l
+	system: 0.170000l
+
+Sys copy, records: 7000, record size: 8192
+	user: 0.000000l
+	system: 0.230000l
+
+Lib copy, records: 7000, record size: 8192
+	user: 0.030000l
+	system: 0.310000l
+
+Sys copy, records: 10000, record size: 8192
+	user: 0.000000l
+	system: 0.290000l
+
+Lib copy, records: 10000, record size: 8192
+	user: 0.000000l
+	system: 0.390000l
+
+Sys sort, records: 5000, record size: 1
+	user: 1.350000l
+	system: 7.310000l
+
+Lib sort, records: 5000, record size: 1
+	user: 1.770000l
+	system: 2.680000l
+
+Sys sort, records: 7000, record size: 1
+	user: 2.950000l
+	system: 15.880000l
+
+Lib sort, records: 7000, record size: 1
+	user: 3.410000l
+	system: 5.100000l
+
+Sys sort, records: 10000, record size: 1
+	user: 5.810000l
+	system: 30.130000l
+
+Lib sort, records: 10000, record size: 1
+	user: 6.160000l
+	system: 8.930000l
+
+Sys sort, records: 5000, record size: 4
+	user: 0.410000l
+	system: 2.070000l
+
+Lib sort, records: 5000, record size: 4
+	user: 0.520000l
+	system: 1.210000l
+
+Sys sort, records: 7000, record size: 4
+	user: 0.640000l
+	system: 3.450000l
+
+Lib sort, records: 7000, record size: 4
+	user: 0.690000l
+	system: 1.480000l
+
+Sys sort, records: 10000, record size: 4
+	user: 1.150000l
+	system: 6.350000l
+
+Lib sort, records: 10000, record size: 4
+	user: 1.350000l
+	system: 2.570000l
+
+Sys sort, records: 5000, record size: 512
+	user: 0.210000l
+	system: 1.050000l
+
+Lib sort, records: 5000, record size: 512
+	user: 0.320000l
+	system: 0.860000l
+
+Sys sort, records: 7000, record size: 512
+	user: 0.250000l
+	system: 1.690000l
+
+Lib sort, records: 7000, record size: 512
+	user: 0.480000l
+	system: 1.170000l
+
+Sys sort, records: 10000, record size: 512
+	user: 0.570000l
+	system: 3.350000l
+
+Lib sort, records: 10000, record size: 512
+	user: 0.880000l
+	system: 2.240000l
+
+Sys sort, records: 5000, record size: 1024
+	user: 0.150000l
+	system: 0.920000l
+
+Lib sort, records: 5000, record size: 1024
+	user: 0.390000l
+	system: 0.850000l
+
+Sys sort, records: 7000, record size: 1024
+	user: 0.230000l
+	system: 1.820000l
+
+Lib sort, records: 7000, record size: 1024
+	user: 0.560000l
+	system: 1.450000l
+
+Sys sort, records: 10000, record size: 1024
+	user: 0.520000l
+	system: 3.380000l
+
+Lib sort, records: 10000, record size: 1024
+	user: 0.960000l
+	system: 2.530000l
+
+Sys sort, records: 5000, record size: 4096
+	user: 0.160000l
+	system: 1.290000l
+
+Lib sort, records: 5000, record size: 4096
+	user: 0.310000l
+	system: 1.300000l
+
+Sys sort, records: 7000, record size: 4096
+	user: 0.310000l
+	system: 2.200000l
+
+Lib sort, records: 7000, record size: 4096
+	user: 0.550000l
+	system: 2.180000l
+
+Sys sort, records: 10000, record size: 4096
+	user: 0.500000l
+	system: 3.660000l
+
+Lib sort, records: 10000, record size: 4096
+	user: 0.960000l
+	system: 3.710000l
+
+Sys sort, records: 5000, record size: 8192
+	user: 0.190000l
+	system: 1.630000l
+
+Lib sort, records: 5000, record size: 8192
+	user: 0.310000l
+	system: 1.630000l
+
+Sys sort, records: 7000, record size: 8192
+	user: 0.350000l
+	system: 2.330000l
+
+Lib sort, records: 7000, record size: 8192
+	user: 0.530000l
+	system: 2.980000l
+
+Sys sort, records: 10000, record size: 8192
+	user: 0.650000l
+	system: 5.600000l
+
+Lib sort, records: 10000, record size: 8192
+	user: 1.050000l
+	system: 5.750000l
+
