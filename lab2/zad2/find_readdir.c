@@ -221,8 +221,8 @@ int main(int argc, char *argv[])
         struct tm *timeinfo;
         time (&rawtime);
         timeinfo = localtime(&rawtime);
-        char *mode = argv[3];
-        mtime(dir, mode, atoi(argv[4]), timeinfo);
+        char mode = argv[3];
+        mtime(dir, mode, atoi(argv[4]), mktime(timeinfo));
     }
     if (strcmp(command, "atime"))
     {
@@ -230,8 +230,8 @@ int main(int argc, char *argv[])
         struct tm *timeinfo;
         time (&rawtime);
         timeinfo = localtime(&rawtime);
-        char *mode = argv[3];
-        atime(dir, mode, atoi(argv[4]), timeinfo);
+        char mode = argv[3];
+        atime(dir, mode, atoi(argv[4]), mktime(timeinfo));
     }
     return 0;
 }
