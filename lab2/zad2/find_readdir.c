@@ -55,22 +55,17 @@ void maxdepth(char *root, int depth)
     DIR *dir = opendir(root);
     if (dir == NULL)
     {
-        fprintf(stderr, "error opening directory: %s\n", strerror(errno));
+        fprintf(stderr, "error while opening directory: %s\n", strerror(errno));
         exit(-1);
     }
     struct dirent *file;
     char new_path[256];
-    while (file = readdir(dir))  // != NULL
+    while (file = readdir(dir)) 
     {
         struct stat file_status;
         strcpy(new_path, root);
         strcat(new_path, "/");
         strcat(new_path, file->d_name);
-        /*if (lstat(new_path, &file_status) < 0)
-        {
-            fprintf(stderr, "unable to lstat file %s: %s\n", new_path, strerror(errno));
-            exit(-1);
-        }*/
         if (S_ISDIR(file_status.st_mode))
         {
             if (strcmp(file->d_name, ".") == 0 || strcmp(file->d_name, "..") == 0)
@@ -82,36 +77,60 @@ void maxdepth(char *root, int depth)
     closedir(dir);
 }
 
-void mtime(char *root, char mode, int count, time_t date)
+void mtime(char *root, char mode, int number_of_days, time_t current_date)
 {
-    if (count == 0)
-        return;
-    if (root == NULL)
-        return;
+    //if (count == 0) return;
+    if (root == NULL) return;
     DIR *dir = opendir(root);
-
     if (dir == NULL)
     {
-        fprintf(stderr, "error open dir: %s\n", strerror(errno));
+        fprintf(stderr, "error while opening directory: %s\n", strerror(errno));
         exit(-1);
     }
-
-    struct dirent *file;
-
+    struct dirent *file; 
     char new_path[256];
-    while ((file = readdir(dir)) != NULL)
+    while (file = readdir(dir))
     {
         strcpy(new_path, root);
         strcat(new_path, "/");
         strcat(new_path, file->d_name);
-
         struct stat file_status;
-
-        if (lstat(new_path, &file_status) < 0)
+        if (S_ISDIR(file_status.st_mode))
         {
-            fprintf(stderr, "unable to lstat file %s: %s\n", new_path, strerror(errno));
-            exit(-1);
+            if (strcmp(file->d_name, ".") == 0 || strcmp(file->d_name, "..") == 0)
+                continue;
+            mtime(new_path, mode, number_of_days, current_date);
         }
+        time_t modification_time = file_status.st_mtime;
+        int days_from_modification = abs(difftime(modification_time, current_date)) / (60 * 60 * 24);
+        if (mode == '-' && days_from_modification < number_of_days)
+            show_file_status(new_path, &file_status);
+        else if (mode == '+' && days_from_modification > number_of_days)
+            show_file_status(new_path, &file_status);
+        else if (mode == '=' && days_from_modification == number_of_days)
+                show_file_status(new_path, &file_status);
+        }
+    }
+    closedir(dir);
+}
+
+void atime(char *root, char mode, int number_of_days, time_t current_date)
+{
+    if (root == NULL) return;
+    DIR *dir = opendir(root);
+    if (dir == NULL)
+    {
+        fprintf(stderr, "error while opening directory: %s\n", strerror(errno));
+        exit(-1);
+    }
+    struct dirent *file;
+    char new_path[256];
+    while (file = readdir(dir))
+    {
+        strcpy(new_path, root);
+        strcat(new_path, "/");
+        strcat(new_path, file->d_name);
+        struct stat file_status;
 
         if (S_ISDIR(file_status.st_mode))
         {
@@ -119,110 +138,22 @@ void mtime(char *root, char mode, int count, time_t date)
             {
                 continue;
             }
-
-            mtime(new_path, mode, count - 1, date);
+            atime(new_path, mode, number_of_days, current_date);
         }
-        time_t modif_time = file_status.st_mtime;
-        if (mode == '-')
-        {
-            int diff_modif = difftime(date, modif_time);
-            if (!((diff_modif == 0 && mode == '=') || (diff_modif > 0 && mode == '+') || (diff_modif < 0 && mode == '-')))
-                continue;
-
+        time_t access_time = file_status.st_atime;
+        int days_from_access = abs(difftime(access_time, current_date)) / (60 * 60 * 24);
+        if (mode == '-' && days_from_access < number_of_days)
             show_file_status(new_path, &file_status);
-        }
-        else if (mode == '+')
-        {
-            int diff_modif = difftime(date, modif_time);
-            if (!((diff_modif == 0 && mode == '=') || (diff_modif > 0 && mode == '+') || (diff_modif < 0 && mode == '-')))
-                continue;
-
+        else if (mode == '+' && days_from_access > number_of_days)
             show_file_status(new_path, &file_status);
-        }
-        else if (mode == '=')
-        {
-
-            int diff_modif = abs(difftime(modif_time, date)) / (60 * 60 * 24);
-            int diff_modif2 = difftime(date, modif_time);
-
-            if ((diff_modif == 0 && mode == '=') && !(diff_modif2 < 0 && mode == '='))
+        else if (mode == '=' && days_from_access == number_of_days)
                 show_file_status(new_path, &file_status);
         }
     }
     closedir(dir);
 }
 
-void atime(char *root, char mode, int count, time_t date)
-{
-    if (count == 0)
-        return;
-    if (root == NULL)
-        return;
-    DIR *dir = opendir(root);
-
-    if (dir == NULL)
-    {
-        fprintf(stderr, "error open dir: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    struct dirent *file;
-
-    char new_path[256];
-    while ((file = readdir(dir)) != NULL)
-    {
-        strcpy(new_path, root);
-        strcat(new_path, "/");
-        strcat(new_path, file->d_name);
-
-        struct stat file_status;
-
-        if (lstat(new_path, &file_status) < 0)
-        {
-            fprintf(stderr, "unable to lstat file %s: %s\n", new_path, strerror(errno));
-            exit(-1);
-        }
-
-        if (S_ISDIR(file_status.st_mode))
-        {
-            if (strcmp(file->d_name, ".") == 0 || strcmp(file->d_name, "..") == 0)
-            {
-                continue;
-            }
-
-            atime(new_path, mode, count - 1, date);
-        }
-        time_t modif_time = file_status.st_atime;
-        if (mode == '-')
-        {
-            int diff_modif = difftime(date, modif_time);
-            if (!((diff_modif == 0 && mode == '=') || (diff_modif > 0 && mode == '+') || (diff_modif < 0 && mode == '-')))
-                continue;
-
-            show_file_status(new_path, &file_status);
-        }
-        else if (mode == '+')
-        {
-            int diff_modif = difftime(date, modif_time);
-            if (!((diff_modif == 0 && mode == '=') || (diff_modif > 0 && mode == '+') || (diff_modif < 0 && mode == '-')))
-                continue;
-
-            show_file_status(new_path, &file_status);
-        }
-        else if (mode == '=')
-        {
-
-            int diff_modif = abs(difftime(modif_time, date)) / (60 * 60 * 24);
-            int diff_modif2 = difftime(date, modif_time);
-
-            if ((diff_modif == 0 && mode == '=') && !(diff_modif2 < 0 && mode == '='))
-                show_file_status(new_path, &file_status);
-        }
-    }
-    closedir(dir);
-}
-
-void print_files_handler(char *root, char *command, char mode, int count, int maxdep)
+/*void print_files_handler(char *root, char *command, char mode, int count, int maxdep)
 {
 
     if (strcmp(command, "maxdepth") == 0)
@@ -273,20 +204,32 @@ void print_files_handler(char *root, char *command, char mode, int count, int ma
         }
     }
 }
+*/
 
 int main(int argc, char *argv[])
 {
-    if (argc != 6)
+    /*if (argc != 6)
     {
         fprintf(stderr, "wrong arguments\n");
         exit(-1);
-    }
+    }*/
     char *dir = argv[1];
-    char *comman = argv[2];
-    char *mod = argv[3];
-    int day = atoi(argv[4]);
-    int mdep = atoi(argv[5]);
-
-    print_files_handler(dir, comman, mod[0], day, mdep);
+    char *command = argv[2];
+    if (command == "maxdepth")
+        maxdepth(dir, atoi(argv[3]));
+    if (command == "mtime")
+    {
+        time_t rawtime;
+        struct tm *timeinfo;
+        timeinfo = localtime(&rawtime)
+        mtime(dir, argv[3], atoi(argv[4]), timeinfo);
+    }
+    if (command == "atime")
+    {
+        time_t rawtime;
+        struct tm *timeinfo;
+        timeinfo = localtime(&rawtime)
+        atime(dir, argv[3], atoi(argv[4]), timeinfo);
+    }
     return 0;
 }

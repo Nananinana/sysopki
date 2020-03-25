@@ -1,8 +1,10 @@
 dir:
 	gcc -Wall -o main find_readdir.c
-	./main ../../ mtime + 7 -1
-	./main ../../ mtime + 7 1
-	./main ../../ atime - 3 2
+	./main ../../ mtime + 7 
+	./main ../../ mtime + 7 
+	./main ../../ atime - 3
+	./main ../../ maxdepth 2 
+
 nftw:
 	gcc -Wall -o main find_nftw.c
 	./main ../../ mtime + 7 -1
