@@ -26,7 +26,7 @@ void print_from_stat(const char *path, const struct stat *file_status)
 {
     char type[64] = "undefined";
 
-    if (S_ISREG(file_status->st_mode))
+    /*if (S_ISREG(file_status->st_mode))
         strcpy(type, "file");
     else if (S_ISDIR(file_status->st_mode))
         strcpy(type, "dir");
@@ -39,7 +39,22 @@ void print_from_stat(const char *path, const struct stat *file_status)
     else if (S_ISFIFO(file_status->st_mode))
         strcpy(type, "fifo");
     else if (S_ISSOCK(file_status->st_mode))
-        strcpy(type, "socket");
+        strcpy(type, "socket");*/
+
+     if (S_ISREG(file_status->st_mode) != 0)
+        type = "file";
+    else if (S_ISDIR(file_status->st_mode) != 0)
+        type = "dir";
+    else if (S_ISFIFO(file_status->st_mode) != 0)
+        type = "fifo";
+    else if (S_ISSOCK(file_status->st_mode) != 0)
+        type = "socket";
+    else if (S_ISLNK(file_status->st_mode) != 0)
+        type = "slink";
+    else if (S_ISCHR(file_status->st_mode) != 0)
+        type = "char dev";
+    else if (S_ISBLK(file_status->st_mode) != 0)
+        type = "block dev";
 
     /*struct tm tm_modif_time;
     localtime_r(&file_status->st_mtime, &tm_modif_time);
