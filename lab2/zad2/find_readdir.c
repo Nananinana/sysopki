@@ -43,16 +43,16 @@ void show_file_status(char *path, struct stat *file_status)
     
     char mtime[255];
     char atime[255];
-    time_t modification_time = file_status.st_mtime;
-    time_t access_time = file_status.st_atime;
+    time_t modification_time = file_status->st_mtime;
+    time_t access_time = file_status->st_atime;
     date(modification_time, mtime);
     date(access_time, atime);
 
     printf("path: %s \n links: %ld \n file type: %s \n file size: %ld \n access time %s\n modification time: %s \n\n\n",
            path,
-           file_status.st_nlink,
+           file_status->st_nlink,
            type,
-           file_status.st_size,
+           file_status->st_size,
            atime,
            mtime
     );
