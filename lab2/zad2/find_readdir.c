@@ -60,7 +60,7 @@ void maxdepth(char *root, int depth)
     }
     struct dirent *file;
     char new_path[256];
-    while ((file = readdir(dir))) 
+    while ((file = readdir(dir)) != NULL) 
     {
         struct stat file_status;
         strcpy(new_path, root);
@@ -89,7 +89,7 @@ void mtime(char *root, char mode, int number_of_days, time_t current_date)
     }
     struct dirent *file; 
     char new_path[256];
-    while ((file = readdir(dir)))
+    while ((file = readdir(dir)) != NULL)
     {
         strcpy(new_path, root);
         strcat(new_path, "/");
@@ -124,7 +124,7 @@ void atime(char *root, char mode, int number_of_days, time_t current_date)
     }
     struct dirent *file;
     char new_path[256];
-    while ((file = readdir(dir)))
+    while ((file = readdir(dir)) != NULL)
     {
         strcpy(new_path, root);
         strcat(new_path, "/");
@@ -213,6 +213,7 @@ int main(int argc, char *argv[])
     }*/
     char *dir = argv[1];
     char *command = argv[2];
+    printf(command);
     if (strcmp(command, "maxdepth"))
         maxdepth(dir, atoi(argv[3]));
     if (strcmp(command, "mtime"))
@@ -222,6 +223,8 @@ int main(int argc, char *argv[])
         time (&rawtime);
         timeinfo = localtime(&rawtime);
         char *mode = argv[3];
+        printf(mode[0]);
+        printf(" doing mtime ");
         mtime(dir, mode[0], atoi(argv[4]), mktime(timeinfo));
     }
     if (strcmp(command, "atime"))
