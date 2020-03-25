@@ -12,7 +12,7 @@ void date(time_t time, char *buffer){
     strftime(buffer, 255*sizeof(char), "%c", times);
 }
 
-void show_file_status(char *path, struct stat *file_status)
+void show_file_status(const char *path, const struct stat *file_status)
 {
     char *type = "uknown";
 
@@ -214,7 +214,9 @@ int main(int argc, char *argv[])
     char *dir = argv[1];
     char *command = argv[2];
     if (strcmp(command, "maxdepth")==0)
+    {    printf("\n  doing maxdepth \n");
         maxdepth(dir, atoi(argv[3]));
+    }
     if (strcmp(command, "mtime")==0)
     {
         time_t rawtime;
