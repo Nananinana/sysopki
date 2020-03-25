@@ -92,131 +92,62 @@ void lib_sort(char *filename, int records_number, int record_size)
     fclose(file);
 }
 
-void sys_swap_in_file(int f, int records_number, int record_size, int i, int j)
+void sys_swap_records(int file, int records_number, int record_size, int record_index1, int record_index2)
 {
-
     char *buffer1 = malloc(record_size);
     char *buffer2 = malloc(record_size);
-    if (lseek(f, i * record_size, SEEK_SET) < 0)
-    {
-        fprintf(stderr, "1cant seek sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-    if (read(f, buffer1, record_size) < 0)
-    {
-        fprintf(stderr, "2cant read sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    if (lseek(f, (j)*record_size, SEEK_SET) < 0)
-    {
-        fprintf(stderr, "3cant seek sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-    if (read(f, buffer2, record_size) < 0)
-    {
-
-        fprintf(stderr, "4cant read sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    if (lseek(f, i * record_size, SEEK_SET) < 0)
-    {
-        fprintf(stderr, "5cant fseek sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    if (write(f, buffer2, record_size) < 0)
-    {
-        fprintf(stderr, "error while writing to file sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    if (lseek(f, (j)*record_size, SEEK_SET) < 0)
-    {
-        fprintf(stderr, "error while fseek sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    if (write(f, buffer1, record_size) < 0)
-    {
-        fprintf(stderr, "error while fwrite sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
+    lseek(file, record_index1 * record_size, SEEK_SET);
+    read(file, buffer1, record_size);
+    lseek(file, record_index2 * record_size, SEEK_SET);
+    read(file, buffer2, record_size);
+    lseek(file, record_index1 * record_size, SEEK_SET);
+    write(file, buffer2, record_size);
+    lseek(file, record_index2 * record_size, SEEK_SET);
+    write(file, buffer1, record_size);
     free(buffer1);
     free(buffer2);
 }
 
-int sys_partition(int f, int records_number, int record_size, int start, int end)
+int sys_partition(int file, int records_number, int record_size, int start, int end)
 {
-
     char *buffer1 = malloc(record_size);
     char *buffer2 = malloc(record_size);
-    if (lseek(f, (end)*record_size, SEEK_SET) < 0)
-    {
-        fprintf(stderr, "cant seek sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    if (read(f, buffer1, record_size) < 0)
-    {
-
-        fprintf(stderr, "6cant read sort lib: %s\n", strerror(errno));
-        exit(-1);
-    }
-
- char min = buffer1[0];
+    lseek(file, end * record_size, SEEK_SET);
+    read(file, buffer1, record_size);
+ 
     int i = start - 1;
+    char min = buffer1[0];
 
     for (int j = start; j < end; j++)
     {
-        if (lseek(f, j * record_size, SEEK_SET) < 0)
-        {
-            fprintf(stderr, "cant seek sort lib: %s\n", strerror(errno));
-            exit(-1);
-        }
-        if (read(f, buffer2, record_size) < 0)
-        {
-            fprintf(stderr, "7cant read sort lib: %s\n", strerror(errno));
-            exit(-1);
-        }
-
+        lseek(file, j * record_size, SEEK_SET);
+        read(file, buffer2, record_size);
         if (buffer2[0] < min)
         {
             i++;
-            sys_swap_in_file(f, records_number, record_size, i, j);
-        }
+            sys_swap_records(file, records_number, record_size, i, j);  }
     }
-    sys_swap_in_file(f, records_number, record_size, i + 1, end);
+    sys_swap_records(file, records_number, record_size, i + 1, end);
     free(buffer1);
     free(buffer2);
     return (i + 1);
 }
 
-void sys_quicksort(int f, int records_number, int record_size, int start, int end)
+void sys_quicksort(int file, int records_number, int record_size, int start, int end)
 {
-
     if (start < end)
     {
-        int pivot = sys_partition(f, records_number, record_size, start, end);
-        if (pivot != 0)
-            sys_quicksort(f, records_number, record_size, start, pivot - 1);
-        if (pivot != records_number)
-            sys_quicksort(f, records_number, record_size, pivot + 1, end);
+        int pivot = sys_partition(file, records_number, record_size, start, end);
+        sys_quicksort(file, records_number, record_size, start, pivot - 1);
+        sys_quicksort(file, records_number, record_size, pivot + 1, end);
     }
 }
 
 void sys_sort(char *filename, int records_number, int record_size)
 {
-    int f = open(filename, O_RDWR);
-    if (f < 0)
-    {
-        fprintf(stderr, "cant open file sort sys: %s\n", strerror(errno));
-        exit(-1);
-    }
-    sys_quicksort(f, records_number, record_size, 0, records_number - 1);
-
-    close(f);
+    int file = open(filename, O_RDWR);  
+    sys_quicksort(file, records_number, record_size, 0, records_number - 1);
+    close(file);
 }
 
 void sys_copy(char *file1, char *file2, int records_number, int record_size)
