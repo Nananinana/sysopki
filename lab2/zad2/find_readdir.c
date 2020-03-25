@@ -7,39 +7,55 @@
 #include <stdlib.h>
 #include <errno.h>
 
-const char format[] = "%Y-%m-%d %H:%M:%S";
+char format[] = "%Y-%m-%d %H:%M:%S";
 
-void print_from_stat(const char *filename, const struct stat *statptr)
+void show_file_status(char *filename, struct stat *file_status)
 {
-    char file_type[64] = "undefined";
+    char *type = "uknown";
 
-    if (S_ISREG(statptr->st_mode))
-        strcpy(file_type, "file");
-    else if (S_ISDIR(statptr->st_mode))
-        strcpy(file_type, "dir");
-    else if (S_ISLNK(statptr->st_mode))
-        strcpy(file_type, "slink");
-    else if (S_ISCHR(statptr->st_mode))
-        strcpy(file_type, "char dev");
-    else if (S_ISBLK(statptr->st_mode))
-        strcpy(file_type, "block dev");
-    else if (S_ISFIFO(statptr->st_mode))
-        strcpy(file_type, "fifo");
-    else if (S_ISSOCK(statptr->st_mode))
-        strcpy(file_type, "socket");
-
-    struct tm tm_modif_time;
-    localtime_r(&statptr->st_mtime, &tm_modif_time);
+    if (S_ISREG(file_status->st_mode) != 0)
+        type = "file";
+    else if (S_ISDIR(file_status->st_mode) != 0)
+        type = "dir";
+    else if (S_ISFIFO(file_status->st_mode) != 0)
+        type = "fifo";
+    else if (S_ISSOCK(file_status->st_mode) != 0)
+        type = "socket";
+    else if (S_ISLNK(file_status->st_mode) != 0)
+        type = "slink";
+    else if (S_ISCHR(file_status->st_mode) != 0)
+        type = "char dev";
+    else if (S_ISBLK(file_status->st_mode) != 0)
+        type = "block dev";
+    
+    /*struct tm modification_time;
+    localtime_r(&file_status->st_mtime, &modification_time);
     char modif_time_str[255];
-    strftime(modif_time_str, 255, format, &tm_modif_time);
+    strftime(modif_time_str, 255, format, &modification_time);
 
     struct tm tm_access_time;
-    localtime_r(&statptr->st_atime, &tm_access_time);
+    localtime_r(&file_status->st_atime, &tm_access_time);
     char access_time_str[255];
     strftime(access_time_str, 255, format, &tm_access_time);
 
     printf("%s || type: %s, size: %ld, modification time: %s, access time: %s, nlinks: %ld\n",
-           filename, file_type, statptr->st_size, modif_time_str, access_time_str, statptr->st_nlink);
+           filename, file_type, file_status->st_size, modif_time_str, access_time_str, file_status->st_nlink);*/
+    
+    char mtime[255];
+    char atime[255];
+    time_t modification_time = file.st_mtime;
+    time_t access_time = file.st_atime;
+    date(modification_time, mtime);
+    date(access_time, atime);
+
+    printf("path: %s \n links: %ld \n file type: %s \n file size: %ld \n access time %s\n modification time: %s \n\n\n",
+           path,
+           file.st_nlink,
+           type,
+           file.st_size,
+           atime,
+           mtime,
+    );
 }
 
 void maxdepth(char *root_path, int depth)
@@ -83,7 +99,7 @@ void maxdepth(char *root_path, int depth)
             maxdepth(new_path, depth - 1);
         }
 
-        print_from_stat(new_path, &sb);
+        show_file_status(new_path, &sb);
     }
     closedir(dir);
 }
@@ -135,7 +151,7 @@ void mtime(char *root_path, char mode, int count, time_t date)
             if (!((diff_modif == 0 && mode == '=') || (diff_modif > 0 && mode == '+') || (diff_modif < 0 && mode == '-')))
                 continue;
 
-            print_from_stat(new_path, &sb);
+            show_file_status(new_path, &sb);
         }
         else if (mode == '+')
         {
@@ -143,7 +159,7 @@ void mtime(char *root_path, char mode, int count, time_t date)
             if (!((diff_modif == 0 && mode == '=') || (diff_modif > 0 && mode == '+') || (diff_modif < 0 && mode == '-')))
                 continue;
 
-            print_from_stat(new_path, &sb);
+            show_file_status(new_path, &sb);
         }
         else if (mode == '=')
         {
@@ -152,7 +168,7 @@ void mtime(char *root_path, char mode, int count, time_t date)
             int diff_modif2 = difftime(date, modif_time);
 
             if ((diff_modif == 0 && mode == '=') && !(diff_modif2 < 0 && mode == '='))
-                print_from_stat(new_path, &sb);
+                show_file_status(new_path, &sb);
         }
     }
     closedir(dir);
@@ -205,7 +221,7 @@ void atime(char *root_path, char mode, int count, time_t date)
             if (!((diff_modif == 0 && mode == '=') || (diff_modif > 0 && mode == '+') || (diff_modif < 0 && mode == '-')))
                 continue;
 
-            print_from_stat(new_path, &sb);
+            show_file_status(new_path, &sb);
         }
         else if (mode == '+')
         {
@@ -213,7 +229,7 @@ void atime(char *root_path, char mode, int count, time_t date)
             if (!((diff_modif == 0 && mode == '=') || (diff_modif > 0 && mode == '+') || (diff_modif < 0 && mode == '-')))
                 continue;
 
-            print_from_stat(new_path, &sb);
+            show_file_status(new_path, &sb);
         }
         else if (mode == '=')
         {
@@ -222,7 +238,7 @@ void atime(char *root_path, char mode, int count, time_t date)
             int diff_modif2 = difftime(date, modif_time);
 
             if ((diff_modif == 0 && mode == '=') && !(diff_modif2 < 0 && mode == '='))
-                print_from_stat(new_path, &sb);
+                show_file_status(new_path, &sb);
         }
     }
     closedir(dir);

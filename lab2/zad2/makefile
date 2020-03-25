@@ -1,5 +1,5 @@
 dir:
-	gcc -Wall -o main find_dir.c
+	gcc -Wall -o main find_readdir.c
 	./main ../../ mtime + 7 -1
 	./main ../../ mtime + 7 1
 	./main ../../ atime - 3 2
