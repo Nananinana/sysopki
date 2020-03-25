@@ -17,7 +17,7 @@ char *command;
 time_t follow_date;
 int maxdepth;
 
-void print_from_stat(const char *filename, const struct stat *statptr)
+void print_from_stat(const char *path, const struct stat *statptr)
 {
     char type[64] = "undefined";
 
