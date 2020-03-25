@@ -19,22 +19,22 @@ int maxdepth;
 
 void print_from_stat(const char *filename, const struct stat *statptr)
 {
-    char file_type[64] = "undefined";
+    char type[64] = "undefined";
 
     if (S_ISREG(statptr->st_mode))
-        strcpy(file_type, "file");
+        strcpy(type, "file");
     else if (S_ISDIR(statptr->st_mode))
-        strcpy(file_type, "dir");
+        strcpy(type, "dir");
     else if (S_ISLNK(statptr->st_mode))
-        strcpy(file_type, "slink");
+        strcpy(type, "slink");
     else if (S_ISCHR(statptr->st_mode))
-        strcpy(file_type, "char dev");
+        strcpy(type, "char dev");
     else if (S_ISBLK(statptr->st_mode))
-        strcpy(file_type, "block dev");
+        strcpy(type, "block dev");
     else if (S_ISFIFO(statptr->st_mode))
-        strcpy(file_type, "fifo");
+        strcpy(type, "fifo");
     else if (S_ISSOCK(statptr->st_mode))
-        strcpy(file_type, "socket");
+        strcpy(type, "socket");
 
     /*struct tm tm_modif_time;
     localtime_r(&statptr->st_mtime, &tm_modif_time);
@@ -47,7 +47,7 @@ void print_from_stat(const char *filename, const struct stat *statptr)
     strftime(access_time_str, 255, format, &tm_access_time);
 
     printf("%s || type: %s, size: %ld, modification time: %s, access time: %s\n",
-           filename, file_type, statptr->st_size, modif_time_str, access_time_str);*/
+           filename, type, statptr->st_size, modif_time_str, access_time_str);*/
     char mtime[255];
     char atime[255];
     time_t modification_time = file_status->st_mtime;
