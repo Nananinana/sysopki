@@ -213,25 +213,29 @@ int main(int argc, char *argv[])
     }*/
     char *dir = argv[1];
     char *command = argv[2];
-    if (strcmp(command, "maxdepth"))
+    if (strcmp(command, "maxdepth")==0)
         maxdepth(dir, atoi(argv[3]));
-    if (strcmp(command, "mtime"))
+    if (strcmp(command, "mtime")==0)
     {
         time_t rawtime;
         struct tm *timeinfo;
         time (&rawtime);
         timeinfo = localtime(&rawtime);
         char *mode = argv[3];
-        mtime(dir, mode[0], atoi(argv[4]), mktime(timeinfo));
+        int number_of_days = atoi(argv[4]);
+        printf("\n  doing mtime \n");
+        mtime(dir, mode[0], number_of_days, mktime(timeinfo));
     }
-    if (strcmp(command, "atime"))
+    if (strcmp(command, "atime")==0)
     {
         time_t rawtime;
         struct tm *timeinfo;
         time (&rawtime);
         timeinfo = localtime(&rawtime);
         char *mode = argv[3];
-        atime(dir, mode[0], atoi(argv[4]), mktime(timeinfo));
+        int number_of_days = atoi(argv[4]);
+        printf("\n  doing atime \n");
+        atime(dir, mode[0], number_of_days, mktime(timeinfo));
     }
     return 0;
 }
