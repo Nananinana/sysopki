@@ -17,37 +17,37 @@ char *command;
 time_t follow_date;
 int maxdepth;
 
-void print_from_stat(const char *path, const struct stat *statptr)
+void print_from_stat(const char *path, const struct stat *file_status)
 {
     char type[64] = "undefined";
 
-    if (S_ISREG(statptr->st_mode))
+    if (S_ISREG(file_status->st_mode))
         strcpy(type, "file");
-    else if (S_ISDIR(statptr->st_mode))
+    else if (S_ISDIR(file_status->st_mode))
         strcpy(type, "dir");
-    else if (S_ISLNK(statptr->st_mode))
+    else if (S_ISLNK(file_status->st_mode))
         strcpy(type, "slink");
-    else if (S_ISCHR(statptr->st_mode))
+    else if (S_ISCHR(file_status->st_mode))
         strcpy(type, "char dev");
-    else if (S_ISBLK(statptr->st_mode))
+    else if (S_ISBLK(file_status->st_mode))
         strcpy(type, "block dev");
-    else if (S_ISFIFO(statptr->st_mode))
+    else if (S_ISFIFO(file_status->st_mode))
         strcpy(type, "fifo");
-    else if (S_ISSOCK(statptr->st_mode))
+    else if (S_ISSOCK(file_status->st_mode))
         strcpy(type, "socket");
 
     /*struct tm tm_modif_time;
-    localtime_r(&statptr->st_mtime, &tm_modif_time);
+    localtime_r(&file_status->st_mtime, &tm_modif_time);
     char modif_time_str[255];
     strftime(modif_time_str, 255, format, &tm_modif_time);
 
     struct tm tm_access_time;
-    localtime_r(&statptr->st_atime, &tm_access_time);
+    localtime_r(&file_status->st_atime, &tm_access_time);
     char access_time_str[255];
     strftime(access_time_str, 255, format, &tm_access_time);
 
     printf("%s || type: %s, size: %ld, modification time: %s, access time: %s\n",
-           filename, type, statptr->st_size, modif_time_str, access_time_str);*/
+           filename, type, file_status->st_size, modif_time_str, access_time_str);*/
     char mtime[255];
     char atime[255];
     time_t modification_time = file_status->st_mtime;
@@ -65,7 +65,7 @@ void print_from_stat(const char *path, const struct stat *statptr)
     );
 }
 
-int file_info(const char *filename, const struct stat *statptr,
+int file_info(const char *filename, const struct stat *file_status,
               int fileflags, struct FTW *pfwt)
 {
 
@@ -76,14 +76,14 @@ int file_info(const char *filename, const struct stat *statptr,
     }
     if (strcmp(command, "maxdepth") == 0)
     {
-        print_from_stat(filename, statptr);
+        print_from_stat(filename, file_status);
 
         return 0;
     }
     else if (strcmp(command, "mtime") == 0)
     {
 
-        time_t modif_time = statptr->st_mtime;
+        time_t modif_time = file_status->st_mtime;
 
         if (follow_mode == '-')
         {
@@ -92,7 +92,7 @@ int file_info(const char *filename, const struct stat *statptr,
                 return 0;
             ;
 
-            print_from_stat(filename, statptr);
+            print_from_stat(filename, file_status);
         }
         else if (follow_mode == '+')
         {
@@ -100,7 +100,7 @@ int file_info(const char *filename, const struct stat *statptr,
             if (!((diff_modif == 0 && follow_mode == '=') || (diff_modif > 0 && follow_mode == '+') || (diff_modif < 0 && follow_mode == '-')))
                 return 0;
 
-            print_from_stat(filename, statptr);
+            print_from_stat(filename, file_status);
         }
         else if (follow_mode == '=')
         {
@@ -109,13 +109,13 @@ int file_info(const char *filename, const struct stat *statptr,
             int diff_modif2 = difftime(follow_date, modif_time);
 
             if ((diff_modif == 0 && follow_mode == '=') && !(diff_modif2 < 0 && follow_mode == '='))
-                print_from_stat(filename, statptr);
+                print_from_stat(filename, file_status);
             return 0;
         }
     }
     else if (strcmp(command, "atime") == 0)
     {
-        time_t modif_time = statptr->st_atime;
+        time_t modif_time = file_status->st_atime;
 
         if (follow_mode == '-')
         {
@@ -124,7 +124,7 @@ int file_info(const char *filename, const struct stat *statptr,
                 return 0;
             ;
 
-            print_from_stat(filename, statptr);
+            print_from_stat(filename, file_status);
         }
         else if (follow_mode == '+')
         {
@@ -132,7 +132,7 @@ int file_info(const char *filename, const struct stat *statptr,
             if (!((diff_modif == 0 && follow_mode == '=') || (diff_modif > 0 && follow_mode == '+') || (diff_modif < 0 && follow_mode == '-')))
                 return 0;
 
-            print_from_stat(filename, statptr);
+            print_from_stat(filename, file_status);
         }
         else if (follow_mode == '=')
         {
@@ -141,7 +141,7 @@ int file_info(const char *filename, const struct stat *statptr,
             int diff_modif2 = difftime(follow_date, modif_time);
 
             if ((diff_modif == 0 && follow_mode == '=') && !(diff_modif2 < 0 && follow_mode == '='))
-                print_from_stat(filename, statptr);
+                print_from_stat(filename, file_status);
             return 0;
         }
     }
