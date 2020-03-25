@@ -50,9 +50,9 @@ void show_file_status(char *path, struct stat *file_status)
 
     printf("path: %s \n links: %ld \n file type: %s \n file size: %ld \n access time %s\n modification time: %s \n\n\n",
            path,
-           file.st_nlink,
+           file_status.st_nlink,
            type,
-           file.st_size,
+           file_status.st_size,
            atime,
            mtime
     );
