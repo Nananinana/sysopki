@@ -43,8 +43,8 @@ void show_file_status(char *path, struct stat *file_status)
     
     char mtime[255];
     char atime[255];
-    time_t modification_time = file.st_mtime;
-    time_t access_time = file.st_atime;
+    time_t modification_time = file_status.st_mtime;
+    time_t access_time = file_status.st_atime;
     date(modification_time, mtime);
     date(access_time, atime);
 
