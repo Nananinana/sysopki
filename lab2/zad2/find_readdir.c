@@ -28,7 +28,7 @@ void show_file_status(char *path, struct stat *file_status)
         type = "slink";
     else if (S_ISCHR(file_status->st_mode) != 0)
         type = "char dev";
-    else if (S_Ifile_statusLK(file_status->st_mode) != 0)
+    else if (S_ISBLK(file_status->st_mode) != 0)
         type = "block dev";
     
     char mtime[255];
