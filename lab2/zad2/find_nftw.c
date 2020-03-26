@@ -22,7 +22,7 @@ void date(time_t time, char *buffer){
     strftime(buffer, 255*sizeof(char), "%c", times);
 }
 
-void show_file_status(const char *path, const struct stat *file_status)
+/*void show_file_status(const char *path, const struct stat *file_status)
 {
     char *type = "undefined";
 
@@ -57,6 +57,38 @@ void show_file_status(const char *path, const struct stat *file_status)
            mtime
     );
 
+}*/
+void show_file_status(const char *filename, const struct stat *statptr)
+{
+    char file_type[64] = "undefined";
+
+    if (S_ISREG(statptr->st_mode))
+        strcpy(file_type, "file");
+    else if (S_ISDIR(statptr->st_mode))
+        strcpy(file_type, "dir");
+    else if (S_ISLNK(statptr->st_mode))
+        strcpy(file_type, "slink");
+    else if (S_ISCHR(statptr->st_mode))
+        strcpy(file_type, "char dev");
+    else if (S_ISBLK(statptr->st_mode))
+        strcpy(file_type, "block dev");
+    else if (S_ISFIFO(statptr->st_mode))
+        strcpy(file_type, "fifo");
+    else if (S_ISSOCK(statptr->st_mode))
+        strcpy(file_type, "socket");
+
+    struct tm tm_modif_time;
+    localtime_r(&statptr->st_mtime, &tm_modif_time);
+    char modif_time_str[255];
+    strftime(modif_time_str, 255, format, &tm_modif_time);
+
+    struct tm tm_access_time;
+    localtime_r(&statptr->st_atime, &tm_access_time);
+    char access_time_str[255];
+    strftime(access_time_str, 255, format, &tm_access_time);
+
+    printf("%s || type: %s, size: %ld, modification time: %s, access time: %s\n",
+           filename, file_type, statptr->st_size, modif_time_str, access_time_str);
 }
 
 int file_info(const char *path, const struct stat *file_status,
