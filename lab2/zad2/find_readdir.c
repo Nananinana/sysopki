@@ -214,12 +214,12 @@ int main(int argc, char *argv[])
             max_depth = atoi(argv[3]);
             char *command2 = argv[4];
             char mode = argv[5];
-            if (strcmp(command2, "atime"==0))
+            if (strcmp(command2, "atime")==0))
             {
                 tm.tm_mday -= atoi(argv[6]);
                 atime(path, mode, tm, max_depth);
             }
-            else if (strcmp(command2, "mtime"==0))
+            else if (strcmp(command2, "mtime")==0))
             {
                 tm.tm_mday -= atoi(argv[6]);
                 mtime(path, mode, tm, max_depth);
