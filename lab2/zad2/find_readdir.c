@@ -112,12 +112,12 @@ void mtime(char *root, char mode, struct tm searched_day, int depth)
             mtime(new_path, mode, searched_day, depth-1);
         }
         time_t access_time = file_status.st_atime;
-        struct tm access_tm = *localtime(&acces_time);
-        if (mode == '-' && access_tm.tm_day > searched_day.tm_day)
+        struct tm access_tm = *localtime(&access_time);
+        if (mode == '-' && access_tm.tm_mday > searched_day.tm_mday)
             show_file_status(new_path, &file_status);
-        else if (mode == '+' && access_tm.tm_day < searched_day.tm_day)
+        else if (mode == '+' && access_tm.tm_mday < searched_day.tm_mday)
             show_file_status(new_path, &file_status);
-        else if (mode == '=' && access_tm.tm_day < searched_day.tm_day)
+        else if (mode == '=' && access_tm.tm_mday < searched_day.tm_mday)
             show_file_status(new_path, &file_status);
     }
     closedir(dir);
@@ -141,7 +141,7 @@ void atime(char *root, char mode, struct tm searched_day, int depth)
         strcat(new_path, "/");
         strcat(new_path, file->d_name);
         struct stat file_status;
-        if (lstat(new_path, &sb) < 0)
+        if (lstat(new_path, &file_status) < 0)
         {
             fprintf(stderr, "unable to lstat file %s: %s\n", new_path, strerror(errno));
             exit(-1);
@@ -155,12 +155,12 @@ void atime(char *root, char mode, struct tm searched_day, int depth)
             atime(new_path, mode, searched_day, depth-1);
         }
         time_t access_time = file_status.st_atime;
-        struct tm access_tm = *localtime(&acces_time);
-        if (mode == '-' && access_tm.tm_day > searched_day.tm_day)
+        struct tm access_tm = *localtime(&access_time);
+        if (mode == '-' && access_tm.tm_mday > searched_day.tm_mday)
             show_file_status(new_path, &file_status);
-        else if (mode == '+' && access_tm.tm_day < searched_day.tm_day)
+        else if (mode == '+' && access_tm.tm_mday < searched_day.tm_mday)
             show_file_status(new_path, &file_status);
-        else if (mode == '=' && access_tm.tm_day < searched_day.tm_day)
+        else if (mode == '=' && access_tm.tm_mday < searched_day.tm_mday)
             show_file_status(new_path, &file_status);
     }
     closedir(dir);
