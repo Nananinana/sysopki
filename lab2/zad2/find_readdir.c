@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
             else
                 printf ("Wrong command \n");
         }
-        else if (strcmp(command, "mtime"==0))
+        else if (strcmp(command, "mtime")==0)
          {
             char mode = argv[3];
             tm.tm_mday -= atoi(argv[4]);
