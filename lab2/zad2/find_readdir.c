@@ -183,6 +183,7 @@ int main(int argc, char *argv[])
     }
     else if (argc == 4)
     {
+    printf("4 arguments \n");
     if (strcmp(command, "atime") == 0)
     {
         char mode = argv[3];
