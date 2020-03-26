@@ -63,7 +63,7 @@ void maxdepth(char *root, int depth)
     while ((file = readdir(dir)) != NULL) 
     {
         struct stat file_status;
-        if (lstat(new_path, &sb) < 0)
+        if (lstat(new_path, &file_status) < 0)
         {
             fprintf(stderr, "unable to lstat file %s: %s\n", new_path, strerror(errno));
             exit(-1);
@@ -82,7 +82,7 @@ void maxdepth(char *root, int depth)
     closedir(dir);
 }
 
-void mtime(char *root, char mode, tm searched_day, int depth)
+void mtime(char *root, char mode, struct tm searched_day, int depth)
 {
     if (depth == 0) return;
     if (root == NULL) return;
@@ -100,7 +100,7 @@ void mtime(char *root, char mode, tm searched_day, int depth)
         strcat(new_path, "/");
         strcat(new_path, file->d_name);
         struct stat file_status;
-        if (lstat(new_path, &sb) < 0)
+        if (lstat(new_path, &file_status) < 0)
         {
             fprintf(stderr, "unable to lstat file %s: %s\n", new_path, strerror(errno));
             exit(-1);
@@ -112,7 +112,7 @@ void mtime(char *root, char mode, tm searched_day, int depth)
             mtime(new_path, mode, searched_day, depth-1);
         }
         time_t access_time = file_status.st_atime;
-        struct tm access_tm = localtime(acces_time);
+        struct tm access_tm = *localtime(&acces_time);
         if (mode == '-' && access_tm.tm_day > searched_day.tm_day)
             show_file_status(new_path, &file_status);
         else if (mode == '+' && access_tm.tm_day < searched_day.tm_day)
@@ -123,7 +123,7 @@ void mtime(char *root, char mode, tm searched_day, int depth)
     closedir(dir);
 }
 
-void atime(char *root, char mode, tm searched_day, int depth)
+void atime(char *root, char mode, struct tm searched_day, int depth)
 {
     if (depth == 0) return;
     if (root == NULL) return;
@@ -155,7 +155,7 @@ void atime(char *root, char mode, tm searched_day, int depth)
             atime(new_path, mode, searched_day, depth-1);
         }
         time_t access_time = file_status.st_atime;
-        struct tm access_tm = localtime(acces_time);
+        struct tm access_tm = *localtime(&acces_time);
         if (mode == '-' && access_tm.tm_day > searched_day.tm_day)
             show_file_status(new_path, &file_status);
         else if (mode == '+' && access_tm.tm_day < searched_day.tm_day)
@@ -170,13 +170,13 @@ int main(int argc, char *argv[])
 {
     char *path  = argv[1];
     char *command = argv[2];
-    int maxdepth = -1;
+    int max_depth = -1;
 
     if (argc == 3)
     {
         if(strcmp(command, "maxdepth") == 0){
-        maxdepth = atoi(argv[3]);
-        maxdepth(path, maxdepth);
+        max_depth = atoi(argv[3]);
+        maxdepth(path, max_depth);
     }
     else
         printf("Wrong command \n");
@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
         struct tm tm = *localtime(&t);
         tm.tm_mday -= atoi(argv[4]);
         //currentDate = mktime(&tm);
-        atime(path, mode, tm, maxdepth);
+        atime(path, mode, tm, max_depth);
     }
     else if (strcmp(command, "mtime") == 0)
     {
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
         struct tm tm = *localtime(&t);
         tm.tm_mday -= atoi(argv[4]);
         //currentDate = mktime(&tm);
-        mtime(path, mode, tm, maxdepth);
+        mtime(path, mode, tm, max_depth);
     }
     else 
         printf("Wrong command \n");
@@ -210,18 +210,18 @@ int main(int argc, char *argv[])
         struct tm tm = *localtime(&t);
         //currentDate = mktime(&tm);
         if(strcmp(command, "maxdepth") == 0){
-            maxdepth = atoi(argv[3]);
+            max_depth = atoi(argv[3]);
             char *command2 = argv[4];
             char mode = argv[5];
             if (strcmp(command2, "atime"==0))
             {
                 tm.tm_mday -= atoi(argv[6]);
-                atime(path, mode, tm, maxdepth);
+                atime(path, mode, tm, max_depth);
             }
             else if (strcmp(command2, "mtime"==0))
             {
                 tm.tm_mday -= atoi(argv[6]);
-                mtime(path, mode, tm, maxdepth);
+                mtime(path, mode, tm, max_depth);
             }
             else 
                 printf ("Wrong command \n");
@@ -233,8 +233,8 @@ int main(int argc, char *argv[])
             char *command2 = argv[5];
             if (strcmp(command, "maxdepth") == 0)
             {
-                maxdepth = atoi(argv[6]);
-                atime(path, mode, tm, maxdepth);
+                max_depth = atoi(argv[6]);
+                atime(path, mode, tm, max_depth);
             }
             else
                 printf ("Wrong command \n");
@@ -246,8 +246,8 @@ int main(int argc, char *argv[])
             char *command2 = argv[5];
             if (strcmp(command, "maxdepth") == 0)
             {
-                maxdepth = atoi(argv[6]);
-                mtime(path, mode, tm, maxdepth);
+                max_depth = atoi(argv[6]);
+                mtime(path, mode, tm, max_depth);
             }
             else
                 printf ("Wrong command \n");
