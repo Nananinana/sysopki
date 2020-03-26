@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
     char *path  = argv[1];
     char *command = argv[2];
     int max_depth = -1;
-    printf(&argc);
+    printf("%d \n", argc);
 
     if (argc == 4)
     {
