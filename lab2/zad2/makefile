@@ -7,6 +7,6 @@ dir:
 
 nftw:
 	gcc -Wall -o main find_nftw.c
-	./main ../../ mtime + 7 -1
+	./main ../../ mtime + 7 1
 	./main ../../ mtime + 7 1
 	./main ../../ atime - 3 0

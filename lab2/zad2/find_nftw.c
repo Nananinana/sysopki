@@ -59,7 +59,7 @@ void show_file_status(const char *path, const struct stat *file_status)
 
 }
 
-int file_info(const char *filename, const struct stat *file_status,
+int file_info(const char *path, const struct stat *file_status,
               int fileflags, struct FTW *pfwt)
 {
 
@@ -70,7 +70,7 @@ int file_info(const char *filename, const struct stat *file_status,
     }
     if (strcmp(command, "maxdepth") == 0)
     {
-        show_file_status(filename, file_status);
+        show_file_status(path, file_status);
 
         return 0;
     }
@@ -86,7 +86,7 @@ int file_info(const char *filename, const struct stat *file_status,
                 return 0;
             ;
 
-            show_file_status(filename, file_status);
+            show_file_status(path, file_status);
         }
         else if (follow_mode == '+')
         {
@@ -94,7 +94,7 @@ int file_info(const char *filename, const struct stat *file_status,
             if (!((diff_modif == 0 && follow_mode == '=') || (diff_modif > 0 && follow_mode == '+') || (diff_modif < 0 && follow_mode == '-')))
                 return 0;
 
-            show_file_status(filename, file_status);
+            show_file_status(path, file_status);
         }
         else if (follow_mode == '=')
         {
@@ -103,7 +103,7 @@ int file_info(const char *filename, const struct stat *file_status,
             int diff_modif2 = difftime(follow_date, modif_time);
 
             if ((diff_modif == 0 && follow_mode == '=') && !(diff_modif2 < 0 && follow_mode == '='))
-                show_file_status(filename, file_status);
+                show_file_status(path, file_status);
             return 0;
         }
     }
@@ -118,7 +118,7 @@ int file_info(const char *filename, const struct stat *file_status,
                 return 0;
             ;
 
-            show_file_status(filename, file_status);
+            show_file_status(path, file_status);
         }
         else if (follow_mode == '+')
         {
@@ -126,7 +126,7 @@ int file_info(const char *filename, const struct stat *file_status,
             if (!((diff_modif == 0 && follow_mode == '=') || (diff_modif > 0 && follow_mode == '+') || (diff_modif < 0 && follow_mode == '-')))
                 return 0;
 
-            show_file_status(filename, file_status);
+            show_file_status(path, file_status);
         }
         else if (follow_mode == '=')
         {
@@ -135,7 +135,7 @@ int file_info(const char *filename, const struct stat *file_status,
             int diff_modif2 = difftime(follow_date, modif_time);
 
             if ((diff_modif == 0 && follow_mode == '=') && !(diff_modif2 < 0 && follow_mode == '='))
-                show_file_status(filename, file_status);
+                show_file_status(path, file_status);
             return 0;
         }
     }
