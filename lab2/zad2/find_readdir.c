@@ -171,9 +171,9 @@ int main(int argc, char *argv[])
     char *path  = argv[1];
     char *command = argv[2];
     int max_depth = -1;
-    printf(argc);
+    printf("%d \n", argc);
 
-    if (argc == 3)
+    if (argc == 4)
     {
         if(strcmp(command, "maxdepth") == 0)
         {
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
         else
            { printf("Wrong command \n");}
     }
-    else if (argc == 4)
+    else if (argc == 5)
     {
         printf("4 arguments \n");
         if (strcmp(command, "atime") == 0)
@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
         else 
             { printf("Wrong command \n");}
     }
-    else if (argc == 6)
+    else if (argc == 7)
     {
         time_t t = time(NULL);
         struct tm tm = *localtime(&t);
