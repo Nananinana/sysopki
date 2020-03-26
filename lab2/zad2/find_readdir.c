@@ -174,36 +174,37 @@ int main(int argc, char *argv[])
 
     if (argc == 3)
     {
-        if(strcmp(command, "maxdepth") == 0){
+        if(strcmp(command, "maxdepth") == 0)
+        {
         max_depth = atoi(argv[3]);
         maxdepth(path, max_depth);
-    }
-    else
-        printf("Wrong command \n");
+        }
+        else
+           { printf("Wrong command \n");}
     }
     else if (argc == 4)
     {
-    printf("4 arguments \n");
-    if (strcmp(command, "atime") == 0)
-    {
-        char mode = argv[3];
-        time_t t = time(NULL);
-        struct tm tm = *localtime(&t);
-        tm.tm_mday -= atoi(argv[4]);
-        //currentDate = mktime(&tm);
-        atime(path, mode, tm, max_depth);
-    }
-    else if (strcmp(command, "mtime") == 0)
-    {
-        char mode = argv[3];
-        time_t t = time(NULL);
-        struct tm tm = *localtime(&t);
-        tm.tm_mday -= atoi(argv[4]);
-        //currentDate = mktime(&tm);
-        mtime(path, mode, tm, max_depth);
-    }
-    else 
-        printf("Wrong command \n");
+        printf("4 arguments \n");
+        if (strcmp(command, "atime") == 0)
+        {
+            char mode = argv[3];
+            time_t t = time(NULL);
+            struct tm tm = *localtime(&t);
+            tm.tm_mday -= atoi(argv[4]);
+            //currentDate = mktime(&tm);
+            atime(path, mode, tm, max_depth);
+        }
+        else if (strcmp(command, "mtime") == 0)
+        {
+            char mode = argv[3];
+            time_t t = time(NULL);
+            struct tm tm = *localtime(&t);
+            tm.tm_mday -= atoi(argv[4]);
+            //currentDate = mktime(&tm);
+            mtime(path, mode, tm, max_depth);
+        }
+        else 
+            { printf("Wrong command \n");}
     }
     else if (argc == 6)
     {
@@ -225,9 +226,9 @@ int main(int argc, char *argv[])
                 mtime(path, mode, tm, max_depth);
             }
             else 
-                printf ("Wrong command \n");
+                { printf ("Wrong command \n");}
         }
-        else if (strcmp(command, "atime"==0))
+        else if (strcmp(command, "atime")==0))
         {
             char mode = argv[3];
             tm.tm_mday -= atoi(argv[4]);
@@ -238,10 +239,10 @@ int main(int argc, char *argv[])
                 atime(path, mode, tm, max_depth);
             }
             else
-                printf ("Wrong command \n");
+               { printf ("Wrong command \n"); }
         }
         else if (strcmp(command, "mtime")==0)
-         {
+        {
             char mode = argv[3];
             tm.tm_mday -= atoi(argv[4]);
             char *command2 = argv[5];
