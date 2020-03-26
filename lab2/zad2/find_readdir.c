@@ -220,7 +220,7 @@ int main(int argc, char *argv[])
                 tm.tm_mday -= atoi(argv[6]);
                 atime(path, mode, tm, max_depth);
             }
-            else if (strcmp(command2, "mtime")==0))
+            else if (strcmp(command2, "mtime")==0)
             {
                 tm.tm_mday -= atoi(argv[6]);
                 mtime(path, mode, tm, max_depth);
