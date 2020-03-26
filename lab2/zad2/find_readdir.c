@@ -14,7 +14,7 @@ void date(time_t time, char *buffer){
 
 void show_file_status(const char *path, const struct stat *file_status)
 {
-    char *type = "uknown";
+    char *type = "unknown";
 
     if (S_ISREG(file_status->st_mode) != 0)
         type = "file";
@@ -63,14 +63,14 @@ void maxdepth(char *root, int depth)
     while ((file = readdir(dir)) != NULL) 
     {
         struct stat file_status;
+        strcpy(new_path, root);
+        strcat(new_path, "/");
+        strcat(new_path, file->d_name);
         if (lstat(new_path, &file_status) < 0)
         {
             fprintf(stderr, "unable to lstat file %s: %s\n", new_path, strerror(errno));
             exit(-1);
         }
-        strcpy(new_path, root);
-        strcat(new_path, "/");
-        strcat(new_path, file->d_name);
         if (S_ISDIR(file_status.st_mode))
         {
             //if (strcmp(file->d_name, ".") == 0 || strcmp(file->d_name, "..") == 0)
