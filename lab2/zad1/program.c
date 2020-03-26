@@ -71,7 +71,9 @@ int main(int argc, char **argv)
         }
         char *file = argv[2];
         int records_number = (int)strtol(argv[3], NULL, 10);
+        printf ("records number is: %d \n", records_number);
         int record_size = (int)strtol(argv[4], NULL, 10);
+        printf ("record size is: %d \n", record_size);
         char *sort_lib_or_sys = argv[5];
         if (strcmp(sort_lib_or_sys, "lib"))
         {
