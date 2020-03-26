@@ -16,16 +16,16 @@ test:
 	make program 
 	rm -f wyniki.txt
 
-	for record_size in 1 4 512  1024  4096 8192 ; do \
-		for records_number in 5000 7000 10000; do \
+	for records_number in 5000 7000 10000; do \
+		for record_size in 1 4 512  1024  4096 8192 ; do \
 			./$(PROGRAM_NAME) generate data $$records_number $$record_size ; \
 			./$(PROGRAM_NAME) copy data data.$$records_number.$$record_size.lib $$records_number $$record_size lib ; \
 			./$(PROGRAM_NAME) copy data data.$$records_number.$$record_size.sys $$records_number $$record_size sys ; \
 		done; \
 	done
 
-	for record_size in 1 4 512  1024  4096 8192 ; do \
-		for records_number in 5000 7000 10000; do \
+	for records_number in 5000 7000 10000; do \
+		for record_size in 1 4 512  1024  4096 8192 ; do \
 			./$(PROGRAM_NAME) sort data.$$records_number.$$record_size.lib $$records_number $$record_size lib ; \
 			./$(PROGRAM_NAME) sort data.$$records_number.$$record_size.sys $$records_number $$record_size sys ; \
 		done; \
