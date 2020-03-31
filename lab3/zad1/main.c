@@ -12,21 +12,21 @@ void deep_search(char *root)
     DIR *dir = opendir(root);
     if (dir == NULL)
     {
-        fprintf(stderr, "error while opening directory: %s\n", strerror(errno)); //?
-        exit(-1);
+        printf("error while opening directory");
+        return;
     }
     struct dirent *file;
-    char new_path[256];
     while ((file = readdir(dir)) != NULL) 
     {
+        char *new_path = malloc(sizeof(char) * (strlen(root) + strlen(file->d_name)) + 2);
         struct stat file_status;
         strcpy(new_path, root);
         strcat(new_path, "/");
         strcat(new_path, file->d_name);
         if (lstat(new_path, &file_status) < 0)
         {
-            fprintf(stderr, "unable to lstat file %s: %s\n", new_path, strerror(errno));
-            exit(-1);
+            printf("unable to lstat file %s\n", new_path);
+            return;
         }
         if (S_ISDIR(file_status.st_mode) && fork()==0)
         {
