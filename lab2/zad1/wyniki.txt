@@ -1,3 +1,8 @@
+
+Jak widać, czas użytkownika jest za każdym razem nieco któtszy dla wersji używającej funkcji systemowych. 
+Widoczna jest też cecha quicksorta, który jest mało efektywny dla wielu powtarzających się elementów.
+Dlatego sortowanie dużej ilości rekordów (7000, 10000) o długości tylko jednego znaku (a więc wiele rekordów jest takich samych) jest bardzo powolne.
+
 Sys copy, records: 5000, record size: 1
 	user: 0.000000l
 	system: 0.050000l
