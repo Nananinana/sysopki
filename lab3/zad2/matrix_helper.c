@@ -1,6 +1,6 @@
 #define _XOPEN_SOURCE 500
-#define MAX_COLS_NUMBER 1000
-#define MAX_LINE_LENGTH (MAX_COLS_NUMBER * 5)
+#define MAX_set_column_and_rows_NUMBER 1000
+#define MAX_LINE_LENGTH (MAX_set_column_and_rows_NUMBER * 5)
 #include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,29 +18,29 @@ typedef struct
     int columns;
 } matrix;
 
-int get_cols_number(char *row) //dostaje ciag znakow w wierszu i liczy kolumny
+int get_set_column_and_rows_number(char *row) //dostaje ciag znakow w wierszu i liczy kolumny
 {
-    int cols = 0;
+    int set_column_and_rows = 0;
     char *num = strtok(row, " ");
     while (num != NULL)
     {
         if (strcmp(num, "\n") != 0)
-            cols++;
+            set_column_and_rows++;
         num = strtok(NULL, " ");
     }
-    return cols;
+    return set_column_and_rows;
 }
 
-void set_cols_and_rows(FILE *f, int *rows, int *cols)
+void set_set_column_and_rows_and_rows(FILE *f, int *rows, int *set_column_and_rows)
 {
     char line[MAX_LINE_LENGTH];
     *rows = 0;
-    *cols = 0;
+    *set_column_and_rows = 0;
     while (fgets(line, MAX_LINE_LENGTH, f) != NULL) //czyta z pliku f size znakow i zapisuje do line
     {
-        if (*cols == 0)
+        if (*set_column_and_rows == 0)
         {
-            *cols = get_cols_number(line);
+            *set_column_and_rows = get_set_column_and_rows_number(line);
         }
         *rows = *rows + 1;
     }
@@ -50,12 +50,12 @@ void set_cols_and_rows(FILE *f, int *rows, int *cols)
 matrix load_matrix_from_file(char *filename) //laduje macierz z pliku do struktury matrix
 {
     FILE *file = fopen(filename, "r");
-    int rows, cols;
-    set_cols_and_rows(file, &rows, &cols);
+    int rows, set_column_and_rows;
+    set_set_column_and_rows_and_rows(file, &rows, &set_column_and_rows);
     int **values = calloc(rows, sizeof(int *));
     for (int i = 0; i < rows; i++)
     {
-        values[i] = calloc(cols, sizeof(int));
+        values[i] = calloc(set_column_and_rows, sizeof(int));
     }
     int x, y = 0;
     char line[MAX_LINE_LENGTH];
@@ -76,7 +76,7 @@ matrix load_matrix_from_file(char *filename) //laduje macierz z pliku do struktu
     matrix m;
     m.values = values;
     m.rows = rows;
-    m.cols = cols;
+    m.set_column_and_rows = set_column_and_rows;
     return m;
 }
 
@@ -93,7 +93,7 @@ void print_matrix(matrix m)
 {
     for (int i = 0; i < m.rows; i++)
     {
-        for (int j = 0; j < m.cols; j++)
+        for (int j = 0; j < m.set_column_and_rows; j++)
         {
             printf("%d ", m.values[i][j]);
         }
@@ -106,14 +106,14 @@ matrix multiply_matrixes(matrix A, matrix B)
     int **values = calloc(A.rows, sizeof(int *));
     for (int i = 0; i < A.rows; i++)
     {
-        values[i] = calloc(B.cols, sizeof(int));
+        values[i] = calloc(B.set_column_and_rows, sizeof(int));
     }
     for (int i = 0; i < A.rows; i++)
     {
-        for (int j = 0; j < B.cols; j++)
+        for (int j = 0; j < B.set_column_and_rows; j++)
         {
             int result = 0;
-            for (int k = 0; k < A.cols; k++)
+            for (int k = 0; k < A.set_column_and_rows; k++)
             {
                 result += (A.values[i][k] * B.values[k][j]);
             }
@@ -124,18 +124,18 @@ matrix multiply_matrixes(matrix A, matrix B)
     matrix m;
     m.values = values;
     m.rows = A.rows;
-    m.cols = B.cols;
+    m.set_column_and_rows = B.set_column_and_rows;
 
     return m;
 }
 
-void generate_matrix_to_file(int rows, int cols, char *filename)
+void generate_matrix_to_file(int rows, int set_column_and_rows, char *filename)
 {
     FILE *file = fopen(filename, "w+");
 
     for (int y = 0; y < rows; y++)
     {
-        for (int x = 0; x < cols; x++)
+        for (int x = 0; x < set_column_and_rows; x++)
         {
             if (x > 0)
             {
@@ -149,13 +149,13 @@ void generate_matrix_to_file(int rows, int cols, char *filename)
     fclose(file);
 }
 
-void init_free_matrix(int rows, int cols, char *filename)  //wpisuje do pliku zera
+void init_free_matrix(int rows, int set_column_and_rows, char *filename)  //wpisuje do pliku zera
 {
     FILE *file = fopen(filename, "w+");
 
     for (int y = 0; y < rows; y++)
     {
-        for (int x = 0; x < cols; x++)
+        for (int x = 0; x < set_column_and_rows; x++)
         {
             if (x > 0)
             {
@@ -174,7 +174,7 @@ void write_matrix_to_file(FILE *file, matrix a) // przepisuje ze struktury matri
     fseek(file, 0, SEEK_SET);
     for (int y = 0; y < a.rows; y++)
     {
-        for (int x = 0; x < a.cols; x++)
+        for (int x = 0; x < a.set_column_and_rows; x++)
         {
             if (x > 0)
             {
