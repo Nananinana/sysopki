@@ -40,22 +40,22 @@ void get_matrix_size(FILE *file, int *rows, int *columns)
     *columns = 0;
     while(getline(&line, &line_size, file) >= 0)
     {
-        rows++;
+        *rows++;
     } 
     fseek(file, 0, 0);
     getline(&line, &line_size, file);
     if ( strtok(line, " ") != NULL) 
     {
-        columns = 1;
+        *columns = 1;
         while(strtok(NULL, " ") != NULL) 
-            columns++;
+            *columns++;
     }
     fseek(file, 0, 0);
 }
 
 matrix load_matrix_from_file(char *filename)
-{
-    if ((FILE *file = fopen(filename, "r")) == NULL)
+{   FILE *file;
+    if ((file = fopen(filename, "r")) == NULL)
     {
         printf("Couldnt open file %s", filename);
             exit(1);
