@@ -35,7 +35,7 @@ void set_cols_and_rows(FILE *f, int *rows, int *columns)
 {
     char line[MAX_LINE_LENGTH];
     *rows = 0;
-    *cols = 0;
+    *columns = 0;
     while (fgets(line, MAX_LINE_LENGTH, f) != NULL)
     {
         if (*columns == 0)
