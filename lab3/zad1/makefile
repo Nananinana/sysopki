@@ -1,2 +1,2 @@
 all:
-	gcc -Wall -o main main.c
+	gcc -Wall -o main deep_search.c

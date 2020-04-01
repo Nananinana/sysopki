@@ -89,7 +89,11 @@ void search_dir(char *path)
 
 int main(int argc, char **argv)
 {
-    char *path = argc > 1 ? argv[1] : ".";
-    deep_search(path);
+    char *root;
+    if (argc>1)
+        root = argv[1];
+    else
+        root = ".";
+    deep_search(root);
     return 0;
 }
