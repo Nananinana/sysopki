@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include "matrix_helper.c"
 
-ool check_multiplication_result(char *fileA, char *fileB, char *result_file) //pomocniczy - sprawdza poprawnosc
+bool check_multiplication_result(char *fileA, char *fileB, char *result_file) //pomocniczy - sprawdza poprawnosc
 {
     matrix matrixA = load_matrix_from_file(fileA);
     matrix matrixB = load_matrix_from_file(fileB);
