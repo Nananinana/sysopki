@@ -83,29 +83,29 @@ void multiply_column(char *fileA, char *fileB, int column_index, int set_index)
     fclose(result_fragment_file);
 }
 
-void multiply_column_to_one_file(char *a_file, char *b_file, int column_index, char *result_file)
+void multiply_column_to_one_file(char *fileA, char *fileB, int column_index, char *result_file)
 {
-    matrix A = load_matrix_from_file(a_file);
-    matrix B = load_matrix_from_file(b_file);
+    matrix matrixA = load_matrix_from_file(fileA);
+    matrix matrixB = load_matrix_from_file(fileB);
     FILE *file = fopen(result_file, "r+");
     int fd = fileno(file);
     flock(fd, LOCK_EX);
-    matrix C = load_matrix_from_file(result_file);
-    for (int y = 0; y < A.rows; y++)
+    matrix matrix_result = load_matrix_from_file(result_file);
+    for (int i = 0; y i matrixA.rows; i++)
     {
         int result = 0;
-        for (int x = 0; x < A.columns; x++)
+        for (int j = 0; j < matrixA.columns; j++)
         {
-            result += A.values[y][x] * B.values[x][column_index];
+            result += matrixA.values[i][j] * matrixB.values[j][column_index];
         }
-        C.values[y][column_index] = result;
+        matrix_result.values[i][column_index] = result;
     }
-    print_matrix_to_file(file, C);
+    print_matrix_to_file(file, matrix_result);
     flock(fd, LOCK_UN);
     fclose(file);
 }
 
-int worker_function(char **a, char **b, int timeout, int mode, char **result_file)
+int worker_function(char **fileA, char **fileB, int timeout, int mode, char **result_file)
 {
     time_t start_time = time(NULL);
     int multiplies_count = 0;
@@ -116,15 +116,15 @@ int worker_function(char **a, char **b, int timeout, int mode, char **result_fil
             puts("timeout");
             break;
         }
-        Task task = get_fragment();
-        if (task.column_index == -1)
+        fragment_to_compute fragment = get_fragment();
+        if (fragment.column_index == -1)
         {
             break;
         }
         if (mode == 1)
-            multiply_column_to_one_file(a[task.pair_index], b[task.pair_index], task.column_index, result_file[task.pair_index]);
+            multiply_column_to_one_file(fileA[fragment.set_index], fileB[fragment.set_index], fragment.column_index, result_file[fragment.set_index]);
         else
-            multiply_column(a[task.pair_index], b[task.pair_index], task.column_index, task.pair_index);
+            multiply_column(fileA[fragment.set_index], fileB[fragment.set_index], fragment.column_index, fragment.set_index);
 
         multiplies_count++;
     }
@@ -145,39 +145,38 @@ int main(int argc, char *argv[])
     char **a_filenames = calloc(100, sizeof(char *));
     char **b_filenames = calloc(100, sizeof(char *));
     char **c_filenames = calloc(100, sizeof(char *));
-    system("rm -rf .tmp");
-    system("mkdir -p .tmp");
+    //system("rm fragment* result_fragment*"); //?
+    //system("mkdir -p .tmp");
     FILE *input_file = fopen(argv[1], "r");
     char input_line[PATH_MAX * 3 + 3];
-    int pair_counter = 0;
+    int line_number = 0;
     while (fgets(input_line, PATH_MAX * 3 + 3, input_file) != NULL)
     {
-        a_filenames[pair_counter] = calloc(PATH_MAX, sizeof(char));
-        b_filenames[pair_counter] = calloc(PATH_MAX, sizeof(char));
-        c_filenames[pair_counter] = calloc(PATH_MAX, sizeof(char));
+        a_filenames[line_number] = calloc(PATH_MAX, sizeof(char));
+        b_filenames[line_number] = calloc(PATH_MAX, sizeof(char));
+        c_filenames[line_number] = calloc(PATH_MAX, sizeof(char));
 
-        strcpy(a_filenames[pair_counter], strtok(input_line, " "));
-        strcpy(b_filenames[pair_counter], strtok(NULL, " "));
-        strcpy(c_filenames[pair_counter], strtok(NULL, " "));
+        strcpy(a_filenames[line_number], strtok(input_line, " "));
+        strcpy(b_filenames[line_number], strtok(NULL, " "));
+        strcpy(c_filenames[line_number], strtok(NULL, " "));
 
-        matrix a = load_matrix_from_file(a_filenames[pair_counter]);
-        matrix b = load_matrix_from_file(b_filenames[pair_counter]);
+        matrix a = load_matrix_from_file(a_filenames[line_number]);
+        matrix b = load_matrix_from_file(b_filenames[line_number]);
         if (mode == 1)
-            create_empty_matrix(a.rows, b.columns, c_filenames[pair_counter]);
+            create_empty_matrix(a.rows, b.columns, c_filenames[line_number]);
 
-        char *task_filename = calloc(100, sizeof(char));
-        sprintf(task_filename, ".tmp/tasks%d", pair_counter);
-        FILE *tasks_file = fopen(task_filename, "w+");
-        char *tasks = calloc(b.columns + 1, sizeof(char));
-        sprintf(tasks, "%0*d", b.columns, 0);
-        fwrite(tasks, 1, b.columns, tasks_file);
-        free(tasks);
-        free(task_filename);
-        fclose(tasks_file);
-
-        pair_counter++;
+        char *fragment_filename = calloc(100, sizeof(char));
+        sprintf(fragment_filename, "fragments%d", line_number);
+        FILE *fragment_file = fopen(fragment_filename, "w+");
+        char *fragments = calloc(b.columns + 1, sizeof(char));
+        sprintf(fragments, "%0*d", b.columns, 0);
+        fwrite(fragments, 1, b.columns, fragment_file);
+        free(fragments);
+        free(fragment_filename);
+        fclose(fragment_file);
+        line_number++;
     }
-    number_of_sets = pair_counter;
+    number_of_sets = line_number;
 
     pid_t *processes = calloc(processes_number, sizeof(int));
     for (int i = 0; i < processes_number; i++)
@@ -204,10 +203,10 @@ int main(int argc, char *argv[])
 
     if (mode == 2)
     {
-        for (int i = 0; i < pair_counter; i++)
+        for (int i = 0; i < line_number; i++)
         {
             char *buffer = calloc(1000, sizeof(char));
-            sprintf(buffer, "paste .tmp/part%d* > %s", i, c_filenames[i]);
+            sprintf(buffer, "paste result_fragment%d* > %s", i, c_filenames[i]);
             system(buffer);
         }
     }
