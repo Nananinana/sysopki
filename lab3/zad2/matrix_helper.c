@@ -65,22 +65,8 @@ matrix load_matrix_from_file(char *filename)
     matrix.rows = 0;
     matrix.columns = 0;
     //get_matrix_size(file, &rows, &columns); //getDimensions(file, &rows, &cols);
-    int **values = calloc(matrix.rows, sizeof(int *));
-    char line[MAX_LINE_LENGTH];
-    for (int i = 0; i < rows; i++)
-        values[i] = calloc(matrix.columns, sizeof(int));
-    int i = 0;
-    int j = 0;
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL)
-    {   matrix.rows++;
-        i = 0;
-        char *value = strtok(line, " \t\n");
-        while (value != NULL)
-        {
-            values[j][i++] = atoi(value);
-            value = strtok(NULL, " \t\n");  }
-        j++;
-    }
+        matrix.rows++;
     fseek(file, 0, 0);
     fgets(line, MAX_LINE_LENGTH, file);
     if ( strtok(line, " ") != NULL) 
@@ -88,6 +74,22 @@ matrix load_matrix_from_file(char *filename)
         matrix.columns = 1;
         while(strtok(NULL, " ") != NULL) 
             matrix.columns++;
+    }
+    int **values = calloc(matrix.rows, sizeof(int *));
+    char line[MAX_LINE_LENGTH];
+    for (int i = 0; i < matrix.rows; i++)
+        values[i] = calloc(matrix.columns, sizeof(int));
+    int i = 0;
+    int j = 0;
+     while (fgets(line, MAX_LINE_LENGTH, file) != NULL)
+    {  
+        i = 0;
+        char *value = strtok(line, " \t\n");
+        while (value != NULL)
+        {
+            values[j][i++] = atoi(value);
+            value = strtok(NULL, " \t\n");  }
+        j++;
     }
     fclose(file);
     matrix.values = values;
