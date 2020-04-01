@@ -31,7 +31,7 @@ int get_cols_number(char *row)
     return cols;
 }
 
-void set_cols_and_rows(FILE *f, int *rows, int *cols)
+void get_matrix_size(FILE *f, int *rows, int *cols)
 {
     char line[MAX_LINE_LENGTH];
     *rows = 0;
@@ -51,7 +51,7 @@ matrix load_matrix_from_file(char *filename)
 {
     FILE *file = fopen(filename, "r");
     int rows, cols;
-    set_cols_and_rows(file, &rows, &cols);
+    get_matrix_size(file, &rows, &cols);
     int **values = calloc(rows, sizeof(int *));
     for (int i = 0; i < rows; i++)
     {

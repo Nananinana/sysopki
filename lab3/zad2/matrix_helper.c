@@ -1,6 +1,6 @@
-#define _XOPEN_SOURCE 500
-#define MAX_COLS_NUMBER 1000
-#define MAX_LINE_LENGTH (MAX_COLS_NUMBER * 5)
+#define _XOPEN_SOURCE 500 //?
+#define MAX_ROW_SIZE 1000
+#define MAX_LINE_LENGTH (MAX_ROW_SIZE * 5)
 #include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,12 +13,12 @@
 
 typedef struct
 {
-    int **values;
     int rows;
     int columns;
+    int **values;
 } matrix;
 
-int get_cols_number(char *row)
+/*int get_cols_number(char *row)
 {
     int columns = 0;
     char *num = strtok(row, " ");
@@ -29,55 +29,61 @@ int get_cols_number(char *row)
         num = strtok(NULL, " ");
     }
     return columns;
-}
+}*/
 
-void set_cols_and_rows(FILE *f, int *rows, int *columns)
+void get_matrix_size(FILE *file, int *rows, int *columns)
 {
-    char line[MAX_LINE_LENGTH];
+    char * line = NULL;
+    size_t line_size = 0;
+    //char line[MAX_LINE_LENGTH];
     *rows = 0;
     *columns = 0;
-    while (fgets(line, MAX_LINE_LENGTH, f) != NULL)
+    while(getline(&line, &line_size, file) >= 0)
     {
-        if (*columns == 0)
-        {
-            *columns = get_cols_number(line);
-        }
-        *rows = *rows + 1;
+        rows++;
+    } 
+    fseek(file, 0, 0);
+    getline(&line, &line_size, file);
+    if ( strtok(line, " ") != NULL) 
+    {
+        columns = 1;
+        while(strtok(NULL, " ") != NULL) 
+            columns++;
     }
-    fseek(f, 0, SEEK_SET);
+    fseek(file, 0, 0);
 }
 
 matrix load_matrix_from_file(char *filename)
 {
-    FILE *file = fopen(filename, "r");
-    int rows, columns;
-    set_cols_and_rows(file, &rows, &columns);
-    int **values = calloc(rows, sizeof(int *));
-    for (int i = 0; i < rows; i++)
+    if ((FILE *file = fopen(filename, "r")) == NULL)
     {
-        values[i] = calloc(columns, sizeof(int));
+        printf("Couldnt open file %s", filename);
+            exit(1);
     }
-    int x, y = 0;
+    int rows, columns;
+    get_matrix_size(file, &rows, &columns); //getDimensions(file, &rows, &cols);
+    int **values = calloc(rows, sizeof(int *));
+    for (int i = 0; i < columns; i++)
+        values[i] = calloc(rows, sizeof(int));
+    int i = 0;
+    int j = 0;
     char line[MAX_LINE_LENGTH];
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL)
     {
-        x = 0;
-        char *number = strtok(line, " \t\n");
-
-        while (number != NULL)
+        i = 0;
+        char *value = strtok(line, " \t\n");
+        while (value != NULL)
         {
-            values[y][x++] = atoi(number);
-            number = strtok(NULL, " \t\n");
-        }
-        y++;
+            values[j][i++] = atoi(value);
+            value = strtok(NULL, " \t\n");  }
+        j++;
     }
-
     fclose(file);
-    matrix m;
-    m.values = values;
-    m.rows = rows;
-    m.columns = columns;
-    return m;
+    matrix matrix;
+    matrix.values = values;
+    matrix.rows = rows;
+    matrix.columns = columns;
+    return matrix;
 }
 
 void free_matrix(matrix *m)
