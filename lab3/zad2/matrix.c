@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
     char **a_filenames = calloc(100, sizeof(char *));
     char **b_filenames = calloc(100, sizeof(char *));
     char **c_filenames = calloc(100, sizeof(char *));
-    system("rm -name "*fragment*" ");
+    system("rm -name ""*fragment*"" ");
     system("mkdir -p .tmp");
     FILE *input_file = fopen(argv[1], "r");
     char input_line[PATH_MAX * 3 + 3];
