@@ -5,12 +5,12 @@
 #include <stdbool.h>
 #include "matrix_helper.c"
 
-bool check_multiply_correctness(char *a_filename, char *b_filename, char *c_filename)
+bool check_multiplication_result(char *a_filename, char *b_filename, char *c_filename)
 {
-    matrix a = load_matrix(a_filename);
-    matrix b = load_matrix(b_filename);
-    matrix c = load_matrix(c_filename);
-    matrix correct_matrix = multiply_matrices(a, b);
+    matrix a = load_matrix_from_file(a_filename);
+    matrix b = load_matrix_from_file(b_filename);
+    matrix c = load_matrix_from_file(c_filename);
+    matrix correct_matrix = multiply_matrixes(a, b);
     if (correct_matrix.cols != c.cols || correct_matrix.rows != c.rows)
         return false;
     for (int i = 0; i < correct_matrix.rows; i++)
@@ -51,8 +51,8 @@ int main(int argc, char **argv)
             sprintf(b_name, "files/b%d.txt", i);
             sprintf(c_name, "files/c%d.txt", i);
 
-            generate_matrix(a_rows, a_cols, a_name);
-            generate_matrix(a_cols, b_cols, b_name);
+            generate_matrix_to_file(a_rows, a_cols, a_name);
+            generate_matrix_to_file(a_cols, b_cols, b_name);
 
             char *command = calloc(1000, sizeof(char));
             sprintf(command, "echo \"%s %s %s\" >> lista", a_name, b_name, c_name);
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
             strcpy(b_filenames[pair_counter], strtok(NULL, " "));
             strcpy(c_filenames[pair_counter], strtok(NULL, " "));
 
-            bool correct = check_multiply_correctness(a_filenames[pair_counter], b_filenames[pair_counter], c_filenames[pair_counter]);
+            bool correct = check_multiplication_result(a_filenames[pair_counter], b_filenames[pair_counter], c_filenames[pair_counter]);
             if (correct)
             {
                 puts("mnozenie poprawne");

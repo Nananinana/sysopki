@@ -15,10 +15,10 @@ typedef struct
 {
     int **values;
     int rows;
-    int cols;
+    int columns;
 } matrix;
 
-int get_cols_number(char *row)
+int get_cols_number(char *row) //dostaje ciag znakow w wierszu i liczy kolumny
 {
     int cols = 0;
     char *num = strtok(row, " ");
@@ -36,7 +36,7 @@ void set_cols_and_rows(FILE *f, int *rows, int *cols)
     char line[MAX_LINE_LENGTH];
     *rows = 0;
     *cols = 0;
-    while (fgets(line, MAX_LINE_LENGTH, f) != NULL)
+    while (fgets(line, MAX_LINE_LENGTH, f) != NULL) //czyta z pliku f size znakow i zapisuje do line
     {
         if (*cols == 0)
         {
@@ -47,7 +47,7 @@ void set_cols_and_rows(FILE *f, int *rows, int *cols)
     fseek(f, 0, SEEK_SET);
 }
 
-matrix load_matrix(char *filename)
+matrix load_matrix_from_file(char *filename) //laduje macierz z pliku do struktury matrix
 {
     FILE *file = fopen(filename, "r");
     int rows, cols;
@@ -59,7 +59,7 @@ matrix load_matrix(char *filename)
     }
     int x, y = 0;
     char line[MAX_LINE_LENGTH];
-    while (fgets(line, MAX_LINE_LENGTH, file) != NULL)
+    while (fgets(line, MAX_LINE_LENGTH, file) != NULL) //wpisuje kolejne do wartosci do odpowiedniego miejsca w values
     {
         x = 0;
         char *number = strtok(line, " \t\n");
@@ -101,7 +101,7 @@ void print_matrix(matrix m)
     }
 }
 
-matrix multiply_matrices(matrix A, matrix B)
+matrix multiply_matrixes(matrix A, matrix B)
 {
     int **values = calloc(A.rows, sizeof(int *));
     for (int i = 0; i < A.rows; i++)
@@ -129,7 +129,7 @@ matrix multiply_matrices(matrix A, matrix B)
     return m;
 }
 
-void generate_matrix(int rows, int cols, char *filename)
+void generate_matrix_to_file(int rows, int cols, char *filename)
 {
     FILE *file = fopen(filename, "w+");
 
@@ -149,7 +149,7 @@ void generate_matrix(int rows, int cols, char *filename)
     fclose(file);
 }
 
-void init_free_matrix(int rows, int cols, char *filename)
+void init_free_matrix(int rows, int cols, char *filename)  //wpisuje do pliku zera
 {
     FILE *file = fopen(filename, "w+");
 
@@ -169,7 +169,7 @@ void init_free_matrix(int rows, int cols, char *filename)
     fclose(file);
 }
 
-void write_matrix_to_file(FILE *file, matrix a)
+void write_matrix_to_file(FILE *file, matrix a) // przepisuje ze struktury matrix do pliku
 {
     fseek(file, 0, SEEK_SET);
     for (int y = 0; y < a.rows; y++)
