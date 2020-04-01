@@ -32,7 +32,7 @@ fragment_to_compute get_fragment()
         char *fragment_filename = calloc(100, sizeof(char));
         sprintf(fragment_filename, "fragments%d", i);
         FILE *fragment_file = fopen(fragment_filename, "r+");
-        int fd = fileno(fragment); //?
+        int fd = fileno(fragment_file); //?
         flock(fd, LOCK_EX);
         char *fragments = calloc(1000, sizeof(char));
         fseek(fragment_file, 0, 0);
