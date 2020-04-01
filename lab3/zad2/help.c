@@ -5,29 +5,6 @@
 #include <linux/limits.h>
 #include "matrix_helper.c"
 
-bool check_multiplication_result(char *fileA, char *fileB, char *result_file) //pomocniczy - sprawdza poprawnosc
-{
-    matrix matrixA = load_matrix_from_file(fileA);
-    matrix matrixB = load_matrix_from_file(fileB);
-    matrix matrix_result = load_matrix_from_file(result_file);
-    matrix correct_matrix = multiply_matrixes(matrixA, matrixB);
-    if (correct_matrix.rows != matrix_result.rows || correct_matrix.columns != matrix_result.columns)
-        return false;
-    for (int i = 0; i < correct_matrix.rows; i++)
-    {
-        for (int j = 0; j < correct_matrix.columns; j++)
-        {
-            if (correct_matrix.values[i][j] != matrix_result.values[i][j])
-                return false;
-        }
-    }
-    free_matrix(&matrixA);
-    free_matrix(&matrixB);
-    free_matrix(&matrix_result);
-    free_matrix(&correct_matrix);
-    return true;
-}
-
 int main(int argc, char **argv)
 {
     char *command = calloc(10, sizeof(char));
@@ -37,9 +14,9 @@ int main(int argc, char **argv)
         srand(time(NULL));
         int min = atoi(argv[2]);
         int max = atoi(argv[3]);
-        int number = atoi(argv[4]);
-        //system("mkdir files");
-        for (int i = 0; i < number; i++)
+        int number_of_sets = atoi(argv[4]);
+        //system("mkdir files"); //czy to przez to sie sypie?
+        for (int i = 0; i < number_of_sets; i++)
         {
             int rows_matrixA = rand() % (max - min + 1) + min;
             int columns_matrixA = rand() % (max - min + 1) + min;

@@ -2,18 +2,6 @@
 #define MAX_ROW_SIZE 1000
 #define MAX_LINE_LENGTH (MAX_ROW_SIZE * 5)
 
-/*#include <linux/limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/file.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include "matrix_helper.c"
-#include <time.h>
-#include <unistd.h> */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,7 +14,7 @@
 #include <sys/wait.h>
 #include "matrix_helper.c"
 
-int pair_number = 0;
+int number_of_sets = 0;
 
 typedef struct
 {
@@ -39,7 +27,7 @@ Task get_task()
     Task task;
     task.column_index = -1;
     task.pair_index = -1;
-    for (int i = 0; i < pair_number; i++)
+    for (int i = 0; i < number_of_sets; i++)
     {
         char *task_filename = calloc(100, sizeof(char));
         sprintf(task_filename, ".tmp/tasks%d", i);
@@ -195,7 +183,7 @@ int main(int argc, char *argv[])
 
         pair_counter++;
     }
-    pair_number = pair_counter;
+    number_of_sets = pair_counter;
 
     pid_t *processes = calloc(processes_number, sizeof(int));
     for (int i = 0; i < processes_number; i++)
