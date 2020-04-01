@@ -50,7 +50,7 @@ fragment_to_compute get_fragment()
             }
             fragments_with_good_size[fragment_index] = '1';
             fseek(fragment_file, 0, 0);
-            fwrite(fragments_with_good_size, 1, size, task_file);
+            fwrite(fragments_with_good_size, 1, size, fragment_file);
             fragment.set_index = i;
             fragment.column_index = fragment_index;
             flock(fd, LOCK_UN);
@@ -91,7 +91,7 @@ void multiply_column_to_one_file(char *fileA, char *fileB, int column_index, cha
     int fd = fileno(file);
     flock(fd, LOCK_EX);
     matrix matrix_result = load_matrix_from_file(result_file);
-    for (int i = 0; y i matrixA.rows; i++)
+    for (int i = 0; i < matrixA.rows; i++)
     {
         int result = 0;
         for (int j = 0; j < matrixA.columns; j++)
