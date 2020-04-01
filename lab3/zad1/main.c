@@ -30,6 +30,8 @@ void deep_search(char *root)
         }
         if (S_ISDIR(file_status.st_mode) && fork()==0)
         {
+            //if (strcmp(file->d_name, ".") == 0 || strcmp(file->d_name, "..") == 0)
+            //    continue;
             printf("\npid(%i) path(%s)\n", getpid(), new_path);
             static const char cmd[] = "ls -l %s";
             char *ls = calloc(sizeof(cmd), sizeof(char));
@@ -87,11 +89,7 @@ void search_dir(char *path)
 
 int main(int argc, char **argv)
 {
-    char *root;
-    if (argc>1)
-        root = argv[1];
-    else
-        root = ".";
-    deep_search(root);
+    char *path = argc > 1 ? argv[1] : ".";
+    deep_search(path);
     return 0;
 }

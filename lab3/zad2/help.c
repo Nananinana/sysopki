@@ -5,87 +5,93 @@
 #include <stdbool.h>
 #include "matrix_helper.c"
 
-bool check_multiplication_result(char *fileA, char *fileB, char *result_file) //pomocniczy - sprawdza poprawnosc
+bool check_multiply_correctness(char *a_filename, char *b_filename, char *c_filename)
 {
-    matrix matrixA = load_matrix_from_file(fileA);
-    matrix matrixB = load_matrix_from_file(fileB);
-    matrix matrix_result = load_matrix_from_file(result_file);
-    matrix correct_matrix = multiply_matrixes(matrixA, matrixB);
-    if (correct_matrix.rows != matrix_result.rows || correct_matrix.columns != matrix_result.columns)
+    matrix a = load_matrix(a_filename);
+    matrix b = load_matrix(b_filename);
+    matrix c = load_matrix(c_filename);
+    matrix correct_matrix = multiply_matrices(a, b);
+    if (correct_matrix.cols != c.cols || correct_matrix.rows != c.rows)
         return false;
     for (int i = 0; i < correct_matrix.rows; i++)
     {
-        for (int j = 0; j < correct_matrix.columns; j++)
+        for (int j = 0; j < correct_matrix.cols; j++)
         {
-            if (correct_matrix.values[i][j] != matrix_result.values[i][j])
+            if (correct_matrix.values[i][j] != c.values[i][j])
                 return false;
         }
     }
-    free_matrix(&matrixA);
-    free_matrix(&matrixB);
-    free_matrix(&matrix_result);
+    free_matrix(&a);
+    free_matrix(&b);
+    free_matrix(&c);
     free_matrix(&correct_matrix);
     return true;
 }
 
 int main(int argc, char **argv)
 {
-    char *command = calloc(10, sizeof(char));
-    command = argv[1]; //?
-    if (strcmp(command, "generate") == 0)
+    char *mode = calloc(10, sizeof(char));
+    mode = argv[1];
+    if (strcmp(mode, "create") == 0)
     {
         srand(time(NULL));
         int min = atoi(argv[2]);
         int max = atoi(argv[3]);
         int number = atoi(argv[4]);
-        //system("mkdir files");
+        system("mkdir files");
         for (int i = 0; i < number; i++)
         {
-            int rows_matrixA = rand() % (max - min + 1) + min;
-            int columns_matrixA = rand() % (max - min + 1) + min;
-            int columns_matrixB = rand() % (max - min + 1) + min;
-            char *name_matrixA = calloc(100, sizeof(char));
-            sprintf(name_matrixA, "matrixA%d.txt", i);
-            char *name_matrixB = calloc(100, sizeof(char));
-            sprintf(name_matrixB, "matrixB%d.txt", i);
-            char *name_matrix_result = calloc(100, sizeof(char));         
-            sprintf(name_matrix_result, "matrix_result%d.txt", i);
-            generate_matrix_to_file(rows_matrixA, columns_matrixA, name_matrixA);
-            generate_matrix_to_file(columns_matrixA, columns_matrixB, name_matrixB);
-            char *to_print = calloc(1000, sizeof(char));
-            sprintf(to_print, "echo \"%s %s %s\" >> lista", name_matrixA, name_matrixB, name_matrix_result);
-            system(to_print);
+            int a_rows = rand() % (max - min + 1) + min;
+            int a_cols = rand() % (max - min + 1) + min;
+            int b_cols = rand() % (max - min + 1) + min;
+            char *a_name = calloc(100, sizeof(char));
+            char *b_name = calloc(100, sizeof(char));
+            char *c_name = calloc(100, sizeof(char));
+            sprintf(a_name, "files/a%d.txt", i);
+            sprintf(b_name, "files/b%d.txt", i);
+            sprintf(c_name, "files/c%d.txt", i);
+
+            generate_matrix(a_rows, a_cols, a_name);
+            generate_matrix(a_cols, b_cols, b_name);
+
+            char *command = calloc(1000, sizeof(char));
+            sprintf(command, "echo \"%s %s %s\" >> lista", a_name, b_name, c_name);
+            system(command);
         }
     }
-    else if (strcmp(command, "check") == 0)
+    else if (strcmp(mode, "check") == 0)
     {
 
-        char **namefileA = calloc(100, sizeof(char *));
-        char **namefileB = calloc(100, sizeof(char *));
-        char **result_namefile = calloc(100, sizeof(char *));
-        int line_number = 0;
+        char **a_filenames = calloc(100, sizeof(char *));
+        char **b_filenames = calloc(100, sizeof(char *));
+        char **c_filenames = calloc(100, sizeof(char *));
         FILE *input_file = fopen(argv[2], "r");
-        char current_line[300]; 
-        while (fgets(current_line, 300, input_file) != NULL)
+        char input_line[PATH_MAX * 3 + 3];
+        int pair_counter = 0;
+        while (fgets(input_line, PATH_MAX * 3 + 3, input_file) != NULL)
         {
-            namefileA[line_number] = calloc(100, sizeof(char));
-            namefileB[line_number] = calloc(100, sizeof(char));
-            result_namefile[line_number] = calloc(100, sizeof(char));
-            strcpy(namefileA[line_number], strtok(current_line, " "));
-            strcpy(namefileB[line_number], strtok(NULL, " "));
-            strcpy(result_namefile[line_number], strtok(NULL, " "));
+            a_filenames[pair_counter] = calloc(PATH_MAX, sizeof(char));
+            b_filenames[pair_counter] = calloc(PATH_MAX, sizeof(char));
+            c_filenames[pair_counter] = calloc(PATH_MAX, sizeof(char));
+            strcpy(a_filenames[pair_counter], strtok(input_line, " "));
+            strcpy(b_filenames[pair_counter], strtok(NULL, " "));
+            strcpy(c_filenames[pair_counter], strtok(NULL, " "));
 
-            bool multiplication_correct = check_multiplication_result(namefileA[line_number], namefileB[line_number], result_namefile[line_number]);
-            if (multiplication_correct)
-                printf("correct multiplication result \n");
+            bool correct = check_multiply_correctness(a_filenames[pair_counter], b_filenames[pair_counter], c_filenames[pair_counter]);
+            if (correct)
+            {
+                puts("mnozenie poprawne");
+            }
             else
-                printf("correct multiplication result \n");
-            line_number++;
+            {
+                puts("mnozenie bledne");
+            }
+            pair_counter++;
         }
     }
     else
     {
-        printf("Wrong command");
+        fprintf(stderr, "Error zly arg");
     }
     return 0;
 }

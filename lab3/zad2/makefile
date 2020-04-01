@@ -14,7 +14,7 @@ test:
 	make clean
 	$(CC) help.c -o help 
 	$(CC) matrix.c -o matrix
-	./help generate 7 14 5
+	./help create 7 14 5
 	./matrix lista 6 3 1
 	./help check lista
 
@@ -22,12 +22,12 @@ paste:
 	make clean
 	$(CC) help.c -o help 
 	$(CC) matrix.c -o matrix
-	./help generate 7 14 5
+	./help create 7 14 5
 	./matrix lista 6 3 2
 
 flock:
 	make clean
 	$(CC) help.c -o help 
 	$(CC) matrix.c -o matrix
-	./help generate 7 14 5
+	./help create 7 14 5
 	./matrix lista 6 3 1
