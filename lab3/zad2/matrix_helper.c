@@ -24,7 +24,6 @@ void print_matrix(matrix matrix)
     {
         for (int j = 0; j < matrix.columns; j++)
             printf("%d ", matrix.values[i][j]);
-        }
         printf("\n");
     }
 }
@@ -138,8 +137,8 @@ matrix multiply_matrixes(matrix matrixA, matrix matrixB)
         }
     }
     matrix_result.values = values;
-    matrix_result.rows = A.rows;
-    matrix_result.columns = B.columns;
+    matrix_result.rows = matrixA.rows;
+    matrix_result.columns = matrixB.columns;
     return matrix_result;
 }
 
