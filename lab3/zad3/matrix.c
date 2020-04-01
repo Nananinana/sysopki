@@ -22,7 +22,7 @@ typedef struct
 {
     int set_index;
     int column_index;
-} task;
+} fragment_to_compute;
 
 void set_limits(int cpu_limit, int as_limit)
 {
