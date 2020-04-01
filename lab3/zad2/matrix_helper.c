@@ -131,20 +131,24 @@ matrix multiply_matrixes(matrix A, matrix B)
 
 void generate_matrix_to_file(int rows, int columns, char *filename)
 {
-    FILE *file = fopen(filename, "w+");
+    FILE *file = fopen(filename, "w");
 
-    for (int y = 0; y < rows; y++)
+    for (int y = 0; y < columns; y++)
     {
-        for (int x = 0; x < columns; x++)
+        for (int x = 0; x < rows; x++)
         {
             if (x > 0)
             {
                 fprintf(file, " ");
             }
-
-            fprintf(file, "%d", rand() % (200 + 1) - 100);
+            char str[7];
+            sprintf(str,"%d ", (rand() % 201) - 100);
+            fwrite(str, sizeof(char), strlen(str), file); 
+            //fprintf(file, "%d", rand() % (200 + 1) - 100);
         };
-        fprintf(file, "\n");
+        fseek(file, -1 * sizeof(char), SEEK_CUR);
+        fwrite("\n", sizeof(char), strlen("\n"), file);
+        //fprintf(file, "\n");
     }
     fclose(file);
 }
