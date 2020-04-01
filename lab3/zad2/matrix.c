@@ -210,7 +210,5 @@ int main(int argc, char *argv[])
             system(buffer);
         }
     }
-    printf(":)");
-
     return 0;
 }

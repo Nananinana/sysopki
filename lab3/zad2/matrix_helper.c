@@ -210,5 +210,6 @@ bool check_multiplication_result(char *fileA, char *fileB, char *result_file) //
     free_matrix(&matrixB);
     free_matrix(&matrix_result);
     free_matrix(&correct_matrix);
+     printf(":)");
     return true;
 }
