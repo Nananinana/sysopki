@@ -15,7 +15,7 @@ typedef struct
 {
     int **values;
     int rows;
-    int cols;
+    int columns;
 } matrix;
 
 int get_cols_number(char *row)
@@ -149,7 +149,7 @@ void generate_matrix_to_file(int rows, int columns, char *filename)
     fclose(file);
 }
 
-void init_free_matrix(int rows, int cols, char *filename)
+void init_free_matrix(int rows, int columns, char *filename)
 {
     FILE *file = fopen(filename, "w+");
 
