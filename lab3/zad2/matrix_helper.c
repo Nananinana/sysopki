@@ -1,15 +1,16 @@
 #define _XOPEN_SOURCE 700
 #define MAX_ROW_SIZE 1000
 #define MAX_LINE_LENGTH (MAX_ROW_SIZE * 5)
-#include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <stdbool.h>
+#include <linux/limits.h>
 #include <sys/file.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <unistd.h>
-#include <stdbool.h>
+
 
 typedef struct
 {
@@ -82,7 +83,6 @@ matrix load_matrix_from_file(char *filename)
     matrix matrix;
     matrix.rows = 0;
     matrix.columns = 0;
-    //get_matrix_size(file, &rows, &columns); //getDimensions(file, &rows, &cols);
     char line[MAX_LINE_LENGTH];
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL)
         matrix.rows++;
@@ -112,18 +112,17 @@ matrix load_matrix_from_file(char *filename)
     }
     fseek(file, 0, 0);
     fclose(file);
-    //matrix.values = values;
     return matrix;
 }
 
-
-
 matrix multiply_matrixes(matrix matrixA, matrix matrixB)
 {
-    int **values = calloc(matrixA.rows, sizeof(int *));
     matrix matrix_result;
+    matrix_result.rows = matrixA.rows;
+    matrix_result.columns = matrixB.columns;
+    matrix_result.values = calloc(matrixA.rows, sizeof(int *));
     for (int i = 0; i < matrixA.rows; i++)
-        values[i] = calloc(matrixB.columns, sizeof(int));
+        matrix_result.values[i] = calloc(matrixB.columns, sizeof(int));
     for (int i = 0; i < matrixA.rows; i++) 
     {
         for (int j = 0; j < matrixB.columns; j++)
@@ -133,27 +132,21 @@ matrix multiply_matrixes(matrix matrixA, matrix matrixB)
             {
                 result += (matrixA.values[i][k] * matrixB.values[k][j]);
             }
-            values[i][j] = result;
+            matrix_result.values[i][j] = result;
         }
     }
-    matrix_result.values = values;
-    matrix_result.rows = matrixA.rows;
-    matrix_result.columns = matrixB.columns;
     return matrix_result;
 }
 
-void generate_matrix_to_file(int rows, int columns, char *filename)
+void generate_matrix_to_file(int rows, int columns, char *filename) //czy to przez to nie dziala?
 {
     FILE *file = fopen(filename, "w");
-
-    for (int y = 0; y < columns; y++)
+    for (int i = 0; i < columns; i++)
     {
-        for (int x = 0; x < rows; x++)
+        for (int j = 0; j < rows; j++)
         {
-            if (x > 0)
-            {
+            if (j > 0)
                 fprintf(file, " ");
-            }
             char str[7];
             sprintf(str,"%d ", (rand() % 201) - 100);
             fwrite(str, sizeof(char), strlen(str), file); 
@@ -166,19 +159,15 @@ void generate_matrix_to_file(int rows, int columns, char *filename)
     fclose(file);
 }
 
-void init_free_matrix(int rows, int columns, char *filename)
+void create_empty_matrix(int rows, int columns, char *filename)
 {
     FILE *file = fopen(filename, "w+");
-
-    for (int y = 0; y < rows; y++)
+    for (int i = 0; i < rows; i++)
     {
-        for (int x = 0; x < columns; x++)
+        for (int j = 0; j < columns; j++)
         {
-            if (x > 0)
-            {
+            if (j > 0)
                 fprintf(file, " ");
-            }
-
             fprintf(file, "%d", 0);
         };
         fprintf(file, "\n");
@@ -186,18 +175,16 @@ void init_free_matrix(int rows, int columns, char *filename)
     fclose(file);
 }
 
-void write_matrix_to_file(FILE *file, matrix a)
+void print_matrix_to_file(FILE *file, matrix matrix)
 {
-    fseek(file, 0, SEEK_SET);
-    for (int y = 0; y < a.rows; y++)
+    fseek(file, 0, 0;
+    for (int i = 0; i < matrix.rows; i++)
     {
-        for (int x = 0; x < a.columns; x++)
+        for (int j = 0; j < matrix.columns; j++)
         {
-            if (x > 0)
-            {
+            if (j > 0)
                 fprintf(file, " ");
-            }
-            fprintf(file, "%d", a.values[y][x]);
+            fprintf(file, "%d", matrix.values[i][j]);
         };
         fprintf(file, "\n");
     }

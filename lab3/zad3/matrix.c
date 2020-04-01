@@ -117,7 +117,7 @@ void multiply_column_to_one_file(char *a_file, char *b_file, int col_idx, char *
         }
         C.values[y][col_idx] = result;
     }
-    write_matrix_to_file(file, C);
+    print_matrix_to_file(file, C);
     flock(fd, LOCK_UN);
     fclose(file);
 }
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
         matrix a = load_matrix_from_file(a_filenames[pair_counter]);
         matrix b = load_matrix_from_file(b_filenames[pair_counter]);
         if (mode == 1)
-            init_free_matrix(a.rows, b.cols, c_filenames[pair_counter]);
+            create_empty_matrix(a.rows, b.cols, c_filenames[pair_counter]);
 
         char *task_filename = calloc(100, sizeof(char));
         sprintf(task_filename, ".tmp/tasks%d", pair_counter);

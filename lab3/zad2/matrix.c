@@ -2,7 +2,7 @@
 #define MAX_ROW_SIZE 1000
 #define MAX_LINE_LENGTH (MAX_ROW_SIZE * 5)
 
-#include <linux/limits.h>
+/*#include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +12,19 @@
 #include <unistd.h>
 #include "matrix_helper.c"
 #include <time.h>
+#include <unistd.h> */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
+#include <time.h>
+#include <linux/limits.h>
+#include <sys/file.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include "matrix_helper.c"
 
 int pair_number = 0;
 
@@ -35,7 +47,7 @@ Task get_task()
         int fd = fileno(tasks_file);
         flock(fd, LOCK_EX);
         char *tasks = calloc(1000, sizeof(char));
-        fseek(tasks_file, 0, SEEK_SET);
+        fseek(tasks_file, 0, 0);
         fread(tasks, 1, 1000, tasks_file);
         char *task_first_zero = strchr(tasks, '0');
         int task_index = task_first_zero != NULL ? task_first_zero - tasks : -1;
@@ -50,7 +62,7 @@ Task get_task()
                 tasks_with_good_size[j] = tasks[j];
             }
             tasks_with_good_size[task_index] = '1';
-            fseek(tasks_file, 0, SEEK_SET);
+            fseek(tasks_file, 0, 0);
             fwrite(tasks_with_good_size, 1, size, tasks_file);
             task.pair_index = i;
             task.column_index = task_index;
@@ -106,7 +118,7 @@ void multiply_column_to_one_file(char *a_file, char *b_file, int col_idx, char *
         }
         C.values[y][col_idx] = result;
     }
-    write_matrix_to_file(file, C);
+    print_matrix_to_file(file, C);
     flock(fd, LOCK_UN);
     fclose(file);
 }
@@ -169,7 +181,7 @@ int main(int argc, char *argv[])
         matrix a = load_matrix_from_file(a_filenames[pair_counter]);
         matrix b = load_matrix_from_file(b_filenames[pair_counter]);
         if (mode == 1)
-            init_free_matrix(a.rows, b.columns, c_filenames[pair_counter]);
+            create_empty_matrix(a.rows, b.columns, c_filenames[pair_counter]);
 
         char *task_filename = calloc(100, sizeof(char));
         sprintf(task_filename, ".tmp/tasks%d", pair_counter);

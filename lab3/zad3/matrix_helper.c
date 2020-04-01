@@ -149,7 +149,7 @@ void generate_matrix(int rows, int cols, char *filename)
     fclose(file);
 }
 
-void init_free_matrix(int rows, int cols, char *filename)
+void create_empty_matrix(int rows, int cols, char *filename)
 {
     FILE *file = fopen(filename, "w+");
 
@@ -169,7 +169,7 @@ void init_free_matrix(int rows, int cols, char *filename)
     fclose(file);
 }
 
-void write_matrix_to_file(FILE *file, matrix a)
+void print_matrix_to_file(FILE *file, matrix a)
 {
     fseek(file, 0, SEEK_SET);
     for (int y = 0; y < a.rows; y++)

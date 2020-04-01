@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <time.h>
 #include <linux/limits.h>
-#include <stdbool.h>
 #include "matrix_helper.c"
 
 bool check_multiplication_result(char *fileA, char *fileB, char *result_file) //pomocniczy - sprawdza poprawnosc
