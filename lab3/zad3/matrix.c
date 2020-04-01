@@ -1,6 +1,6 @@
 #define _XOPEN_SOURCE 500
-#define MAX_columns_NUMBER 1000
-#define MAX_LINE_LENGTH (MAX_columns_NUMBER * 5)
+#define MAX_COLS_NUMBER 1000
+#define MAX_LINE_LENGTH (MAX_COLS_NUMBER * 5)
 
 #include <linux/limits.h>
 #include <stdio.h>
@@ -87,7 +87,7 @@ void multiply_column(char *a_file, char *b_file, int col_index, int pair_index)
     {
         int result = 0;
 
-        for (int x = 0; x < A.columns; x++)
+        for (int x = 0; x < A.cols; x++)
         {
             result += A.values[y][x] * B.values[x][col_index];
         }
@@ -111,7 +111,7 @@ void multiply_column_to_one_file(char *a_file, char *b_file, int col_idx, char *
     for (int y = 0; y < A.rows; y++)
     {
         int result = 0;
-        for (int x = 0; x < A.columns; x++)
+        for (int x = 0; x < A.cols; x++)
         {
             result += A.values[y][x] * B.values[x][col_idx];
         }
@@ -195,14 +195,14 @@ int main(int argc, char *argv[])
         matrix a = load_matrix(a_filenames[pair_counter]);
         matrix b = load_matrix(b_filenames[pair_counter]);
         if (mode == 1)
-            init_free_matrix(a.rows, b.columns, c_filenames[pair_counter]);
+            init_free_matrix(a.rows, b.cols, c_filenames[pair_counter]);
 
         char *task_filename = calloc(100, sizeof(char));
         sprintf(task_filename, ".tmp/tasks%d", pair_counter);
         FILE *tasks_file = fopen(task_filename, "w+");
-        char *tasks = calloc(b.columns + 1, sizeof(char));
-        sprintf(tasks, "%0*d", b.columns, 0);
-        fwrite(tasks, 1, b.columns, tasks_file);
+        char *tasks = calloc(b.cols + 1, sizeof(char));
+        sprintf(tasks, "%0*d", b.cols, 0);
+        fwrite(tasks, 1, b.cols, tasks_file);
         free(tasks);
         free(task_filename);
         fclose(tasks_file);

@@ -51,7 +51,7 @@ int main(int argc, char **argv)
             sprintf(b_name, "files/b%d.txt", i);
             sprintf(c_name, "files/c%d.txt", i);
 
-            generate_matrix(a_rows, a_cols, a_name);
+            generate_matrix_to_file(a_rows, a_cols, a_name);
             generate_matrix(a_cols, b_cols, b_name);
 
             char *command = calloc(1000, sizeof(char));
