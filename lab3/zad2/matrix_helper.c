@@ -1,4 +1,3 @@
-//#define _XOPEN_SOURCE 500 //?
 #define _XOPEN_SOURCE 700
 #define MAX_ROW_SIZE 1000
 #define MAX_LINE_LENGTH (MAX_ROW_SIZE * 5)
@@ -18,6 +17,26 @@ typedef struct
     int columns;
     int **values;
 } matrix;
+
+void print_matrix(matrix matrix)
+{
+    for (int i = 0; i < matrix.rows; i++)
+    {
+        for (int j = 0; j < matrix.columns; j++)
+            printf("%d ", matrix.values[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void free_matrix(matrix *matrix)
+{
+    for (int i = 0; i < matrix->rows; i++)
+        free(matrix->values[i]);
+    free(matrix->values);
+}
+
+
 
 /*int get_cols_number(char *row)
 {
@@ -98,53 +117,30 @@ matrix load_matrix_from_file(char *filename)
     return matrix;
 }
 
-void free_matrix(matrix *m)
-{
-    for (int y = 0; y < m->rows; y++)
-    {
-        free(m->values[y]);
-    }
-    free(m->values);
-}
 
-void print_matrix(matrix m)
-{
-    for (int i = 0; i < m.rows; i++)
-    {
-        for (int j = 0; j < m.columns; j++)
-        {
-            printf("%d ", m.values[i][j]);
-        }
-        printf("\n");
-    }
-}
 
-matrix multiply_matrixes(matrix A, matrix B)
+matrix multiply_matrixes(matrix matrixA, matrix matrixB)
 {
-    int **values = calloc(A.rows, sizeof(int *));
-    for (int i = 0; i < A.rows; i++)
+    int **values = calloc(matrixA.rows, sizeof(int *));
+    matrix matrix_result;
+    for (int i = 0; i < matrixA.rows; i++)
+        values[i] = calloc(matrixB.columns, sizeof(int));
+    for (int i = 0; i < matrixA.rows; i++) 
     {
-        values[i] = calloc(B.columns, sizeof(int));
-    }
-    for (int i = 0; i < A.rows; i++)
-    {
-        for (int j = 0; j < B.columns; j++)
+        for (int j = 0; j < matrixB.columns; j++)
         {
             int result = 0;
-            for (int k = 0; k < A.columns; k++)
+            for (int k = 0; k < matrixA.columns; k++)
             {
-                result += (A.values[i][k] * B.values[k][j]);
+                result += (matrixA.values[i][k] * matrixB.values[k][j]);
             }
             values[i][j] = result;
         }
     }
-
-    matrix m;
-    m.values = values;
-    m.rows = A.rows;
-    m.columns = B.columns;
-
-    return m;
+    matrix_result.values = values;
+    matrix_result.rows = A.rows;
+    matrix_result.columns = B.columns;
+    return matrix_result;
 }
 
 void generate_matrix_to_file(int rows, int columns, char *filename)
