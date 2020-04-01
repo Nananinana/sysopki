@@ -30,7 +30,7 @@ fragment_to_compute get_fragment()
     for (int i = 0; i < number_of_sets; i++)
     {
         char *fragment_filename = calloc(100, sizeof(char));
-        sprintf(fragment_filename, "fragments%d", i);
+        sprintf(fragment_filename, ".fragments/fragment%d", i);
         FILE *fragment_file = fopen(fragment_filename, "r+");
         int fd = fileno(fragment_file); //?
         flock(fd, LOCK_EX);
@@ -68,7 +68,7 @@ void multiply_column(char *fileA, char *fileB, int column_index, int set_index)
     matrix matrixA = load_matrix_from_file(fileA);
     matrix matrixB = load_matrix_from_file(fileB);
     char *result_fragment_filename = calloc(20, sizeof(char));
-    sprintf(result_fragment_filename, "result_fragment%d%04d", set_index, column_index); //.tmp/part%d%04d
+    sprintf(result_fragment_filename, ".fragments/result_fragment%d%04d", set_index, column_index); //.tmp/part%d%04d
     FILE *result_fragment_file = fopen(result_fragment_filename, "w+");
     for (int i = 0; i < matrixA.rows; i++)
     {
@@ -145,8 +145,8 @@ int main(int argc, char *argv[])
     char **a_filenames = calloc(100, sizeof(char *));
     char **b_filenames = calloc(100, sizeof(char *));
     char **c_filenames = calloc(100, sizeof(char *));
-    system("rm -name ""*fragment*"" ");
-    system("mkdir -p .tmp");
+    system("rm -rf .fragments");
+    system("mkdir -p .fragments");
     FILE *input_file = fopen(argv[1], "r");
     char input_line[PATH_MAX * 3 + 3];
     int line_number = 0;
@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
             create_empty_matrix(a.rows, b.columns, c_filenames[line_number]);
 
         char *fragment_filename = calloc(100, sizeof(char));
-        sprintf(fragment_filename, "fragments%d", line_number);
+        sprintf(fragment_filename, ".fragments/fragment%d", line_number);
         FILE *fragment_file = fopen(fragment_filename, "w+");
         char *fragments = calloc(b.columns + 1, sizeof(char));
         sprintf(fragments, "%0*d", b.columns, 0);
@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
         for (int i = 0; i < line_number; i++)
         {
             char *buffer = calloc(1000, sizeof(char));
-            sprintf(buffer, "paste result_fragment%d* > %s", i, c_filenames[i]);
+            sprintf(buffer, "paste .fragments/result_fragment%d* > %s", i, c_filenames[i]);
             system(buffer);
         }
     }
