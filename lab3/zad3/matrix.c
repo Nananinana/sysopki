@@ -16,13 +16,13 @@
 #include <sys/resource.h>
 #include <sys/time.h>
 
-int pair_number = 0;
+int number_of_sets = 0;
 
 typedef struct
 {
-    int pair_index;
+    int set_index;
     int column_index;
-} Task;
+} task;
 
 void set_limits(int cpu_limit, int as_limit)
 {
@@ -38,7 +38,7 @@ Task get_task()
     Task task;
     task.column_index = -1;
     task.pair_index = -1;
-    for (int i = 0; i < pair_number; i++)
+    for (int i = 0; i < number_of_sets; i++)
     {
         char *task_filename = calloc(100, sizeof(char));
         sprintf(task_filename, ".tmp/tasks%d", i);
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
 
         pair_counter++;
     }
-    pair_number = pair_counter;
+    number_of_sets = pair_counter;
 
     pid_t *processes = calloc(processes_number, sizeof(int));
     for (int i = 0; i < processes_number; i++)

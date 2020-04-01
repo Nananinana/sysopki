@@ -14,15 +14,15 @@
 #include <sys/wait.h>
 #include "matrix_helper.c"
 
-int number_of_sets = 0;
-
 typedef struct
 {
-    int pair_index;
+    int set_index;
     int column_index;
-} Task;
+} task;
 
-Task get_task()
+int number_of_sets = 0;
+
+task get_task()
 {
     Task task;
     task.column_index = -1;
@@ -65,31 +65,27 @@ Task get_task()
     return task;
 }
 
-void multiply_column(char *a_file, char *b_file, int col_index, int pair_index)
+void multiply_column(char *fileA, char *fileB, int column_index, int set_index)
 {
-    matrix A = load_matrix_from_file(a_file);
-    matrix B = load_matrix_from_file(b_file);
-    char *filename = calloc(20, sizeof(char));
-    sprintf(filename, ".tmp/part%d%04d", pair_index, col_index);
-    FILE *part_file = fopen(filename, "w+");
-    for (int y = 0; y < A.rows; y++)
+    matrix matrixA = load_matrix_from_file(fileA);
+    matrix matrixB = load_matrix_from_file(fileB);
+    char *result_fragment_filename = calloc(20, sizeof(char));
+    sprintf(result_fragment_filename, "result_fragment%d%04d", set_index, column_index); //.tmp/part%d%04d
+    FILE *result_fragment_file = fopen(result_fragment_filename, "w+");
+    for (int i = 0; i < matrixA.rows; i++)
     {
-        int result = 0;
-
-        for (int x = 0; x < A.columns; x++)
-        {
-            result += A.values[y][x] * B.values[x][col_index];
-        }
-
-        if (y == A.rows - 1)
-            fprintf(part_file, "%d", result);
+        int result_fragment = 0;
+        for (int j = 0; j < matrixA.columns; j++)
+            result_fragment += matrixA.values[i][j] * matrixB.values[i][column_index];
+        if (i == matrixA.rows - 1)
+            fprintf(result_fragment_file, "%d", result_fragment);
         else
-            fprintf(part_file, "%d\n", result);
+            fprintf(result_fragment_file, "%d\n", result_fragment);
     }
-    fclose(part_file);
+    fclose(result_fragment_file);
 }
 
-void multiply_column_to_one_file(char *a_file, char *b_file, int col_idx, char *result_file)
+void multiply_column_to_one_file(char *a_file, char *b_file, int column_index, char *result_file)
 {
     matrix A = load_matrix_from_file(a_file);
     matrix B = load_matrix_from_file(b_file);
@@ -102,9 +98,9 @@ void multiply_column_to_one_file(char *a_file, char *b_file, int col_idx, char *
         int result = 0;
         for (int x = 0; x < A.columns; x++)
         {
-            result += A.values[y][x] * B.values[x][col_idx];
+            result += A.values[y][x] * B.values[x][column_index];
         }
-        C.values[y][col_idx] = result;
+        C.values[y][column_index] = result;
     }
     print_matrix_to_file(file, C);
     flock(fd, LOCK_UN);
