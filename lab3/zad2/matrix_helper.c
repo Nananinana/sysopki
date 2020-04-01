@@ -1,6 +1,4 @@
-//#define _GNU_SOURCE
-#define _POSIX_C_SOURCE 200809L
-#define _XOPEN_SOURCE 500 //?
+//#define _XOPEN_SOURCE 500 //?
 #define _XOPEN_SOURCE 700
 #define MAX_ROW_SIZE 1000
 #define MAX_LINE_LENGTH (MAX_ROW_SIZE * 5)
@@ -33,12 +31,12 @@ typedef struct
     }
     return columns;
 }*/
-
+/*
 void get_matrix_size(FILE *file, int *rows, int *columns)
 {
     char * line = NULL;
     size_t line_size = 0;
-    //char line[MAX_LINE_LENGTH];
+    
     *rows = 0;
     *columns = 0;
     while(getline(&line, &line_size, file) >= 0)
@@ -54,7 +52,7 @@ void get_matrix_size(FILE *file, int *rows, int *columns)
             *columns++;
     }
     fseek(file, 0, 0);
-}
+}*/
 
 matrix load_matrix_from_file(char *filename)
 {   FILE *file;
@@ -63,16 +61,18 @@ matrix load_matrix_from_file(char *filename)
         printf("Couldnt open file %s", filename);
             exit(1);
     }
-    int rows, columns;
-    get_matrix_size(file, &rows, &columns); //getDimensions(file, &rows, &cols);
+    matrix matrix;
+    matrix.rows = 0;
+    matrix.columns = 0;
+    //get_matrix_size(file, &rows, &columns); //getDimensions(file, &rows, &cols);
     int **values = calloc(rows, sizeof(int *));
+    char line[MAX_LINE_LENGTH];
     for (int i = 0; i < columns; i++)
         values[i] = calloc(rows, sizeof(int));
     int i = 0;
     int j = 0;
-    char line[MAX_LINE_LENGTH];
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL)
-    {
+    {   matrix.rows++;
         i = 0;
         char *value = strtok(line, " \t\n");
         while (value != NULL)
@@ -81,11 +81,16 @@ matrix load_matrix_from_file(char *filename)
             value = strtok(NULL, " \t\n");  }
         j++;
     }
+    fseek(file, 0, 0);
+    fgets(line, MAX_LINE_LENGTH, file);
+    if ( strtok(line, " ") != NULL) 
+    {
+        matrix.columns = 1;
+        while(strtok(NULL, " ") != NULL) 
+            matrix.columns++;
+    }
     fclose(file);
-    matrix matrix;
     matrix.values = values;
-    matrix.rows = rows;
-    matrix.columns = columns;
     return matrix;
 }
 
