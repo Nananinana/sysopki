@@ -18,38 +18,29 @@ typedef struct
     int cols;
 } matrix;
 
-<<<<<<< HEAD
-int get_set_column_and_rows_number(char *row) //dostaje ciag znakow w wierszu i liczy kolumny
-=======
 int get_cols_number(char *row)
->>>>>>> parent of 9b1a8e5... changes in help
 {
-    int set_column_and_rows = 0;
+    int columns = 0;
     char *num = strtok(row, " ");
     while (num != NULL)
     {
         if (strcmp(num, "\n") != 0)
-            set_column_and_rows++;
+            columns++;
         num = strtok(NULL, " ");
     }
-    return set_column_and_rows;
+    return columns;
 }
 
-void set_set_column_and_rows_and_rows(FILE *f, int *rows, int *set_column_and_rows)
+void set_cols_and_rows(FILE *f, int *rows, int *columns)
 {
     char line[MAX_LINE_LENGTH];
     *rows = 0;
-<<<<<<< HEAD
-    *set_column_and_rows = 0;
-    while (fgets(line, MAX_LINE_LENGTH, f) != NULL) //czyta z pliku f size znakow i zapisuje do line
-=======
     *cols = 0;
     while (fgets(line, MAX_LINE_LENGTH, f) != NULL)
->>>>>>> parent of 9b1a8e5... changes in help
     {
-        if (*set_column_and_rows == 0)
+        if (*columns == 0)
         {
-            *set_column_and_rows = get_set_column_and_rows_number(line);
+            *columns = get_cols_number(line);
         }
         *rows = *rows + 1;
     }
@@ -59,12 +50,12 @@ void set_set_column_and_rows_and_rows(FILE *f, int *rows, int *set_column_and_ro
 matrix load_matrix(char *filename)
 {
     FILE *file = fopen(filename, "r");
-    int rows, set_column_and_rows;
-    set_set_column_and_rows_and_rows(file, &rows, &set_column_and_rows);
+    int rows, columns;
+    set_cols_and_rows(file, &rows, &columns);
     int **values = calloc(rows, sizeof(int *));
     for (int i = 0; i < rows; i++)
     {
-        values[i] = calloc(set_column_and_rows, sizeof(int));
+        values[i] = calloc(columns, sizeof(int));
     }
     int x, y = 0;
     char line[MAX_LINE_LENGTH];
@@ -85,7 +76,7 @@ matrix load_matrix(char *filename)
     matrix m;
     m.values = values;
     m.rows = rows;
-    m.set_column_and_rows = set_column_and_rows;
+    m.columns = columns;
     return m;
 }
 
@@ -102,7 +93,7 @@ void print_matrix(matrix m)
 {
     for (int i = 0; i < m.rows; i++)
     {
-        for (int j = 0; j < m.set_column_and_rows; j++)
+        for (int j = 0; j < m.columns; j++)
         {
             printf("%d ", m.values[i][j]);
         }
@@ -115,14 +106,14 @@ matrix multiply_matrices(matrix A, matrix B)
     int **values = calloc(A.rows, sizeof(int *));
     for (int i = 0; i < A.rows; i++)
     {
-        values[i] = calloc(B.set_column_and_rows, sizeof(int));
+        values[i] = calloc(B.columns, sizeof(int));
     }
     for (int i = 0; i < A.rows; i++)
     {
-        for (int j = 0; j < B.set_column_and_rows; j++)
+        for (int j = 0; j < B.columns; j++)
         {
             int result = 0;
-            for (int k = 0; k < A.set_column_and_rows; k++)
+            for (int k = 0; k < A.columns; k++)
             {
                 result += (A.values[i][k] * B.values[k][j]);
             }
@@ -133,22 +124,18 @@ matrix multiply_matrices(matrix A, matrix B)
     matrix m;
     m.values = values;
     m.rows = A.rows;
-    m.set_column_and_rows = B.set_column_and_rows;
+    m.columns = B.columns;
 
     return m;
 }
 
-<<<<<<< HEAD
-void generate_matrix_to_file(int rows, int set_column_and_rows, char *filename)
-=======
-void generate_matrix(int rows, int cols, char *filename)
->>>>>>> parent of 9b1a8e5... changes in help
+void generate_matrix_to_file(int rows, int columns, char *filename)
 {
     FILE *file = fopen(filename, "w+");
 
     for (int y = 0; y < rows; y++)
     {
-        for (int x = 0; x < set_column_and_rows; x++)
+        for (int x = 0; x < columns; x++)
         {
             if (x > 0)
             {
@@ -162,17 +149,13 @@ void generate_matrix(int rows, int cols, char *filename)
     fclose(file);
 }
 
-<<<<<<< HEAD
-void init_free_matrix(int rows, int set_column_and_rows, char *filename)  //wpisuje do pliku zera
-=======
 void init_free_matrix(int rows, int cols, char *filename)
->>>>>>> parent of 9b1a8e5... changes in help
 {
     FILE *file = fopen(filename, "w+");
 
     for (int y = 0; y < rows; y++)
     {
-        for (int x = 0; x < set_column_and_rows; x++)
+        for (int x = 0; x < columns; x++)
         {
             if (x > 0)
             {
@@ -191,7 +174,7 @@ void write_matrix_to_file(FILE *file, matrix a)
     fseek(file, 0, SEEK_SET);
     for (int y = 0; y < a.rows; y++)
     {
-        for (int x = 0; x < a.set_column_and_rows; x++)
+        for (int x = 0; x < a.columns; x++)
         {
             if (x > 0)
             {
