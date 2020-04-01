@@ -65,10 +65,10 @@ matrix load_matrix_from_file(char *filename)
     matrix.rows = 0;
     matrix.columns = 0;
     //get_matrix_size(file, &rows, &columns); //getDimensions(file, &rows, &cols);
-    int **values = calloc(rows, sizeof(int *));
+    int **values = calloc(matrix.rows, sizeof(int *));
     char line[MAX_LINE_LENGTH];
-    for (int i = 0; i < columns; i++)
-        values[i] = calloc(rows, sizeof(int));
+    for (int i = 0; i < rows; i++)
+        values[i] = calloc(matrix.columns, sizeof(int));
     int i = 0;
     int j = 0;
     while (fgets(line, MAX_LINE_LENGTH, file) != NULL)
