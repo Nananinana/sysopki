@@ -177,7 +177,7 @@ void create_empty_matrix(int rows, int columns, char *filename)
 
 void print_matrix_to_file(FILE *file, matrix matrix)
 {
-    fseek(file, 0, 0;
+    fseek(file, 0, 0);
     for (int i = 0; i < matrix.rows; i++)
     {
         for (int j = 0; j < matrix.columns; j++)
