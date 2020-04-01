@@ -95,9 +95,9 @@ matrix load_matrix_from_file(char *filename)
             matrix.columns++;
     }
     fseek(file, 0, 0);
-    int **values = calloc(matrix.rows, sizeof(int *));
+    matrix.values = calloc(matrix.rows, sizeof(int *));
     for (int i = 0; i < matrix.rows; i++)
-        values[i] = calloc(matrix.columns, sizeof(int));
+        matrix.values[i] = calloc(matrix.columns, sizeof(int));
     int i = 0;
     int j = 0;
      while (fgets(line, MAX_LINE_LENGTH, file) != NULL)
@@ -106,13 +106,13 @@ matrix load_matrix_from_file(char *filename)
         char *value = strtok(line, " \t\n");
         while (value != NULL)
         {
-            values[j][i++] = atoi(value);
+            matrix.values[j][i++] = atoi(value);
             value = strtok(NULL, " \t\n");  }
         j++;
     }
     fseek(file, 0, 0);
     fclose(file);
-    matrix.values = values;
+    //matrix.values = values;
     return matrix;
 }
 
