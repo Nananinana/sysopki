@@ -47,7 +47,7 @@ void set_cols_and_rows(FILE *f, int *rows, int *columns)
     fseek(f, 0, SEEK_SET);
 }
 
-matrix load_matrix(char *filename)
+matrix load_matrix_from_file(char *filename)
 {
     FILE *file = fopen(filename, "r");
     int rows, columns;
@@ -101,7 +101,7 @@ void print_matrix(matrix m)
     }
 }
 
-matrix multiply_matrices(matrix A, matrix B)
+matrix multiply_matrixes(matrix A, matrix B)
 {
     int **values = calloc(A.rows, sizeof(int *));
     for (int i = 0; i < A.rows; i++)

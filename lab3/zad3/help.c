@@ -7,10 +7,10 @@
 
 bool check_multiply_correctness(char *a_filename, char *b_filename, char *c_filename)
 {
-    matrix a = load_matrix(a_filename);
-    matrix b = load_matrix(b_filename);
-    matrix c = load_matrix(c_filename);
-    matrix correct_matrix = multiply_matrices(a, b);
+    matrix a = load_matrix_from_file(a_filename);
+    matrix b = load_matrix_from_file(b_filename);
+    matrix c = load_matrix_from_file(c_filename);
+    matrix correct_matrix = multiply_matrixes(a, b);
     if (correct_matrix.cols != c.cols || correct_matrix.rows != c.rows)
         return false;
     for (int i = 0; i < correct_matrix.rows; i++)

@@ -67,8 +67,8 @@ Task get_task()
 
 void multiply_column(char *a_file, char *b_file, int col_index, int pair_index)
 {
-    matrix A = load_matrix(a_file);
-    matrix B = load_matrix(b_file);
+    matrix A = load_matrix_from_file(a_file);
+    matrix B = load_matrix_from_file(b_file);
     char *filename = calloc(20, sizeof(char));
     sprintf(filename, ".tmp/part%d%04d", pair_index, col_index);
     FILE *part_file = fopen(filename, "w+");
@@ -91,12 +91,12 @@ void multiply_column(char *a_file, char *b_file, int col_index, int pair_index)
 
 void multiply_column_to_one_file(char *a_file, char *b_file, int col_idx, char *result_file)
 {
-    matrix A = load_matrix(a_file);
-    matrix B = load_matrix(b_file);
+    matrix A = load_matrix_from_file(a_file);
+    matrix B = load_matrix_from_file(b_file);
     FILE *file = fopen(result_file, "r+");
     int fd = fileno(file);
     flock(fd, LOCK_EX);
-    matrix C = load_matrix(result_file);
+    matrix C = load_matrix_from_file(result_file);
     for (int y = 0; y < A.rows; y++)
     {
         int result = 0;
@@ -166,8 +166,8 @@ int main(int argc, char *argv[])
         strcpy(b_filenames[pair_counter], strtok(NULL, " "));
         strcpy(c_filenames[pair_counter], strtok(NULL, " "));
 
-        matrix a = load_matrix(a_filenames[pair_counter]);
-        matrix b = load_matrix(b_filenames[pair_counter]);
+        matrix a = load_matrix_from_file(a_filenames[pair_counter]);
+        matrix b = load_matrix_from_file(b_filenames[pair_counter]);
         if (mode == 1)
             init_free_matrix(a.rows, b.cols, c_filenames[pair_counter]);
 
