@@ -36,43 +36,6 @@ void free_matrix(matrix *matrix)
     free(matrix->values);
 }
 
-
-
-/*int get_cols_number(char *row)
-{
-    int columns = 0;
-    char *num = strtok(row, " ");
-    while (num != NULL)
-    {
-        if (strcmp(num, "\n") != 0)
-            columns++;
-        num = strtok(NULL, " ");
-    }
-    return columns;
-}*/
-/*
-void get_matrix_size(FILE *file, int *rows, int *columns)
-{
-    char * line = NULL;
-    size_t line_size = 0;
-    
-    *rows = 0;
-    *columns = 0;
-    while(getline(&line, &line_size, file) >= 0)
-    {
-        *rows++;
-    } 
-    fseek(file, 0, 0);
-    getline(&line, &line_size, file);
-    if ( strtok(line, " ") != NULL) 
-    {
-        *columns = 1;
-        while(strtok(NULL, " ") != NULL) 
-            *columns++;
-    }
-    fseek(file, 0, 0);
-}*/
-
 matrix load_matrix_from_file(char *filename)
 {   FILE *file;
     if ((file = fopen(filename, "r")) == NULL)
@@ -138,37 +101,15 @@ matrix multiply_matrixes(matrix matrixA, matrix matrixB)
     return matrix_result;
 }
 
-void generate_matrix_to_file(int rows, int columns, char *filename) //czy to przez to nie dziala?
+void generate_matrix_to_file(int rows, int columns, char *filename) 
 {
-    /*FILE *file = fopen(filename, "w+");
-    for (int i = 0; i < columns; i++)
-    {
-        for (int j = 0; j < rows; j++)
-        {
-            if (j > 0)
-                fprintf(file, " ");
-            char str[7];
-            sprintf(str,"%d ", (rand() % 201) - 100);
-            fwrite(str, sizeof(char), strlen(str), file); 
-            //fprintf(file, "%d", rand() % (200 + 1) - 100);
-        };
-        fseek(file, -1 * sizeof(char), SEEK_CUR);
-        fwrite("\n", sizeof(char), strlen("\n"), file);
-        //fprintf(file, "\n");
-    }
-    fclose(file);*/
-
     FILE *file = fopen(filename, "w+");
-
     for (int y = 0; y < rows; y++)
     {
         for (int x = 0; x < columns; x++)
         {
             if (x > 0)
-            {
                 fprintf(file, " ");
-            }
-
             fprintf(file, "%d", rand() % (200 + 1) - 100);
         };
         fprintf(file, "\n");
@@ -207,7 +148,7 @@ void print_matrix_to_file(FILE *file, matrix matrix)
     }
 }
 
-bool check_multiplication_result(char *fileA, char *fileB, char *result_file) //pomocniczy - sprawdza poprawnosc
+bool check_multiplication_result(char *fileA, char *fileB, char *result_file) 
 {
     matrix matrixA = load_matrix_from_file(fileA);
     matrix matrixB = load_matrix_from_file(fileB);

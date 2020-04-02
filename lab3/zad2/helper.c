@@ -8,7 +8,7 @@
 int main(int argc, char **argv)
 {
     char *command = calloc(10, sizeof(char));
-    command = argv[1]; //?
+    command = argv[1];
     if (strcmp(command, "generate") == 0)
     {
         srand(time(NULL));
@@ -43,7 +43,6 @@ int main(int argc, char **argv)
         int line_number = 0;
         FILE *input_file = fopen(argv[2], "r");
         char current_line[PATH_MAX * 3 + 3];
-        //char current_line[300]; 
         while (fgets(current_line, PATH_MAX * 3 + 3, input_file) != NULL)
         {
             namefileA[line_number] = calloc(PATH_MAX, sizeof(char));

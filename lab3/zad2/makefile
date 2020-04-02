@@ -14,20 +14,20 @@ test:
 	make clean
 	$(CC) helper.c -o helper
 	$(CC) matrix.c -o matrix
-	./helper generate 7 14 5
-	./matrix lista 6 3 1
+	./helper generate 5 15 6
+	./matrix lista 5 4 1
 	./help check lista
 
 paste:
 	make clean
 	$(CC) helper.c -o helper
 	$(CC) matrix.c -o matrix
-	./helper generate 7 14 5
-	./matrix lista 6 3 2
+	./helper generate 5 15 6
+	./matrix lista 5 4 2
 
-flock:
+shared:
 	make clean
 	$(CC) helper.c -o helper
 	$(CC) matrix.c -o matrix
-	./helper generate 7 14 5
-	./matrix lista 6 3 1
+	./helper generate 5 15 6
+	./matrix lista 5 4 1

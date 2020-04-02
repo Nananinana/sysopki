@@ -32,13 +32,17 @@ fragment_to_compute get_fragment()
         char *fragment_filename = calloc(100, sizeof(char));
         sprintf(fragment_filename, ".fragments/fragment%d", i);
         FILE *fragment_file = fopen(fragment_filename, "r+");
-        int fd = fileno(fragment_file); //?
-        flock(fd, LOCK_EX);
+        int descriptor = fileno(fragment_file);
+        flock(descriptor, LOCK_EX);
         char *fragments = calloc(1000, sizeof(char));
         fseek(fragment_file, 0, 0);
         fread(fragments, 1, 1000, fragment_file);
         char *first_zero = strchr(fragments, '0');
-        int fragment_index = first_zero != NULL ? first_zero - fragments : -1;
+        int fragment_index;
+        if (first_zero != NULL)
+            first_zero= first_zero - fragments;
+        else
+            first_zero--;
         if (fragment_index >= 0)
         {
             char *end_of_line = strchr(fragments, '\0');
@@ -53,22 +57,22 @@ fragment_to_compute get_fragment()
             fwrite(fragments_with_good_size, 1, size, fragment_file);
             fragment.set_index = i;
             fragment.column_index = fragment_index;
-            flock(fd, LOCK_UN);
+            flock(descriptor, LOCK_UN);
             fclose(fragment_file);
             break;
         }
-        flock(fd, LOCK_UN);
+        flock(descriptor, LOCK_UN);
         fclose(fragment_file);
     }
     return fragment;
 }
 
-void multiply_column(char *fileA, char *fileB, int column_index, int set_index)
+void multiply_column_paste(char *fileA, char *fileB, int column_index, int set_index)
 {
     matrix matrixA = load_matrix_from_file(fileA);
     matrix matrixB = load_matrix_from_file(fileB);
     char *result_fragment_filename = calloc(20, sizeof(char));
-    sprintf(result_fragment_filename, ".fragments/result_fragment%d%04d", set_index, column_index); //.tmp/part%d%04d
+    sprintf(result_fragment_filename, ".fragments/result_fragment%d%04d", set_index, column_index); 
     FILE *result_fragment_file = fopen(result_fragment_filename, "w+");
     for (int i = 0; i < matrixA.rows; i++)
     {
@@ -83,13 +87,13 @@ void multiply_column(char *fileA, char *fileB, int column_index, int set_index)
     fclose(result_fragment_file);
 }
 
-void multiply_column_to_one_file(char *fileA, char *fileB, int column_index, char *result_file)
+void multiply_column_to_shared_file(char *fileA, char *fileB, int column_index, char *result_file)
 {
     matrix matrixA = load_matrix_from_file(fileA);
     matrix matrixB = load_matrix_from_file(fileB);
     FILE *file = fopen(result_file, "r+");
-    int fd = fileno(file);
-    flock(fd, LOCK_EX);
+    int descriptor = fileno(file);
+    flock(descriptor, LOCK_EX);
     matrix matrix_result = load_matrix_from_file(result_file);
     for (int i = 0; i < matrixA.rows; i++)
     {
@@ -101,14 +105,14 @@ void multiply_column_to_one_file(char *fileA, char *fileB, int column_index, cha
         matrix_result.values[i][column_index] = result;
     }
     print_matrix_to_file(file, matrix_result);
-    flock(fd, LOCK_UN);
+    flock(descriptor, LOCK_UN);
     fclose(file);
 }
 
 int worker_function(char **fileA, char **fileB, int timeout, int mode, char **result_file)
 {
     time_t start_time = time(NULL);
-    int multiplies_count = 0;
+    int multiplication_count = 0;
     while (1)
     {
         if ((time(NULL) - start_time) >= timeout)
@@ -118,17 +122,14 @@ int worker_function(char **fileA, char **fileB, int timeout, int mode, char **re
         }
         fragment_to_compute fragment = get_fragment();
         if (fragment.column_index == -1)
-        {
             break;
-        }
         if (mode == 1)
-            multiply_column_to_one_file(fileA[fragment.set_index], fileB[fragment.set_index], fragment.column_index, result_file[fragment.set_index]);
+            multiply_column_to_shared_file(fileA[fragment.set_index], fileB[fragment.set_index], fragment.column_index, result_file[fragment.set_index]);
         else
-            multiply_column(fileA[fragment.set_index], fileB[fragment.set_index], fragment.column_index, fragment.set_index);
-
-        multiplies_count++;
+            multiply_column_paste(fileA[fragment.set_index], fileB[fragment.set_index], fragment.column_index, fragment.set_index);
+        multiplication_count++;
     }
-    return multiplies_count;
+    return multiplication_count;
 }
 
 int main(int argc, char *argv[])
@@ -141,33 +142,32 @@ int main(int argc, char *argv[])
     int processes_number = atoi(argv[2]);
     int timeout = atoi(argv[3]);
     int mode = atoi(argv[4]);
-    char **a_filenames = calloc(100, sizeof(char *));
-    char **b_filenames = calloc(100, sizeof(char *));
-    char **c_filenames = calloc(100, sizeof(char *));
     system("rm -rf .fragments");
+    char **filenamesA = calloc(100, sizeof(char *));
+    char **filenamesB = calloc(100, sizeof(char *));
+    char **filenamesC = calloc(100, sizeof(char *));
     system("mkdir -p .fragments");
     FILE *input_file = fopen(argv[1], "r");
-    char input_line[PATH_MAX * 3 + 3];
+    char current_line[PATH_MAX * 3 + 3];
     int line_number = 0;
-    while (fgets(input_line, PATH_MAX * 3 + 3, input_file) != NULL)
+    while (fgets(current_line, PATH_MAX * 3 + 3, input_file) != NULL)
     {
-        a_filenames[line_number] = calloc(PATH_MAX, sizeof(char));
-        b_filenames[line_number] = calloc(PATH_MAX, sizeof(char));
-        c_filenames[line_number] = calloc(PATH_MAX, sizeof(char));
-        strcpy(a_filenames[line_number], strtok(input_line, " "));
-        strcpy(b_filenames[line_number], strtok(NULL, " "));
-        strcpy(c_filenames[line_number], strtok(NULL, " "));
-
-        matrix a = load_matrix_from_file(a_filenames[line_number]);
-        matrix b = load_matrix_from_file(b_filenames[line_number]);
+        filenamesA[line_number] = calloc(PATH_MAX, sizeof(char));
+        strcpy(filenamesA[line_number], strtok(current_line, " "));
+        filenamesB[line_number] = calloc(PATH_MAX, sizeof(char));
+        strcpy(filenamesB[line_number], strtok(NULL, " "));
+        filenamesC[line_number] = calloc(PATH_MAX, sizeof(char));   
+        strcpy(filenamesC[line_number], strtok(NULL, " "));
+        matrix matrixA = load_matrix_from_file(filenamesA[line_number]);
+        matrix matrixB = load_matrix_from_file(filenamesB[line_number]);
         if (mode == 1)
-            create_empty_matrix(a.rows, b.columns, c_filenames[line_number]);
+            create_empty_matrix(matrixA.rows, matrixB.columns, filenamesC[line_number]);
         char *fragment_filename = calloc(100, sizeof(char));
         sprintf(fragment_filename, ".fragments/fragment%d", line_number);
         FILE *fragment_file = fopen(fragment_filename, "w+");
-        char *fragments = calloc(b.columns + 1, sizeof(char));
-        sprintf(fragments, "%0*d", b.columns, 0);
-        fwrite(fragments, 1, b.columns, fragment_file);
+        char *fragments = calloc(matrixB.columns + 1, sizeof(char));
+        sprintf(fragments, "%0*d", matrixB.columns, 0);
+        fwrite(fragments, 1, matrixB.columns, fragment_file);
         free(fragments);
         free(fragment_filename);
         fclose(fragment_file);
@@ -179,30 +179,24 @@ int main(int argc, char *argv[])
     {
         pid_t worker = fork();
         if (worker == 0)
-        {
-            return worker_function(a_filenames, b_filenames, timeout, mode, c_filenames);
-        }
+            return worker_function(filenamesA, filenamesB, timeout, mode, filenamesC);
         else
-        {
             processes[i] = worker;
-        }
     }
-
     for (int i = 0; i < processes_number; i++)
     {
         int status;
         waitpid(processes[i], &status, 0);
-        printf("Proces %d wykonal %d mnozen macierzy\n", processes[i],
+        printf("Proccess %d have done %d matrix multiplications\n", processes[i],
                WEXITSTATUS(status));
     }
     free(processes);
-
     if (mode == 2)
     {
         for (int i = 0; i < line_number; i++)
         {
             char *buffer = calloc(1000, sizeof(char));
-            sprintf(buffer, "paste .fragments/result_fragment%d* > %s", i, c_filenames[i]);
+            sprintf(buffer, "paste .fragments/result_fragment%d* > %s", i, filenamesC[i]);
             system(buffer);
         }
     }

@@ -76,7 +76,7 @@ Task get_task()
     return task;
 }
 
-void multiply_column(char *a_file, char *b_file, int col_index, int pair_index)
+void multiply_column_paste(char *a_file, char *b_file, int col_index, int pair_index)
 {
     matrix A = load_matrix_from_file(a_file);
     matrix B = load_matrix_from_file(b_file);
@@ -100,7 +100,7 @@ void multiply_column(char *a_file, char *b_file, int col_index, int pair_index)
     fclose(part_file);
 }
 
-void multiply_column_to_one_file(char *a_file, char *b_file, int col_idx, char *result_file)
+void multiply_column_to_shared_file(char *a_file, char *b_file, int col_idx, char *result_file)
 {
     matrix A = load_matrix_from_file(a_file);
     matrix B = load_matrix_from_file(b_file);
@@ -140,9 +140,9 @@ int worker_function(char **a, char **b, int timeout, int mode, char **result_fil
             break;
         }
         if (mode == 1)
-            multiply_column_to_one_file(a[task.pair_index], b[task.pair_index], task.column_index, result_file[task.pair_index]);
+            multiply_column_to_shared_file(a[task.pair_index], b[task.pair_index], task.column_index, result_file[task.pair_index]);
         else
-            multiply_column(a[task.pair_index], b[task.pair_index], task.column_index, task.pair_index);
+            multiply_column_paste(a[task.pair_index], b[task.pair_index], task.column_index, task.pair_index);
 
         multiplies_count++;
     }
