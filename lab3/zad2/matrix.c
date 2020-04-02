@@ -121,6 +121,7 @@ int worker_function(char **fileA, char **fileB, int timeout, int mode, char **re
         {
             break;
         }
+        printf ("malloc problem later on \n");
         if (mode == 1)
             multiply_column_to_one_file(fileA[fragment.set_index], fileB[fragment.set_index], fragment.column_index, result_file[fragment.set_index]);
         else
@@ -180,7 +181,6 @@ int main(int argc, char *argv[])
         pid_t worker = fork();
         if (worker == 0)
         {
-            printf ("malloc problem later on \n");
             return worker_function(a_filenames, b_filenames, timeout, mode, c_filenames);
         }
         else
