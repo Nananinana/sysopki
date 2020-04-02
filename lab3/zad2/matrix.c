@@ -90,6 +90,7 @@ void multiply_column_to_one_file(char *fileA, char *fileB, int column_index, cha
     FILE *file = fopen(result_file, "r+");
     int fd = fileno(file);
     flock(fd, LOCK_EX);
+    printf ("malloc problem later on \n");
     matrix matrix_result = load_matrix_from_file(result_file);
     for (int i = 0; i < matrixA.rows; i++)
     {
@@ -102,7 +103,6 @@ void multiply_column_to_one_file(char *fileA, char *fileB, int column_index, cha
     }
     print_matrix_to_file(file, matrix_result);
     flock(fd, LOCK_UN);
-    printf ("malloc problem later on \n");
     fclose(file);
 }
 
