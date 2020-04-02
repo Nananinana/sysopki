@@ -27,7 +27,6 @@ int main(int argc, char **argv)
             sprintf(name_matrixB, "matrixes/matrixB%d.txt", i);
             char *name_matrix_result = calloc(100, sizeof(char));         
             sprintf(name_matrix_result, "matrixes/matrix_result%d.txt", i);
-            printf("error before generating?");
             generate_matrix_to_file(rows_matrixA, columns_matrixA, name_matrixA);
             generate_matrix_to_file(columns_matrixA, columns_matrixB, name_matrixB);
             char *to_print = calloc(1000, sizeof(char));
