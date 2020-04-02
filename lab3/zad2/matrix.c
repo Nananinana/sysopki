@@ -39,10 +39,7 @@ fragment_to_compute get_fragment()
         fread(fragments, 1, 1000, fragment_file);
         char *first_zero = strchr(fragments, '0');
         int fragment_index;
-        if (first_zero != NULL)
-            first_zero= first_zero - fragments;
-        else
-            first_zero--;
+        int fragment_index = first_zero != NULL ? first_zero - fragments : -1;
         if (fragment_index >= 0)
         {
             char *end_of_line = strchr(fragments, '\0');
