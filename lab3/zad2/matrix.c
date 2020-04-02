@@ -68,7 +68,6 @@ void multiply_column(char *fileA, char *fileB, int column_index, int set_index)
     matrix matrixA = load_matrix_from_file(fileA);
     matrix matrixB = load_matrix_from_file(fileB);
     char *result_fragment_filename = calloc(20, sizeof(char));
-    printf ("malloc problem later on \n");
     sprintf(result_fragment_filename, ".fragments/result_fragment%d%04d", set_index, column_index); //.tmp/part%d%04d
     FILE *result_fragment_file = fopen(result_fragment_filename, "w+");
     for (int i = 0; i < matrixA.rows; i++)
@@ -81,6 +80,7 @@ void multiply_column(char *fileA, char *fileB, int column_index, int set_index)
         else
             fprintf(result_fragment_file, "%d\n", result_fragment);
     }
+    printf ("malloc problem later on \n");
     fclose(result_fragment_file);
 }
 
