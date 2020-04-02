@@ -85,8 +85,8 @@ void multiply_column(char *fileA, char *fileB, int column_index, int set_index)
 
 void multiply_column_to_one_file(char *fileA, char *fileB, int column_index, char *result_file)
 {
-    matrix matrixA = load_matrix_from_file(fileA);
     printf ("malloc problem later on \n");
+    matrix matrixA = load_matrix_from_file(fileA);
     matrix matrixB = load_matrix_from_file(fileB);
     FILE *file = fopen(result_file, "r+");
     int fd = fileno(file);
