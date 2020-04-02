@@ -154,8 +154,6 @@ int main(int argc, char *argv[])
         a_filenames[line_number] = calloc(PATH_MAX, sizeof(char));
         b_filenames[line_number] = calloc(PATH_MAX, sizeof(char));
         c_filenames[line_number] = calloc(PATH_MAX, sizeof(char));
-        printf ("malloc problem later on\n");
-
         strcpy(a_filenames[line_number], strtok(input_line, " "));
         strcpy(b_filenames[line_number], strtok(NULL, " "));
         strcpy(c_filenames[line_number], strtok(NULL, " "));
@@ -164,8 +162,8 @@ int main(int argc, char *argv[])
         matrix b = load_matrix_from_file(b_filenames[line_number]);
         if (mode == 1)
             create_empty_matrix(a.rows, b.columns, c_filenames[line_number]);
-
         char *fragment_filename = calloc(100, sizeof(char));
+         printf ("malloc problem later on \n");
         sprintf(fragment_filename, ".fragments/fragment%d", line_number);
         FILE *fragment_file = fopen(fragment_filename, "w+");
         char *fragments = calloc(b.columns + 1, sizeof(char));
