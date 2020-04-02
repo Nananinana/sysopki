@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <linux/limits.h>
-#include "matrix_helper.c"
+#include "matrix_operations.c"
 
 int main(int argc, char **argv)
 {

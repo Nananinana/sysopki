@@ -4,30 +4,30 @@ all:
 	make test
 
 clean:
-	rm -f -r .fragments matrixes help matrix lista
+	rm -f -r .fragments matrixes helper matrix lista
 
 helper:
-	rm -f help
-	$(CC) help.c -o help
+	rm -f helper
+	$(CC) helper.c -o helper
 
 test:
 	make clean
-	$(CC) help.c -o help 
+	$(CC) helper.c -o helper
 	$(CC) matrix.c -o matrix
-	./help generate 7 14 5
+	./helper generate 7 14 5
 	./matrix lista 6 3 1
 	./help check lista
 
 paste:
 	make clean
-	$(CC) help.c -o help 
+	$(CC) helper.c -o helper
 	$(CC) matrix.c -o matrix
-	./help generate 7 14 5
+	./helper generate 7 14 5
 	./matrix lista 6 3 2
 
 flock:
 	make clean
-	$(CC) help.c -o help 
+	$(CC) helper.c -o helper
 	$(CC) matrix.c -o matrix
-	./help generate 7 14 5
+	./helper generate 7 14 5
 	./matrix lista 6 3 1

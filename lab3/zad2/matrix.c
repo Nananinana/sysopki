@@ -12,7 +12,7 @@
 #include <sys/file.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "matrix_helper.c"
+#include "matrix_operations.c"
 
 typedef struct
 {
@@ -85,7 +85,6 @@ void multiply_column(char *fileA, char *fileB, int column_index, int set_index)
 
 void multiply_column_to_one_file(char *fileA, char *fileB, int column_index, char *result_file)
 {
-    printf ("malloc problem later on \n");
     matrix matrixA = load_matrix_from_file(fileA);
     matrix matrixB = load_matrix_from_file(fileB);
     FILE *file = fopen(result_file, "r+");
