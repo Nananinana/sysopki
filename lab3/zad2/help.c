@@ -22,11 +22,12 @@ int main(int argc, char **argv)
             int columns_matrixA = rand() % (max - min + 1) + min;
             int columns_matrixB = rand() % (max - min + 1) + min;
             char *name_matrixA = calloc(100, sizeof(char));
-            sprintf(name_matrixA, ".matrixes/matrixA%d.txt", i);
+            sprintf(name_matrixA, "matrixes/matrixA%d.txt", i);
             char *name_matrixB = calloc(100, sizeof(char));
-            sprintf(name_matrixB, ".matrixes/matrixB%d.txt", i);
+            sprintf(name_matrixB, "matrixes/matrixB%d.txt", i);
             char *name_matrix_result = calloc(100, sizeof(char));         
-            sprintf(name_matrix_result, ".matrixes/matrix_result%d.txt", i);
+            sprintf(name_matrix_result, "matrixes/matrix_result%d.txt", i);
+            printf("error before generating?");
             generate_matrix_to_file(rows_matrixA, columns_matrixA, name_matrixA);
             generate_matrix_to_file(columns_matrixA, columns_matrixB, name_matrixB);
             char *to_print = calloc(1000, sizeof(char));
