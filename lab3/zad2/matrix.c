@@ -144,7 +144,6 @@ int main(int argc, char *argv[])
     char **a_filenames = calloc(100, sizeof(char *));
     char **b_filenames = calloc(100, sizeof(char *));
     char **c_filenames = calloc(100, sizeof(char *));
-    printf ("malloc problem later on\n");
     system("rm -rf .fragments");
     system("mkdir -p .fragments");
     FILE *input_file = fopen(argv[1], "r");
@@ -155,6 +154,7 @@ int main(int argc, char *argv[])
         a_filenames[line_number] = calloc(PATH_MAX, sizeof(char));
         b_filenames[line_number] = calloc(PATH_MAX, sizeof(char));
         c_filenames[line_number] = calloc(PATH_MAX, sizeof(char));
+        printf ("malloc problem later on\n");
 
         strcpy(a_filenames[line_number], strtok(input_line, " "));
         strcpy(b_filenames[line_number], strtok(NULL, " "));
