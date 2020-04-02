@@ -163,7 +163,6 @@ int main(int argc, char *argv[])
         if (mode == 1)
             create_empty_matrix(a.rows, b.columns, c_filenames[line_number]);
         char *fragment_filename = calloc(100, sizeof(char));
-         printf ("malloc problem later on \n");
         sprintf(fragment_filename, ".fragments/fragment%d", line_number);
         FILE *fragment_file = fopen(fragment_filename, "w+");
         char *fragments = calloc(b.columns + 1, sizeof(char));
@@ -175,8 +174,8 @@ int main(int argc, char *argv[])
         line_number++;
     }
     number_of_sets = line_number;
-
     pid_t *processes = calloc(processes_number, sizeof(int));
+    printf ("malloc problem later on \n");
     for (int i = 0; i < processes_number; i++)
     {
         pid_t worker = fork();
