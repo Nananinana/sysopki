@@ -38,7 +38,6 @@ fragment_to_compute get_fragment()
         fseek(fragment_file, 0, 0);
         fread(fragments, 1, 1000, fragment_file);
         char *first_zero = strchr(fragments, '0');
-        int fragment_index;
         int fragment_index = first_zero != NULL ? first_zero - fragments : -1;
         if (fragment_index >= 0)
         {
