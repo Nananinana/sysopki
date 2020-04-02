@@ -4,7 +4,7 @@ all:
 	make test
 
 clean:
-	rm -f -r .fragments .matrixes help matrix lista
+	rm -f -r .fragments matrixes help matrix lista
 
 helper:
 	rm -f help
