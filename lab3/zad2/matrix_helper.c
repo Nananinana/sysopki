@@ -140,7 +140,7 @@ matrix multiply_matrixes(matrix matrixA, matrix matrixB)
 
 void generate_matrix_to_file(int rows, int columns, char *filename) //czy to przez to nie dziala?
 {
-    FILE *file = fopen(filename, "w+");
+    /*FILE *file = fopen(filename, "w+");
     for (int i = 0; i < columns; i++)
     {
         for (int j = 0; j < rows; j++)
@@ -156,9 +156,8 @@ void generate_matrix_to_file(int rows, int columns, char *filename) //czy to prz
         fwrite("\n", sizeof(char), strlen("\n"), file);
         //fprintf(file, "\n");
     }
-    fclose(file);
+    fclose(file);*/
 
-    /*
     FILE *file = fopen(filename, "w+");
 
     for (int y = 0; y < rows; y++)
@@ -174,7 +173,7 @@ void generate_matrix_to_file(int rows, int columns, char *filename) //czy to prz
         };
         fprintf(file, "\n");
     }
-    fclose(file); */
+    fclose(file);
 }
 
 void create_empty_matrix(int rows, int columns, char *filename)
