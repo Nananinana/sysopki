@@ -141,10 +141,10 @@ int main(int argc, char *argv[])
     int processes_number = atoi(argv[2]);
     int timeout = atoi(argv[3]);
     int mode = atoi(argv[4]);
-    printf ("malloc problem later on\n");
     char **a_filenames = calloc(100, sizeof(char *));
     char **b_filenames = calloc(100, sizeof(char *));
     char **c_filenames = calloc(100, sizeof(char *));
+    printf ("malloc problem later on\n");
     system("rm -rf .fragments");
     system("mkdir -p .fragments");
     FILE *input_file = fopen(argv[1], "r");
