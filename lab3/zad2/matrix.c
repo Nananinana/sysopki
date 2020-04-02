@@ -175,13 +175,13 @@ int main(int argc, char *argv[])
     }
     number_of_sets = line_number;
     pid_t *processes = calloc(processes_number, sizeof(int));
-    printf ("malloc problem later on \n");
     for (int i = 0; i < processes_number; i++)
     {
         pid_t worker = fork();
         if (worker == 0)
         {
             return worker_function(a_filenames, b_filenames, timeout, mode, c_filenames);
+            printf ("malloc problem later on \n");
         }
         else
         {
