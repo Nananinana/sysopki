@@ -43,12 +43,13 @@ int main(int argc, char **argv)
         char **result_namefile = calloc(100, sizeof(char *));
         int line_number = 0;
         FILE *input_file = fopen(argv[2], "r");
-        char current_line[300]; 
-        while (fgets(current_line, 300, input_file) != NULL)
+        char current_line[PATH_MAX * 3 + 3];
+        //char current_line[300]; 
+        while (fgets(current_line, PATH_MAX * 3 + 3, input_file) != NULL)
         {
-            namefileA[line_number] = calloc(100, sizeof(char));
-            namefileB[line_number] = calloc(100, sizeof(char));
-            result_namefile[line_number] = calloc(100, sizeof(char));
+            namefileA[line_number] = calloc(PATH_MAX, sizeof(char));
+            namefileB[line_number] = calloc(PATH_MAX, sizeof(char));
+            result_namefile[line_number] = calloc(PATH_MAX, sizeof(char));
             strcpy(namefileA[line_number], strtok(current_line, " "));
             strcpy(namefileB[line_number], strtok(NULL, " "));
             strcpy(result_namefile[line_number], strtok(NULL, " "));
