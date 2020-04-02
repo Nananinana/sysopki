@@ -162,7 +162,7 @@ void generate_matrix_to_file(int rows, int columns, char *filename) //czy to prz
 
     for (int y = 0; y < rows; y++)
     {
-        for (int x = 0; x < cols; x++)
+        for (int x = 0; x < columns; x++)
         {
             if (x > 0)
             {
