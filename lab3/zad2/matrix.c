@@ -80,7 +80,6 @@ void multiply_column(char *fileA, char *fileB, int column_index, int set_index)
         else
             fprintf(result_fragment_file, "%d\n", result_fragment);
     }
-    printf ("malloc problem later on \n");
     fclose(result_fragment_file);
 }
 
@@ -103,6 +102,7 @@ void multiply_column_to_one_file(char *fileA, char *fileB, int column_index, cha
     }
     print_matrix_to_file(file, matrix_result);
     flock(fd, LOCK_UN);
+    printf ("malloc problem later on \n");
     fclose(file);
 }
 
