@@ -65,8 +65,10 @@ int main(int argc, char **argv)
         {
             printf("Printing from child process\n");
             if (strcmp(argv[1], "pending") != 0)
-                if(strcmp(argv[1], "handler") != 0) 
-                    signal(SIGUSR1, handler);
+                { 
+                    if(strcmp(argv[1], "handler") != 0) 
+                        signal(SIGUSR1, handler);
+                }
                 raise(SIGUSR1);
             else
                 pending_handler(SIGUSR1);
