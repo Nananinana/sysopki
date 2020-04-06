@@ -1,5 +1,5 @@
-//#define _POSIX_C_SOURCE 1
-#define _XOPEN_SOURCE 500
+#define _POSIX_C_SOURCE 1
+//#define _XOPEN_SOURCE 500
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
