@@ -13,7 +13,7 @@ void sigint_handler(int sig_no)
     exit(0);
 }
 
-void sigstp_handler(int sig_no)
+void sigstop_handler(int sig_no)
 {
     if (stop)
     {
@@ -31,7 +31,7 @@ int main()
     sigemptyset(&act.sa_mask);
     act.sa_flags = 0;
     sigaction(SIGINT, &act, NULL);
-    signal(SIGSTP, sigstp_handler);
+    signal(SIGSTOP, sigstop_handler);
     while (1)
     {
         if (!stop)
