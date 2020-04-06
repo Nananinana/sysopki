@@ -1,5 +1,5 @@
-#define _POSIX_C_SOURCE 1
-//#define _XOPEN_SOURCE 500
+//#define _POSIX_C_SOURCE 1
+#define _XOPEN_SOURCE 500
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -26,12 +26,12 @@ void sigtstp_handler(int sig_no)
 
 int main()
 {
+    signal(SIGTSTP, sigtstp_handler);
     struct sigaction act;
     act.sa_handler = sigint_handler;
     sigemptyset(&act.sa_mask);
     act.sa_flags = 0;
     sigaction(SIGINT, &act, NULL);
-    signal(SIGTSTP, sigtstp_handler);
     while (1)
     {
         if (loop)
