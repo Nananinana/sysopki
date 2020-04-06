@@ -26,12 +26,12 @@ void sigtstp_handler(int sig_no)
 
 int main()
 {
-    signal(SIGTSTP, sigtstp_handler);
+    signal(SIGINT, sigint_handler);
     struct sigaction act;
-    act.sa_handler = sigint_handler;
+    act.sa_handler = sigtstp_handler;
     sigemptyset(&act.sa_mask);
     act.sa_flags = 0;
-    sigaction(SIGINT, &act, NULL);
+    sigaction(SIGTSTP, &act, NULL);
     while (1)
     {
         if (loop)
