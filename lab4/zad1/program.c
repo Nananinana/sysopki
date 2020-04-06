@@ -13,7 +13,7 @@ void sigint_handler(int sig_no)
     exit(0);
 }
 
-void sigtstp_handler(int sig_no)
+void sigstp_handler(int sig_no)
 {
     if (stop)
     {
