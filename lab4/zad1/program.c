@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <signal.h>
 
-int stop = 0;
+int loop = 1;
 
 void sigint_handler(int sig_no)
 {
@@ -15,13 +15,13 @@ void sigint_handler(int sig_no)
 
 void sigtstp_handler(int sig_no)
 {
-    if (stop)
+    if (loop)
     {
-        stop = 0;
-        return;
+        loop = 0;
+        printf("Waiting for CTRL+Z - continuation or CTRL+C - end of the program \n");
     }
-    printf("Waiting for CTRL+Z - continuation or CTRL+C - end of the program \n");
-    stop = 1;
+    else  
+        loop = 1;
 }
 
 int main()
@@ -34,7 +34,7 @@ int main()
     signal(SIGTSTP, sigtstp_handler);
     while (1)
     {
-        if (!stop)
+        if (loop)
         {
             system("ls -l");
             sleep(1);
