@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 1
+#define _XOPEN_SOURCE 500
 #include <stdio.h>
 #include <unistd.h>
 #include <stdbool.h>
@@ -28,9 +28,13 @@ void pending_handler(int sig_no){
 int main(int argc, char **argv)
 {
     printf("Printing from exec function \n");
+    if (strcmp(argv[1], "pending") == 0)
+        pending_handler(SIGUSR1);
+    
+    signal(SIGUSR1,handler);
+
     if (strcmp(argv[1], "pending") != 0)
         raise(SIGUSR1, handler);
-    else
-        pending_handler(SIGUSR1);
+
     return 0;
 }

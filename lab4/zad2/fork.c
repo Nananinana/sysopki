@@ -1,4 +1,4 @@
-#define _POSIX_C_SOURCE 1
+#define _XOPEN_SOURCE 500
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
         return 1;
     }
     raise(SIGUSR1);
-    sigset_t newmask;
+    //sigset_t newmask;
 
     if (strcmp(argv[1], "pending") == 0)
         pending_handler(SIGUSR1);
