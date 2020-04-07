@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     signal(SIGUSR1,handler);
 
     if (strcmp(argv[1], "pending") != 0)
-        raise(SIGUSR1, handler);
+        raise(SIGUSR1);
 
     return 0;
 }
