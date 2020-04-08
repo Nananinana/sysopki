@@ -101,6 +101,8 @@ int main(int argc, char *argv[])
     sigaction(sigusr1_signal, &act, NULL);
     sigaction(sigusr2_signal, &act, NULL);
 
-    sleep(3);
-    while(1);
+     while (1)
+    {
+        sleep(100);
+    }
 }

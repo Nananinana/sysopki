@@ -108,6 +108,9 @@ int main(int argc, char *argv[])
             sigqueue(catcher_PID, sigusr1_signal, value);
         sigqueue(catcher_PID, sigusr2_signal, value);
     }
-
+     while (1)
+    {
+        sleep(100);
+    }
     return 0;
 }
