@@ -103,6 +103,6 @@ int main(int argc, char *argv[])
 
      while (1)
     {
-        usleep(100);
+        sleep(100);
     }
 }
