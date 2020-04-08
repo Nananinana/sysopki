@@ -56,7 +56,8 @@ int main(int argc, char *argv[])
         printf("wrong command, should be: mode (kill/sigqueque/sigrt) \n");
         exit(1);
     }
-
+    
+    printf("catcher PID is: %d\n", getpid());
     char *mode_name = argv[1];
     if (strcmp("kill", mode_name) == 0)
     {
@@ -100,6 +101,6 @@ int main(int argc, char *argv[])
     sigaction(sigusr1_signal, &act, NULL);
     sigaction(sigusr2_signal, &act, NULL);
 
-    printf("catcher PID is: %d\n", getpid());
-    return 0;
+    sleep(3);
+    while(1);
 }
