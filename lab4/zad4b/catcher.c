@@ -1,3 +1,4 @@
+
 #define _XOPEN_SOURCE 500
 
 #include <stdio.h>
@@ -18,6 +19,7 @@ Mode mode;
 int sigusr1_signal;
 int sigusr2_signal;
 int received_signals = 0;
+union sigval value;
 
 void handler(int sig_no, siginfo_t *siginfo, void *ucontext)
 {
@@ -25,39 +27,37 @@ void handler(int sig_no, siginfo_t *siginfo, void *ucontext)
     {
         received_signals++;
         printf("Catcher: received so far %d signals from sender \n", received_signals);
+        if (mode == KILL || mode == SIGRT)
+        {
+            kill(siginfo->si_pid, sigusr1_signal);
+            printf("Catcher: sending signal number %d to sender \n", received_signals);
+        }
+        else
+        {
+            sigqueue(siginfo->si_pid, sigusr1_signal, value);
+            printf("Catcher: sending signal number %d to sender \n", received_signals);
+        }
     }
     else if (sig_no == sigusr2_signal)
     {
         if (mode == KILL || mode == SIGRT)
         {
-            for (int i = 0; i < received_signals; ++i)
-            {
-                kill(siginfo->si_pid, sigusr1_signal);
-                printf("Catcher: sending signal number %d to sender \n", i);
-            }
             kill(siginfo->si_pid, sigusr2_signal);
             printf("Catcher: sending end signal to sender \n");
         }
         else
         {
-            union sigval value;
-            for (int i = 0; i < received_signals; ++i)
-            {
-                value.sival_int = i;
-                sigqueue(siginfo->si_pid, sigusr1_signal, value);
-                printf("Catcher: sending signal number %d to sender \n", i);
-            }
             sigqueue(siginfo->si_pid, sigusr2_signal, value);
             printf("Catcher: sending end signal to sender \n");
         }
-        printf("catcher received end signal. Number of signals received: %d \n", received_signals);
+        printf("catcher received end signal. Number of signals received: %d\n", received_signals);
         exit(0);
     }
 }
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
+        if (argc != 2)
     {
         printf("wrong command, should be: mode (kill/sigqueue/sigrt) \n");
         exit(1);

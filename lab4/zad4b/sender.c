@@ -1,5 +1,4 @@
 #define _XOPEN_SOURCE 500
-
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -15,56 +14,61 @@ typedef enum Mode
 } Mode;
 
 Mode mode;
+int number_of_signals;
+int received_signals;
 int sigusr1_signal;
 int sigusr2_signal;
-int received_signals = 0;
+int catcher_PID;
+int signals_sent = 0;
+union sigval value;
+
+void send_sigusr1()
+{
+    signals_sent++;
+    if (mode == KILL || mode == SIGRT)
+        kill(catcher_PID, sigusr1_signal);
+    else
+        sigqueue(catcher_PID, sigusr1_signal, value);
+    printf ("Sender: signal number %d sent \n", signals_sent);
+}
+
+void send_sigusr2()
+{
+    if (mode == KILL || mode == SIGRT)
+        kill(catcher_PID, sigusr2_signal);
+    else
+        sigqueue(catcher_PID, sigusr2_signal, value);
+    printf ("Sender: end signal sent \n");
+}
 
 void handler(int sig_no, siginfo_t *siginfo, void *ucontext)
 {
     if (sig_no == sigusr1_signal)
-    {
+    {   
         received_signals++;
-        printf("Catcher: received so far %d signals from sender \n", received_signals);
+        printf("Sender: received so far %d signals from catcher \n", received_signals);
+        if (signals_sent < number_of_signals)
+            send_sigusr1();
+        else
+            send_sigusr2();
     }
     else if (sig_no == sigusr2_signal)
     {
-        if (mode == KILL || mode == SIGRT)
-        {
-            for (int i = 0; i < received_signals; ++i)
-            {
-                kill(siginfo->si_pid, sigusr1_signal);
-                printf("Catcher: sending signal number %d to sender \n", i);
-            }
-            kill(siginfo->si_pid, sigusr2_signal);
-            printf("Catcher: sending end signal to sender \n");
-        }
-        else
-        {
-            union sigval value;
-            for (int i = 0; i < received_signals; ++i)
-            {
-                value.sival_int = i;
-                sigqueue(siginfo->si_pid, sigusr1_signal, value);
-                printf("Catcher: sending signal number %d to sender \n", i);
-            }
-            sigqueue(siginfo->si_pid, sigusr2_signal, value);
-            printf("Catcher: sending end signal to sender \n");
-        }
-        printf("catcher received end signal. Number of signals received: %d \n", received_signals);
+        printf("Sender received end signal. Number of signals received: %d, should have received: %d\n", received_signals, number_of_signals);
         exit(0);
     }
 }
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
+      if (argc != 4)
     {
-        printf("wrong command, should be: mode (kill/sigqueue/sigrt) \n");
-        exit(1);
+        printf("wrong command, should be: catcher_PID number_of_signals_to_send mode (kill/sigqueque/sigrt) \n");
     }
-    
-    printf("catcher PID is: %d\n", getpid());
-    char *mode_name = argv[1];
+    catcher_PID = atoi(argv[1]);
+    number_of_signals = atoi(argv[2]);
+    char *mode_name = argv[3];
+
     if (strcmp("kill", mode_name) == 0)
     {
         mode = KILL;
@@ -85,19 +89,20 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("wrong command, should be: mode (kill/sigqueque/sigrt) \n");
+        printf("wrong command, should be: catcher_PID number_of_signals_to_send mode (kill/sigqueque/sigrt) \n");
         exit(1);
     }
+
     sigset_t mask;
     sigfillset(&mask);
     sigdelset(&mask, sigusr1_signal);
     sigdelset(&mask, sigusr2_signal);
-
     if (sigprocmask(SIG_BLOCK, &mask, NULL) < 0)
     {
-        printf("unable to block signal\n");
+        printf("unable to block signal \n");
         exit(1);
     }
+
     struct sigaction act;
     act.sa_flags = SA_SIGINFO;
     act.sa_sigaction = handler;
@@ -106,8 +111,11 @@ int main(int argc, char *argv[])
     sigaddset(&act.sa_mask, sigusr2_signal);
     sigaction(sigusr1_signal, &act, NULL);
     sigaction(sigusr2_signal, &act, NULL);
+    printf("sender has PID: %d\n", getpid());
+    send_sigusr1();
 
-     while (1)
+    while (1)
         sleep(10);
+
     return 0;
 }

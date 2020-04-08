@@ -96,9 +96,10 @@ int main(int argc, char *argv[])
         for (int i = 0; i < number_of_signals; ++i)
         {
             kill(catcher_PID, sigusr1_signal);
-            printf ("signal number %d sent \n", i);
+            printf ("Sender: signal number %d sent \n", i);
         }
         kill(catcher_PID, sigusr2_signal);
+        printf ("Sender: end signal sent \n");
     }
     else
     {
@@ -109,8 +110,6 @@ int main(int argc, char *argv[])
         sigqueue(catcher_PID, sigusr2_signal, value);
     }
      while (1)
-    {
-        sleep(100);
-    }
+        sleep(10);
     return 0;
 }
