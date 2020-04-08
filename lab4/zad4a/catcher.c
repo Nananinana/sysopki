@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 {
     if (argc != 2)
     {
-        fprintf(stderr, "wrong command, should be: mode (kill/sigqueque/sigrt) \n");
+        printf("wrong command, should be: mode (kill/sigqueque/sigrt) \n");
         exit(1);
     }
 
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf(stderr, "wrong command, should be: mode (kill/sigqueque/sigrt) \n");
+        printf("wrong command, should be: mode (kill/sigqueque/sigrt) \n");
         exit(1);
     }
     sigset_t mask;

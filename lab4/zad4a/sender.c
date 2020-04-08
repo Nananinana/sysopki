@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 {
     if (argc != 4)
     {
-        fprintf(stderr, "wrong command, should be: catcher_PID number_of_signals_to_send mode (kill/sigqueque/sigrt) \n");
+        printf("wrong command, should be: catcher_PID number_of_signals_to_send mode (kill/sigqueque/sigrt) \n");
     }
     int catcher_PID = atoi(argv[1]);
     number_of_signals = atoi(argv[2]);
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        fprintf(stderr, "wrong command, should be: catcher_PID number_of_signals_to_send mode (kill/sigqueque/sigrt) \n");
+        printf("wrong command, should be: catcher_PID number_of_signals_to_send mode (kill/sigqueque/sigrt) \n");
         exit(1);
     }
 
