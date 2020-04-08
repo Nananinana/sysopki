@@ -7,7 +7,6 @@ catcher: catcher.c
 	$(CC) $(FLAGS) catcher.c -o catcher
 
 sender: sender.c
-	$(CC) $(FLAGS) catcher.c -o catcher
 	$(CC) $(FLAGS) sender.c -o sender
 
 clean:
