@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 {
     if (argc != 2)
     {
-        printf("wrong command, should be: mode (kill/sigqueque/sigrt) \n");
+        printf("wrong command, should be: mode (kill/sigqueue/sigrt) \n");
         exit(1);
     }
     
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
         sigusr1_signal = SIGUSR1;
         sigusr2_signal = SIGUSR2;
     }
-    else if (strcmp("queue", mode_name) == 0)
+    else if (strcmp("sigqueue", mode_name) == 0)
     {
         mode = SIGQUEUE;
         sigusr1_signal = SIGUSR1;
