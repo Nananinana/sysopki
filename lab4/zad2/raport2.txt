@@ -1,0 +1,32 @@
+./fork ignore f
+Printing from child process
+Handler received a signal
+./fork handler f
+Printing from child process
+Handler received a signal
+./fork mask f
+Printing from child process
+./fork pending f
+Printing from child process
+SIGUSR1 is not visible from this proccess
+
+Jak widać przy wykorzystaniu funkcji fork proces potomny
+dziedziczy maskę i handler. Nie dziedziczy ustawień dotyczących ignorowania
+ani listy nieobsłużonych sygnałów.
+
+./fork ignore exec
+Printing from exec function 
+Handler received a signal
+./fork handler exec
+Printing from exec function 
+Handler received a signal
+./fork mask exec
+Printing from exec function
+./fork pending exec
+Printing from exec function 
+SIGUSR1 is pending
+
+W przypadku funkcji exec proces potomny dziedziczy handler, maskę i listę
+niobsłużonych sygnałów. Nie dziedziczy ustawień dotyczących ignorowania.
+
+
