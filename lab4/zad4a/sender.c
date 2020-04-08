@@ -94,8 +94,10 @@ int main(int argc, char *argv[])
     if (mode == KILL || mode == SIGRT)
     {
         for (int i = 0; i < number_of_signals; ++i)
+        {
             kill(catcher_PID, sigusr1_signal);
             printf ("signal sent /n");
+        }
         kill(catcher_PID, sigusr2_signal);
     }
     else
