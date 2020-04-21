@@ -117,11 +117,12 @@ int main (int argc, char ** argv){
             int arguments_number = 0;
             while (one_argument != NULL)
             {
+                print(one_argument);
                 tasks[tasks_number][arguments_number++] = one_argument;
-                printf("what's in table: ");
-                printf (tasks[tasks_number][arguments_number]);
-                printf(" /n");
-                printf("I'm in while loop");
+                //printf("what's in table: ");
+                //printf (tasks[tasks_number][arguments_number]);
+                //printf(" /n");
+                //printf("I'm in while loop");
                 one_argument = strtok_r(NULL, " ", &task_copy);
             }
             one_task = strtok_r(NULL, "|", &line_copy);
