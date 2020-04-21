@@ -95,7 +95,7 @@ int main (int argc, char ** argv){
     
     while(fgets(line,2048,file)!=NULL){
         tasks_number = 0;
-        char tasks[MAX_COMMANDS_IN_LINE][MAX_ARGS];
+        char *tasks[MAX_COMMANDS_IN_LINE][MAX_ARGS];
         for (int i = 0; i < MAX_COMMANDS_IN_LINE; ++i)
         {
             for (int j = 0; j < MAX_ARGS; ++j)
@@ -118,7 +118,9 @@ int main (int argc, char ** argv){
             while (one_argument != NULL)
             {
                 tasks[tasks_number][arguments_number++] = one_argument;
-                printf(tasks[tasks_number][arguments_number]);
+                printf("what's in table: ");
+                printf (tasks[tasks_number][arguments_number]);
+                printf(" /n");
                 printf("I'm in while loop");
                 one_argument = strtok_r(NULL, " ", &task_copy);
             }
