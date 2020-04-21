@@ -11,55 +11,20 @@
 #define MAX_COMMANDS_IN_LINE 10
 #define MAX_ARGS 10
 
-/*void find_arguments(char *task_arguments, char *one_task)
-{
-    
-}*/
-
-/*
-int parse_line (char *line, char ***tasks)
-{
-    char *line_copy = line;
-    char *one_task = strtok_r(line, "|", &line_copy);
-    int tasks_number = 0;
-
-    while (one_task != NULL)
-    {
-        //find_arguments(tasks[tasks_number++], one_task);
-        char *task_copy = one_task;
-        char *one_argument = strtok_r(one_task, " ", &task_copy);
-        int arguments_number = 0;
-        while (one_argument != NULL)
-        {
-            tasks[tasks_number][arguments_number++] = one_argument;
-            one_argument = strtok_r(NULL, " ", &task_copy);
-        }
-        one_task = strtok_r(NULL, "|", &line_copy);
-    }     
-    return tasks_number; 
-}
-*/
-
-long get_file_size(FILE *f)
-{
-    fseek(f, 0, SEEK_END);
-    long file_size = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    return file_size;
-}
-
-char *get_line(FILE *file)
+char *load_file_to_buffer(FILE *file)
 {
     if(file == NULL){
         printf("can't open file");
-        exit(1); //?
+        exit(1); 
     }
-    //char line[2048];
-    long file_size = get_file_size(file);
+
+    fseek(file, 0, SEEK_END);
+    long file_size = ftell(file);
+    fseek(file, 0, SEEK_SET);
     char *buffer = malloc(file_size + 1);
     if (fread(buffer, 1, file_size, file) != file_size)
     {
-        printf("cant read from file \n");
+        printf("can't read from file \n");
         exit(1);
     }
     fclose(file);
@@ -75,9 +40,9 @@ int main (int argc, char ** argv){
 
     char *file_path = argv[1];
     FILE *file = fopen(file_path, "r");
-    char *buffer = get_line(file);
-    char *lines_tmp = buffer;
-    char *line = strtok_r(buffer, "\n", &lines_tmp);
+    char *buffer = load_file_to_buffer(file);
+    char *buffer_copy = buffer;
+    char *line = strtok_r(buffer, "\n", &buffer_copy);
     int tasks_number;
     
     while(line != NULL){
@@ -88,34 +53,24 @@ int main (int argc, char ** argv){
             for (int j = 0; j < MAX_ARGS; ++j)
                 tasks[i][j] = NULL;
         }   
-        //int tasks_number = parse_line(line, tasks);
-
         char *line_copy = line;
         char *one_task = strtok_r(line, "|", &line_copy);
-        //printf (one_task);
         tasks_number = 0;
 
         while (one_task != NULL)
         {
-        //find_arguments(tasks[tasks_number++], one_task);
             char *task_copy = one_task;
             char *one_argument = strtok_r(one_task, " ", &task_copy);
-            //printf (one_argument);
             int arguments_number = 0;
             while (one_argument != NULL)
             {
                 printf(one_argument);
                 tasks[tasks_number][arguments_number++] = one_argument;
-                //printf("what's in table: ");
-                //printf (tasks[tasks_number][arguments_number]);
-                //printf(" /n");
-                //printf("I'm in while loop");
                 one_argument = strtok_r(NULL, " ", &task_copy);
             }
             one_task = strtok_r(NULL, "|", &line_copy);
             tasks_number++;
         }
-        //printf (tasks_number);
         int fd1[2], fd2[2];
         pipe(fd1);
 
@@ -130,14 +85,11 @@ int main (int argc, char ** argv){
                     close(fd2[0]);
                     dup2(fd2[1],STDOUT_FILENO);
                 }
-                    //args=find_args(tasks[i]);
                     execvp(tasks[i][0],tasks[i]);
-                    /*perror("error");
-
-                    for(int i=0;i<maxs;i++){
-                        free(args[i]);
-                    }
-                    free(args);*/
+                    perror("error");
+                    for(int j=0;j<arguments_number;j++)
+                        free(tasks[i][j]);
+                    free(tasks[i]);
                     exit(0);
             } 
             close(fd1[0]);
@@ -149,7 +101,7 @@ int main (int argc, char ** argv){
         close(fd2[1]);
 
         while((wait(NULL))!=-1);
-        line = strtok_r(NULL, "\n", &lines_tmp);
+        line = strtok_r(NULL, "\n", &buffer_copy);
     }
 
     fclose(file); 
