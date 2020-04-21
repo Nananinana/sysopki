@@ -51,7 +51,7 @@
     
 }*/
 
-int parse_line (char *line, char **tasks)
+int parse_line (char *line, char *tasks[][])
 {
     char *line_copy = line;
     char *one_task = strtok_r(line, "|", &line_copy);
@@ -93,7 +93,7 @@ int main (int argc, char ** argv){
     
     while(fgets(line,2048,file)!=NULL){
         tasks_number = 0;
-        char tasks[MAX_COMMANDS_IN_LINE][MAX_ARGS];
+        char *tasks[MAX_COMMANDS_IN_LINE][MAX_ARGS];
         for (int i = 0; i < MAX_COMMANDS_IN_LINE; ++i)
         {
             for (int j = 0; j < MAX_ARGS; ++j)
