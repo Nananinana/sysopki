@@ -75,7 +75,8 @@ int main (int argc, char ** argv){
 
     char *file_path = argv[1];
     FILE *file = fopen(file_path, "r");
-    char *lines_tmp = get_line(file);
+    char *buffer = get_line(file);
+    char *lines_tmp = buffer;
     char *line = strtok_r(buffer, "\n", &lines_tmp);
     int tasks_number;
     
