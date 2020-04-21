@@ -118,6 +118,7 @@ int main (int argc, char ** argv){
             while (one_argument != NULL)
             {
                 tasks[tasks_number][arguments_number++] = one_argument;
+                printf("I'm in while loop");
                 one_argument = strtok_r(NULL, " ", &task_copy);
             }
             one_task = strtok_r(NULL, "|", &line_copy);
