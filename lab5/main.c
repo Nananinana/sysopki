@@ -46,17 +46,10 @@
 }*/
 
 
-void find_arguments(char *task_arguments, char *one_task)
+/*void find_arguments(char *task_arguments, char *one_task)
 {
-    char *task_copy = one_task;
-    char *one_argument = strtok_r(one_task, " ", &task_copy);
-    int arguments_number = 0;
-    while (one_argument != NULL)
-    {
-        task_arguments[arguments_number++] = one_argument;
-        one_argument = strtok_r(NULL, " ", &task_copy);
-    }
-}
+    
+}*/
 
 int parse_line (char *line, char **tasks)
 {
@@ -66,7 +59,15 @@ int parse_line (char *line, char **tasks)
 
     while (one_task != NULL)
     {
-        find_arguments(tasks[tasks_number++], one_task);
+        //find_arguments(tasks[tasks_number++], one_task);
+        char *task_copy = one_task;
+        char *one_argument = strtok_r(one_task, " ", &task_copy);
+        int arguments_number = 0;
+        while (one_argument != NULL)
+        {
+            tasks[tasks_number][arguments_number++] = one_argument;
+            one_argument = strtok_r(NULL, " ", &task_copy);
+        }
         one_task = strtok_r(NULL, "|", &line_copy);
     }     
     return tasks_number; 
