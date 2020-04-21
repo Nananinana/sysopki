@@ -1,6 +1,6 @@
 all:
 	gcc -Wall -std=c99 -o main main.c
-	./main file.txt
+	./main text.txt
 	make clean
 
 clean:
