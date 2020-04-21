@@ -11,41 +11,6 @@
 #define MAX_COMMANDS_IN_LINE 10
 #define MAX_ARGS 10
 
-
-//int maxs=0; //?max arguments/commands?
-
-/*char **find_args(char *command){
-    char **args=(char**)calloc(128, sizeof(char*));
-
-    int p=0, it=0, flag=0;
-    for(int i=0;command[i]!='\0';i++){
-        if((command[i]=='\''|| command[i]=='\"'|| command[i]=='{')&& flag==0)
-            flag=1;
-        else if((command[i]=='\''  || command[i]=='\"'|| command[i]=='}')&& flag==1)
-            flag=0;
-        
-        
-        if(command[i]==' ' && flag==0){
-
-            args[it]=(char*)calloc(i-p+64, sizeof(char));
-            strncpy(args[it++], command+p,i-p);
-            p=i+1;
-        }
-        else if(command[i+1]=='\0'){
-
-            args[it]=(char*)calloc(i-p+64, sizeof(char));
-            strncpy(args[it++], command+p,i+1-p+1);
-        }
-
-    }
-    args[it]=NULL;
-    
-        maxs=it;
-
-    return args;
-}*/
-
-
 /*void find_arguments(char *task_arguments, char *one_task)
 {
     
@@ -83,14 +48,8 @@ long get_file_size(FILE *f)
     return file_size;
 }
 
-int main (int argc, char ** argv){
-
-    if(argc <2){
-        printf("Wrong number of arguments");
-        return 1;
-    }
-
-    char *file_path = argv[1];
+char *get_line(char *file_path)
+{
     FILE *file = fopen(file_path, "r");
     if(file == NULL){
         printf("can't open file");
@@ -110,7 +69,18 @@ int main (int argc, char ** argv){
 
     char *lines_tmp = buffer;
     char *line = strtok_r(buffer, "\n", &lines_tmp);
+    return line;
 
+}
+
+int main (int argc, char ** argv){
+
+    if(argc <2){
+        printf("Wrong number of arguments");
+        return 1;
+    }
+
+    char *line = get_line(argv[1]);
     
     while(line != NULL){
         tasks_number = 0;
