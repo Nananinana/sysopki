@@ -46,7 +46,7 @@
 }*/
 
 
-void find_arguments(char *task_arguments[], char *one_task)
+void find_arguments(char *task_arguments, char *one_task)
 {
     char *task_copy = one_task;
     char *one_argument = strtok_r(one_task, " ", &task_copy);
@@ -87,6 +87,8 @@ int main (int argc, char ** argv){
         return 1;
     }
     char line[2048];
+    int tasks_number = 0;
+
     
     while(fgets(line,2048,file)!=NULL){
         tasks_number = 0;
