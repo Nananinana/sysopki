@@ -46,10 +46,23 @@
 }*/
 
 
-/*void find_arguments(char *task_arguments, char *one_task)
+void find_arguments(char *task_arguments[], char *one_task)
 {
-    
-}*/
+    char *task_copy = one_task;
+    char *one_argument = strtok_r(one_task, " ", &task_copy);
+    //printf (one_argument);
+    int arguments_number = 0;
+    while (one_argument != NULL)
+    {
+        //print(one_argument);
+        tasks_arguments[arguments_number++] = &one_argument;
+                //printf("what's in table: ");
+                //printf (tasks[tasks_number][arguments_number]);
+                //printf(" /n");
+                //printf("I'm in while loop");
+        one_argument = strtok_r(NULL, " ", &task_copy);
+    }
+}
 
 /*
 int parse_line (char *line, char ***tasks)
@@ -110,23 +123,9 @@ int main (int argc, char ** argv){
 
         while (one_task != NULL)
         {
-        //find_arguments(tasks[tasks_number++], one_task);
-            char *task_copy = one_task;
-            char *one_argument = strtok_r(one_task, " ", &task_copy);
-            //printf (one_argument);
-            int arguments_number = 0;
-            while (one_argument != NULL)
-            {
-                print(one_argument);
-                tasks[tasks_number][arguments_number++] = one_argument;
-                //printf("what's in table: ");
-                //printf (tasks[tasks_number][arguments_number]);
-                //printf(" /n");
-                //printf("I'm in while loop");
-                one_argument = strtok_r(NULL, " ", &task_copy);
-            }
+            find_arguments(tasks[tasks_number++], one_task);
             one_task = strtok_r(NULL, "|", &line_copy);
-            tasks_number++;
+            //tasks_number++;
         }
         //printf (tasks_number);
         int fd1[2], fd2[2];
