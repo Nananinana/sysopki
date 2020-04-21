@@ -58,10 +58,8 @@ void find_arguments(char *task_arguments[], char *one_task)
     }
 }
 
-char **parse_line (char *line, int *tasks_number)
+int parse_line (char *line, char **tasks)
 {
-    char *tasks[MAX_COMMANDS_IN_LINE][MAX_ARGS];
-
     for (int i = 0; i < MAX_COMMANDS_IN_LINE; ++i)
     {
         for (int j = 0; j < MAX_ARGS; ++j)
@@ -69,13 +67,14 @@ char **parse_line (char *line, int *tasks_number)
     }
     char *line_copy = line;
     char *one_task = strtok_r(line, "|", &line_copy);
+    int tasks_number = 0;
 
     while (one_task != NULL)
     {
-        find_arguments(tasks[&tasks_number++], one_task);
+        find_arguments(tasks[tasks_number++], one_task);
         one_task = strtok_r(NULL, "|", &line_copy);
     }     
-    return tasks; 
+    return tasks_number; 
 }
 
 
@@ -93,11 +92,11 @@ int main (int argc, char ** argv){
         return 1;
     }
     char line[2048];
-    int *tasks_number;
     
     while(fgets(line,2048,file)!=NULL){
         &tasks_number = 0;
-        char **tasks = parse_line(&line, &tasks_number);
+        char tasks[MAX_COMMANDS_IN_LINE][MAX_ARGS];
+        int tasks_number = parse_line(line, tasks);
 
         /*
     
@@ -141,14 +140,14 @@ int main (int argc, char ** argv){
         int fd1[2], fd2[2];
         pipe(fd1);
 
-        for(int i=0;i<&tasks_number;i++){
+        for(int i=0;i<tasks_number;i++){
             pipe(fd2);
             if (fork()== 0) {
                 if(i!=0){
                     dup2(fd1[0],STDIN_FILENO);
                     close(fd1[1]);
                 }
-                if(i!=&tasks_number-1){
+                if(i!=tasks_number-1){
                     close(fd2[0]);
                     dup2(fd2[1],STDOUT_FILENO);
                 }
