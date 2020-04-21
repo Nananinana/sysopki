@@ -129,7 +129,7 @@ int main (int argc, char ** argv){
             int arguments_number = 0;
             while (one_argument != NULL)
             {
-                print(one_argument);
+                printf(one_argument);
                 tasks[tasks_number][arguments_number++] = one_argument;
                 //printf("what's in table: ");
                 //printf (tasks[tasks_number][arguments_number]);
