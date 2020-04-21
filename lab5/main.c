@@ -136,7 +136,7 @@ int main (int argc, char ** argv){
                     dup2(fd2[1],STDOUT_FILENO);
                 }
                     //args=find_args(tasks[i]);
-                    execvp(tasks[i][0],tasks);
+                    execvp(tasks[i][0],tasks[i]);
                     /*perror("error");
 
                     for(int i=0;i<maxs;i++){
