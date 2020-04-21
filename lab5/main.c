@@ -122,7 +122,7 @@ int main (int argc, char ** argv){
             }
             one_task = strtok_r(NULL, "|", &line_copy);
         }
-        printf (tasks_number);
+        //printf (tasks_number);
         int fd1[2], fd2[2];
         pipe(fd1);
 
