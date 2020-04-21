@@ -75,6 +75,13 @@ int parse_line (char *line, char ***tasks)
 }
 */
 
+long get_file_size(FILE *f)
+{
+    fseek(f, 0, SEEK_END);
+    long file_size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    return file_size;
+}
 
 int main (int argc, char ** argv){
 
@@ -92,14 +99,14 @@ int main (int argc, char ** argv){
     //char line[2048];
     int tasks_number;
 
-    long file_size = get_file_size(f);
+    long file_size = get_file_size(file);
     char *buffer = malloc(file_size + 1);
-    if (fread(buffer, 1, file_size, f) != file_size)
+    if (fread(buffer, 1, file_size, file) != file_size)
     {
         fprintf(stderr, "cant read from file %s\n", file_path);
         exit(1);
     }
-    fclose(f);
+    fclose(file);
 
     char *lines_tmp = buffer;
     char *line = strtok_r(buffer, "\n", &lines_tmp);
