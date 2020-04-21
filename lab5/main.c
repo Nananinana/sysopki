@@ -105,7 +105,7 @@ int main (int argc, char ** argv){
 
         char *line_copy = line;
         char *one_task = strtok_r(line, "|", &line_copy);
-        printf (one_task);
+        //printf (one_task);
         tasks_number = 0;
 
         while (one_task != NULL)
@@ -121,6 +121,7 @@ int main (int argc, char ** argv){
                 one_argument = strtok_r(NULL, " ", &task_copy);
             }
             one_task = strtok_r(NULL, "|", &line_copy);
+            tasks_number++;
         }
         //printf (tasks_number);
         int fd1[2], fd2[2];
