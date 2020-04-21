@@ -55,7 +55,7 @@ void find_arguments(char *task_arguments[], char *one_task)
     while (one_argument != NULL)
     {
         //print(one_argument);
-        tasks_arguments[arguments_number++] = &one_argument;
+        task_arguments[arguments_number++] = one_argument;
                 //printf("what's in table: ");
                 //printf (tasks[tasks_number][arguments_number]);
                 //printf(" /n");
