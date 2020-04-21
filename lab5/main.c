@@ -87,7 +87,7 @@ int main (int argc, char ** argv){
                 }
                     execvp(tasks[i][0],tasks[i]);
                     perror("error");
-                    for(int j=0;j<arguments_number;j++)
+                    for(int j=0;j<MAX_ARGS;j++)
                         free(tasks[i][j]);
                     free(tasks[i]);
                     exit(0);
