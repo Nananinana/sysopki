@@ -51,6 +51,7 @@
     
 }*/
 
+/*
 int parse_line (char *line, char ***tasks)
 {
     char *line_copy = line;
@@ -72,6 +73,7 @@ int parse_line (char *line, char ***tasks)
     }     
     return tasks_number; 
 }
+*/
 
 
 int main (int argc, char ** argv){
@@ -88,7 +90,7 @@ int main (int argc, char ** argv){
         return 1;
     }
     char line[2048];
-    int tasks_number = 0;
+    int tasks_number;
 
     
     while(fgets(line,2048,file)!=NULL){
@@ -99,47 +101,26 @@ int main (int argc, char ** argv){
             for (int j = 0; j < MAX_ARGS; ++j)
                 tasks[i][j] = NULL;
         }   
-        int tasks_number = parse_line(line, tasks);
+        //int tasks_number = parse_line(line, tasks);
 
-        /*
-    
-        //reads how many commands are there
-        int n=1;
-        for(int i=0;line[i]!='\0';i++){
-            if(line[i]=='|')
-                n++;  
+        char *line_copy = line;
+        char *one_task = strtok_r(line, "|", &line_copy);
+        tasks_number = 0;
+
+        while (one_task != NULL)
+        {
+        //find_arguments(tasks[tasks_number++], one_task);
+            char *task_copy = one_task;
+            char *one_argument = strtok_r(one_task, " ", &task_copy);
+            int arguments_number = 0;
+            while (one_argument != NULL)
+            {
+                tasks[tasks_number][arguments_number++] = one_argument;
+                one_argument = strtok_r(NULL, " ", &task_copy);
+            }
+            one_task = strtok_r(NULL, "|", &line_copy);
         }
         
-        //reads commands
-        char command[256];
-        strcpy(command,"");
-        int p=0,end=0;
-        char tasks[128][256];
-
-        int i=0;
-        for(;line[i]!='\0';i++){
-
-            if(line[i]=='|' || line[i]=='\n'){
-                
-                strcpy(tasks[p],command);
-                strcpy(command,"");
-                i++; end=0;
-            }
-            else{
-                end++;
-                strncat(command,line+i,1);
-                command[end+1]='\0';
-
-                
-            }
-        }
-        if( line[i]=='\0'){
-                strcpy(tasks[p++],command);
-                strcpy(command,"");
-        }
-            */
-        //make pipe
-        //char **args;
         int fd1[2], fd2[2];
         pipe(fd1);
 
