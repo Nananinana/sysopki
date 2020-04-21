@@ -46,23 +46,10 @@
 }*/
 
 
-void find_arguments(char *task_arguments[], char *one_task)
+/*void find_arguments(char *task_arguments, char *one_task)
 {
-    char *task_copy = one_task;
-    char *one_argument = strtok_r(one_task, " ", &task_copy);
-    //printf (one_argument);
-    int arguments_number = 0;
-    while (one_argument != NULL)
-    {
-        //print(one_argument);
-        task_arguments[arguments_number++] = one_argument;
-                //printf("what's in table: ");
-                //printf (tasks[tasks_number][arguments_number]);
-                //printf(" /n");
-                //printf("I'm in while loop");
-        one_argument = strtok_r(NULL, " ", &task_copy);
-    }
-}
+    
+}*/
 
 /*
 int parse_line (char *line, char ***tasks)
@@ -102,11 +89,23 @@ int main (int argc, char ** argv){
         printf("can't open file");
         return 1;
     }
-    char line[2048];
+    //char line[2048];
     int tasks_number;
 
+    long file_size = get_file_size(f);
+    char *buffer = malloc(file_size + 1);
+    if (fread(buffer, 1, file_size, f) != file_size)
+    {
+        fprintf(stderr, "cant read from file %s\n", file_path);
+        exit(1);
+    }
+    fclose(f);
+
+    char *lines_tmp = buffer;
+    char *line = strtok_r(buffer, "\n", &lines_tmp);
+
     
-    while(fgets(line,2048,file)!=NULL){
+    while(line != NULL){
         tasks_number = 0;
         char *tasks[MAX_COMMANDS_IN_LINE][MAX_ARGS];
         for (int i = 0; i < MAX_COMMANDS_IN_LINE; ++i)
@@ -123,9 +122,23 @@ int main (int argc, char ** argv){
 
         while (one_task != NULL)
         {
-            find_arguments(tasks[tasks_number++], one_task);
+        //find_arguments(tasks[tasks_number++], one_task);
+            char *task_copy = one_task;
+            char *one_argument = strtok_r(one_task, " ", &task_copy);
+            //printf (one_argument);
+            int arguments_number = 0;
+            while (one_argument != NULL)
+            {
+                print(one_argument);
+                tasks[tasks_number][arguments_number++] = one_argument;
+                //printf("what's in table: ");
+                //printf (tasks[tasks_number][arguments_number]);
+                //printf(" /n");
+                //printf("I'm in while loop");
+                one_argument = strtok_r(NULL, " ", &task_copy);
+            }
             one_task = strtok_r(NULL, "|", &line_copy);
-            //tasks_number++;
+            tasks_number++;
         }
         //printf (tasks_number);
         int fd1[2], fd2[2];
@@ -161,6 +174,7 @@ int main (int argc, char ** argv){
         close(fd2[1]);
 
         while((wait(NULL))!=-1);
+        line = strtok_r(NULL, "\n", &lines_tmp);
     }
 
     fclose(file); 
