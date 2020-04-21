@@ -3,12 +3,11 @@ FLAGS = -std=c99 -Wall
 
 all: main
 
-main: main.c
-	make clean
-	$(CC) $(FLAGS) main.c -o main
+main: 
+	$(CC) $(FLAGS) -o main main.c
 
 clean:
-	rm -f *.o *.a *.so
+	rm main
     
 test: 
-	./main tasks
+	./main tasks.txt
