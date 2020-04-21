@@ -105,6 +105,7 @@ int main (int argc, char ** argv){
 
         char *line_copy = line;
         char *one_task = strtok_r(line, "|", &line_copy);
+        printf ("task:", one_task);
         tasks_number = 0;
 
         while (one_task != NULL)
