@@ -48,9 +48,8 @@ long get_file_size(FILE *f)
     return file_size;
 }
 
-char *get_line(char *file_path)
+char *get_line(FILE *file)
 {
-    FILE *file = fopen(file_path, "r");
     if(file == NULL){
         printf("can't open file");
         return 1;
@@ -62,7 +61,7 @@ char *get_line(char *file_path)
     char *buffer = malloc(file_size + 1);
     if (fread(buffer, 1, file_size, file) != file_size)
     {
-        fprintf(stderr, "cant read from file %s\n", file_path);
+        printf(stderr, "cant read from file \n");
         exit(1);
     }
     fclose(file);
@@ -80,7 +79,9 @@ int main (int argc, char ** argv){
         return 1;
     }
 
-    char *line = get_line(argv[1]);
+    char *file_path = argv[1];
+    FILE *file = fopen(file_path, "r");
+    char *line = get_line(file);
     
     while(line != NULL){
         tasks_number = 0;
