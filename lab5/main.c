@@ -104,5 +104,4 @@ int main (int argc, char ** argv){
         line = strtok_r(NULL, "\n", &buffer_copy);
     }
     free(buffer);
-    fclose(file); 
 }
