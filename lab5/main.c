@@ -113,6 +113,7 @@ int main (int argc, char ** argv){
         //find_arguments(tasks[tasks_number++], one_task);
             char *task_copy = one_task;
             char *one_argument = strtok_r(one_task, " ", &task_copy);
+            printf (one_argument);
             int arguments_number = 0;
             while (one_argument != NULL)
             {
@@ -121,7 +122,7 @@ int main (int argc, char ** argv){
             }
             one_task = strtok_r(NULL, "|", &line_copy);
         }
-        
+        printf (tasks_number);
         int fd1[2], fd2[2];
         pipe(fd1);
 
