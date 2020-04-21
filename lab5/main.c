@@ -103,6 +103,6 @@ int main (int argc, char ** argv){
         while((wait(NULL))!=-1);
         line = strtok_r(NULL, "\n", &buffer_copy);
     }
-
+    free(buffer);
     fclose(file); 
 }
