@@ -58,7 +58,7 @@ void find_arguments(char *task_arguments[], char *one_task)
     }
 }
 
-int parse_line (char *line, char **tasks)
+int parse_line (char *line, char **tasks[][])
 {
     for (int i = 0; i < MAX_COMMANDS_IN_LINE; ++i)
     {
