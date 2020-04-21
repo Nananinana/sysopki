@@ -64,7 +64,6 @@ int main (int argc, char ** argv){
             int arguments_number = 0;
             while (one_argument != NULL)
             {
-                printf(one_argument);
                 tasks[tasks_number][arguments_number++] = one_argument;
                 one_argument = strtok_r(NULL, " ", &task_copy);
             }
