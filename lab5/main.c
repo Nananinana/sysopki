@@ -55,8 +55,6 @@ char *get_line(FILE *file)
         return 1;
     }
     //char line[2048];
-    int tasks_number;
-
     long file_size = get_file_size(file);
     char *buffer = malloc(file_size + 1);
     if (fread(buffer, 1, file_size, file) != file_size)
@@ -65,11 +63,7 @@ char *get_line(FILE *file)
         exit(1);
     }
     fclose(file);
-
-    char *lines_tmp = buffer;
-    char *line = strtok_r(buffer, "\n", &lines_tmp);
-    return line;
-
+    return buffer;
 }
 
 int main (int argc, char ** argv){
@@ -81,7 +75,9 @@ int main (int argc, char ** argv){
 
     char *file_path = argv[1];
     FILE *file = fopen(file_path, "r");
-    char *line = get_line(file);
+    char *lines_tmp = get_line(file);
+    char *line = strtok_r(buffer, "\n", &lines_tmp);
+    int tasks_number;
     
     while(line != NULL){
         tasks_number = 0;
