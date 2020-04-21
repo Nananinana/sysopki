@@ -52,14 +52,14 @@ char *get_line(FILE *file)
 {
     if(file == NULL){
         printf("can't open file");
-        return 1;
+        exit(1); //?
     }
     //char line[2048];
     long file_size = get_file_size(file);
     char *buffer = malloc(file_size + 1);
     if (fread(buffer, 1, file_size, file) != file_size)
     {
-        printf(stderr, "cant read from file \n");
+        printf("cant read from file \n");
         exit(1);
     }
     fclose(file);
