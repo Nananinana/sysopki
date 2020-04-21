@@ -51,7 +51,7 @@
     
 }*/
 
-int parse_line (char *line, char *tasks[][])
+int parse_line (char *line, char ***tasks)
 {
     char *line_copy = line;
     char *one_task = strtok_r(line, "|", &line_copy);
