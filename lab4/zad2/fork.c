@@ -77,30 +77,3 @@ int main(int argc, char **argv)
     return 0;
 }
 
-/* 
-./fork ignore f
-Printing from child process
-Handler received a signal
-./fork handler f
-Handler received a signal
-Printing from child process
-./fork mask f
-Printing from child process
-./fork pending f
-Printing from child process
-SIGUSR1 is not visible from this proccess
-
-./fork ignore exec
-Printing from exec function 
-Handler received a signal
-./fork pending exec
-SIGUSR1 is not visible from this proccess
-Printing from exec function 
-SIGUSR1 is pending
-./fork mask exec
-Printing from exec function
-./fork handler exec
-Handler received a signal
-Printing from exec function 
-Handler received a signal
-*/
