@@ -1,3 +1,5 @@
+ls -l | grep main | wc 
 cat ./main.c | wc -l
 cat ./main.c | head -3 | sort -r
+cat ./makefile | tr -d "\t" | sort | tail -n +4 | head -5
 ps -aux | grep root | wc -l
