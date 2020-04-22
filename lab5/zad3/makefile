@@ -11,7 +11,7 @@ consumer:
 	$(CC) $(FLAGS) -o consumer consumer.c
 
 test:
-	make setup
+	make input
 	make main
 	make producer
 	make consumer
