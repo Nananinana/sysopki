@@ -100,7 +100,7 @@ int main (int argc, char ** argv){
         close(fd2[1]);
 
         while((wait(NULL))!=-1);
-        line = strtok_r(NULL, "\n", &buffer_copy);
+        line = strtok_r(NULL, " \n", &buffer_copy);
     }
     free(buffer);
 }
