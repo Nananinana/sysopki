@@ -25,6 +25,7 @@ int main(int argc, char *argv[]) {
     }
     int N = atoi(argv[3]);
     char *buffer = calloc(N + 1, sizeof(char));
+    fprintf(pipe,"#%d",(int)getpid());
     while (fread(buffer, 1, N, file) > 0) 
         fwrite(buffer, 1, N, pipe);
 
