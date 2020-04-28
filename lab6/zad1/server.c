@@ -199,27 +199,22 @@ int main() {
         if (incoming_message.type == INIT)
         {
             init_handler(&incoming_message);
-            break;
         }
         else if (incoming_message.type == LIST) 
         {
             list_handler(&incoming_message);
-            break;
         }
         else if (incoming_message.type == CONNECT) 
         {
             connect_handler(&incoming_message);
-            break;
         }
         else if (incoming_message.type == DISCONNECT) 
         {
             disconnect_handler(&incoming_message);
-            break;
         }
         else if (incoming_message.type == STOP) 
         {
             stop_handler(&incoming_message);
-            break;
         }
     }
 }
