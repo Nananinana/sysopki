@@ -37,13 +37,13 @@ client* get_client_by_id(int client_id) {
 //i odsyła ten identyfikator do klienta (komunikacja w kierunku serwer->klient odbywa się za pomocą kolejki klienta).
 
 void init_client(msg* message) {
-    clients_no++;
     int client_queue_id = atoi(message->text);
     client* new_client = calloc(1, sizeof(client));
     new_client -> id = next_client_id;
     new_client -> queue_id = client_queue_id;
     new_client -> connected_client_id = -1; //is connected? connection id
     clients_on_server[clients_no] = new_client;
+    clients_no++;
     next_client_id++;
     msg msg_to_client;
     msg_to_client.type = INIT;
@@ -61,7 +61,7 @@ void list_clients(msg* message) {
         if(clients_on_server[i]->connected_client_id == -1) 
             sprintf(msg_to_client.text + strlen(msg_to_client.text), "client %d is free\n", clients_on_server[i]->id);
         else 
-            sprintf(msg_to_client.text + strlen(msg_to_client.text), "client %d \n", clients_on_server[i]->id);
+            sprintf(msg_to_client.text + strlen(msg_to_client.text), "client %d is connected with another client\n", clients_on_server[i]->id);
     msgsnd(client->queue_id, &msg_to_client, MAX_MSG_SIZE, 0);
     puts(msg_to_client.text);
 }
