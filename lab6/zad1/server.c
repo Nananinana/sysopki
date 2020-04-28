@@ -174,6 +174,24 @@ int main() {
     signal(SIGINT, stop_server);
     printf("Server ready, waiting for new clients... \n");
     while (1) {
+        switch (msg.type) {
+            case INIT:
+                init_handler(&msg);
+                break;
+            case LIST:
+                list_handler(&msg);
+                break;
+            case CONNECT:
+                connect_handler(&msg);
+                break;
+            case DISCONNECT:
+                disconnect_handler(&msg);
+                break;
+            case STOP:
+                stop_handler(&msg);
+                break;
+        }
+        /*
         msg incoming_message;
         msgrcv(server_queue, &incoming_message, MAX_MSG_SIZE, -ANY_MESSAGE, 0);
         print_action(&incoming_message);
@@ -181,6 +199,6 @@ int main() {
         else if (incoming_message.type == DISCONNECT) disconnect_handler(&incoming_message);
         else if (incoming_message.type == LIST) list_handler(&incoming_message);
         else if (incoming_message.type == CONNECT) connect_handler(&incoming_message);
-        else if (incoming_message.type == INIT)init_handler(&incoming_message);
+        else if (incoming_message.type == INIT)init_handler(&incoming_message);*/
     }
 }
