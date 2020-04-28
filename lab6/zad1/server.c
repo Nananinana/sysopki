@@ -181,30 +181,35 @@ int main() {
         char to_print[MAX_MSG_SIZE * 2];
         if (incoming_message.type == STOP) 
         {
-            //sprintf(to_print, "STOP - client %s has disconnected", incoming_message.text);
-            sprintf(to_print, "STOP - client has disconnected");
-            puts(to_print);
             stop_handler(&incoming_message);
+            sprintf(to_print, "STOP - client %s has quitted the server", incoming_message.text);
+            puts(to_print);
             continue;
         }
         else if (incoming_message.type == DISCONNECT) 
         {
             disconnect_handler(&incoming_message);
+            sprintf(to_print, "STOP - client %s has disconnected", incoming_message.text);
+            puts(to_print);
             continue;
         }
         else if (incoming_message.type == LIST) 
         {
             list_handler(&incoming_message);
+            sprintf(to_print, "LIST - listing clients:", incoming_message.text);
+            puts(to_print);
             continue;
         }
         else if (incoming_message.type == CONNECT) 
         {
             connect_handler(&incoming_message);
+            sprintf(to_print, "CONNECT - connecting clients %s", incoming_message.text);
+            puts(to_print);
             continue;
         }
         if (incoming_message.type == INIT)
         {
-            sprintf(to_print, "INIT");
+            sprintf(to_print, "INIT - new client");
             puts(to_print);
             init_handler(&incoming_message);
             continue;
