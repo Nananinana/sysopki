@@ -22,7 +22,7 @@ typedef struct {
 typedef struct { 
     int id;
     int queue_id;
-    int connected_client_id;
+    int connected_to_client;
 } client;
 
 #endif
