@@ -180,8 +180,8 @@ int main() {
         puts("Got message from client: ");
         if (incoming_message.type == STOP) 
         {
-            printf("STOP \n");
-            printf ("User %s has disconnected.", incoming_message.text);
+            puts("STOP \n");
+            puts("User %s has disconnected.", incoming_message.text);
             stop_handler(&incoming_message);
             continue;
         }
