@@ -196,9 +196,14 @@ int main() {
                 break;
         }
         */
-        if (incoming_message.type == INIT)
+        if (incoming_message.type == STOP) 
         {
-            init_handler(&incoming_message);
+            stop_handler(&incoming_message);
+            continue;
+        }
+        else if (incoming_message.type == DISCONNECT) 
+        {
+            disconnect_handler(&incoming_message);
             continue;
         }
         else if (incoming_message.type == LIST) 
@@ -211,15 +216,10 @@ int main() {
             connect_handler(&incoming_message);
             continue;
         }
-        else if (incoming_message.type == DISCONNECT) 
+        if (incoming_message.type == INIT)
         {
-            disconnect_handler(&incoming_message);
+            init_handler(&incoming_message);
             continue;
-        }
-        else if (incoming_message.type == STOP) 
-        {
-            stop_handler(&incoming_message);
-            continue;
-        }
+        }  
     }
 }
