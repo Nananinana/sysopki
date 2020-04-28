@@ -4,7 +4,7 @@
 
 #define MAX_CLIENTS 7
 #define MAX_MSG_SIZE 256 //?
-#define SERVER_KEY_ID 1
+#define SERVER_ID 1
 #define STOP_SERVER 1L
 #define STOP 2L
 #define DISCONNECT 3L
