@@ -178,8 +178,8 @@ int main() {
         print_action(&incoming_message);
         if (incoming_message.type == STOP) stop_handler(&incoming_message);
         else if (incoming_message.type == DISCONNECT) disconnect_handler(&incoming_message);
-        else if (incoming_message.type == LIST) disconnect_handler(&list_handler);
-        else if (incoming_message.type == CONNECT) disconnect_handler(&connect_handler);
+        else if (incoming_message.type == LIST) list_handler(&incoming_message);
+        else if (incoming_message.type == CONNECT) connect_handler(&incoming_message);
         else init_handler(&incoming_message);
         }
     }
