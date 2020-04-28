@@ -35,7 +35,7 @@ client* get_client(int client_id) {
 //o otrzymaniu takiego komunikatu, serwer otwiera kolejkę klienta, przydziela klientowi identyfikator (np. numer w kolejności zgłoszeń) 
 //i odsyła ten identyfikator do klienta (komunikacja w kierunku serwer->klient odbywa się za pomocą kolejki klienta).
 
-void init_handler(message* msg) {
+void init_handler(msg* msg) {
     int queue_id = atoi(msg->text);
 
     client* new_client = calloc(1, sizeof(client));
@@ -45,17 +45,17 @@ void init_handler(message* msg) {
 
     clients[clients_count++] = new_client;
 
-    message reply;
+    msg reply;
     reply.type = INIT;
     sprintf(reply.text, "%d", new_client->id);
     msgsnd(queue_id, &reply, TEXT_LEN, 0);
 }
 
-void list_handler(message* msg) {
+void list_handler(msg* msg) {
     int client_id = atoi(msg->text);
     client* client = get_client(client_id);
 
-    message reply;
+    msg reply;
     reply.type = LIST;
     sprintf(reply.text, "");
 
@@ -73,7 +73,7 @@ void list_handler(message* msg) {
 
 //Serwer ma umożliwiać łączenie klientów w pary - klienci przechodząc do trybu chatu będą mogli wysyłać sobie bezpośrednio wiadomości bez udziału serwera.
 
-void connect_handler(message* msg) {
+void connect_handler(msg* msg) {
     int client_id = atoi(strtok(msg->text, " "));
     int second_id = atoi(strtok(NULL, " "));
 
@@ -83,7 +83,7 @@ void connect_handler(message* msg) {
     first->connected_client_id = second->id;
     second->connected_client_id = first->id;
 
-    message reply;
+    msg reply;
     reply.type = CONNECT;
     sprintf(reply.text, "%d", first->queue_id);
     msgsnd(second->queue_id, &reply, TEXT_LEN, 0);
@@ -91,7 +91,7 @@ void connect_handler(message* msg) {
     msgsnd(first->queue_id, &reply, TEXT_LEN, 0);
 }
 
-void disconnect_handler(message* msg) {
+void disconnect_handler(msg* msg) {
     int client_id = atoi(msg->text);
 
     client* first = get_client(client_id);
@@ -100,12 +100,12 @@ void disconnect_handler(message* msg) {
     first->connected_client_id = -1;
     second->connected_client_id = -1;
 
-    message reply;
+    msg reply;
     reply.type = DISCONNECT;
     msgsnd(second->queue_id, &reply, TEXT_LEN, 0);
 }
 
-void stop_handler(message* msg) {
+void stop_handler(msg* msg) {
     int client_id = atoi(msg->text);
 
     int client_offset;
@@ -128,13 +128,13 @@ void stop_handler(message* msg) {
 }
 
 void stop_server() {
-    message stop_server;
+    msg stop_server;
     stop_server.type = STOP_SERVER;
     for (int i = 0; i < clients_count; i++) 
         msgsnd(clients[i]->queue_id, &stop_server, TEXT_LEN, 0);
 
     while (clients_count > 0) {
-        message stop_client;
+        msg stop_client;
         msgrcv(server_queue, &stop_client, TEXT_LEN, STOP, 0);
         stop_handler(&stop_client);
     }
@@ -143,7 +143,7 @@ void stop_server() {
     exit(0);
 }
 
-void print_action(message* msg) {
+void print_action(msg* msg) {
     char buffer[TEXT_LEN * 2];
     switch (msg->type) {
             case INIT:
@@ -173,8 +173,8 @@ int main() {
     puts("Server turned ON, waiting for users!");
 
     while (1) {
-        message msg;
-        msgrcv(server_queue, &msg, TEXT_LEN, -TYPES_COUNT, 0);
+        msg msg;
+        msgrcv(server_queue, &msg, MAX_MSG_SIZE, -TYPES_COUNT, 0);
         print_action(&msg);
 
         switch (msg.type) {

@@ -19,7 +19,7 @@ int server_queue;
 int other_queue = -1;
 
 void stop_client() {
-    message msg;
+    msg msg;
     msg.type = STOP;
     sprintf(msg.text, "%d", own_id);
 
@@ -32,7 +32,7 @@ void stop_client() {
 
 void get_replies(union sigval sv) {
     (void)sv;
-    message reply;
+    msg reply;
     while (msgrcv(client_queue, &reply, MAX_MSG_SIZE, -TYPES_COUNT, IPC_NOWAIT) !=
            -1) {
         if (reply.type == CONNECT) {
@@ -79,14 +79,14 @@ int main() {
 
     signal(SIGINT, sigint_handler);
 
-    message init;
+    msg init;
     init.type = INIT;
     sprintf(init.text, "%d", client_queue);
     msgsnd(server_queue, &init, MAX_MSG_SIZE, 0);
 
     //Po otrzymaniu identyfikatora, klient może wysłać zlecenie do serwera(zlecenia są czytane ze standardowego wyjścia w postaci typ_komunikatu).
 
-    message init_ack;
+    msg init_ack;
     msgrcv(client_queue, &init_ack, MAX_MSG_SIZE, INIT, 0);
     own_id = atoi(init_ack.text);
 
@@ -97,7 +97,7 @@ int main() {
     printf("\nown_id: %d\n", own_id);
 
     while (fgets(line, sizeof(line), stdin)) {
-        message msg;
+        msg msg;
         msg.type = -1;
         int is_msg_to_client = 0;
 
