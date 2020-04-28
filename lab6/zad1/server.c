@@ -181,6 +181,5 @@ int main() {
         else if (incoming_message.type == LIST) list_handler(&incoming_message);
         else if (incoming_message.type == CONNECT) connect_handler(&incoming_message);
         else init_handler(&incoming_message);
-        }
     }
 }
