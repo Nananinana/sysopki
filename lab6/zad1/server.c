@@ -177,6 +177,7 @@ int main() {
         msg incoming_message;
         msgrcv(server_queue, &incoming_message, MAX_MSG_SIZE, -ANY_MESSAGE, 0);
         print_action(&incoming_message);
+        /*
         switch (incoming_message.type) {
             case INIT:
                 init_handler(&incoming_message);
@@ -194,12 +195,31 @@ int main() {
                 stop_handler(&incoming_message);
                 break;
         }
-        /*
-       
-        if (incoming_message.type == STOP) stop_handler(&incoming_message);
-        else if (incoming_message.type == DISCONNECT) disconnect_handler(&incoming_message);
-        else if (incoming_message.type == LIST) list_handler(&incoming_message);
-        else if (incoming_message.type == CONNECT) connect_handler(&incoming_message);
-        else if (incoming_message.type == INIT)init_handler(&incoming_message);*/
+        */
+        if (incoming_message.type == INIT)
+        {
+            init_handler(&incoming_message);
+            break;
+        }
+        else if (incoming_message.type == LIST) 
+        {
+            list_handler(&incoming_message);
+            break;
+        }
+        else if (incoming_message.type == CONNECT) 
+        {
+            connect_handler(&incoming_message);
+            break;
+        }
+        else if (incoming_message.type == DISCONNECT) 
+        {
+            disconnect_handler(&incoming_message);
+            break;
+        }
+        else if (incoming_message.type == STOP) 
+        {
+            stop_handler(&incoming_message);
+            break;
+        }
     }
 }
