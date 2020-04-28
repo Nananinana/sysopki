@@ -19,11 +19,11 @@ int server_queue;
 int other_queue = -1;
 
 void stop_client() {
-    msg msg;
-    msg.type = STOP;
-    sprintf(msg.text, "%d", own_id);
+    msg message;
+    message.type = STOP;
+    sprintf(message.text, "%d", own_id);
 
-    msgsnd(server_queue, &msg, MAX_MSG_SIZE, 0);
+    msgsnd(server_queue, &message, MAX_MSG_SIZE, 0);
 
     puts("Deleting queue...");
     msgctl(client_queue, IPC_RMID, NULL);
@@ -97,33 +97,33 @@ int main() {
     printf("\nown_id: %d\n", own_id);
 
     while (fgets(line, sizeof(line), stdin)) {
-        msg msg;
-        msg.type = -1;
+        msg message;
+        message.type = -1;
         int is_msg_to_client = 0;
 
         if (starts_with(line, "list")) {
-            msg.type = LIST;
-            sprintf(msg.text, "%d", own_id);
+            message.type = LIST;
+            sprintf(message.text, "%d", own_id);
         }
 
         if (starts_with(line, "connect")) {
-            msg.type = CONNECT;
+            message.type = CONNECT;
 
             (void)strtok(line, " ");
             int second_id = atoi(strtok(NULL, " "));
-            sprintf(msg.text, "%d %d", own_id, second_id);
+            sprintf(message.text, "%d %d", own_id, second_id);
         }
 
         if (starts_with(line, "send") && other_queue != -1) {
-            msg.type = SEND;
+            message.type = SEND;
 
-            sprintf(msg.text, "%s", strchr(line, ' ') + 1);
+            sprintf(message.text, "%s", strchr(line, ' ') + 1);
             is_msg_to_client = 1;
         }
 
         if (starts_with(line, "disconnect")) {
-            msg.type = DISCONNECT;
-            sprintf(msg.text, "%d", own_id);
+            message.type = DISCONNECT;
+            sprintf(message.text, "%d", own_id);
             other_queue = -1;
         }
 
@@ -131,9 +131,9 @@ int main() {
             stop_client();
         }
 
-        if (msg.type != -1) {
+        if (message.type != -1) {
             int destination = is_msg_to_client ? other_queue : server_queue;
-            msgsnd(destination, &msg, MAX_MSG_SIZE, 0);
+            msgsnd(destination, &message, MAX_MSG_SIZE, 0);
         }
     }
 
