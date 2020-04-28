@@ -52,6 +52,7 @@ void init_handler(msg* message) {
 }
 
 void list_handler(msg* message) {
+    printf("Got to list function \n");
     int client_id = atoi(message->text);
     client* client = get_client(client_id);
 
@@ -178,10 +179,8 @@ int main() {
         print_action(&incoming_message);
         if (incoming_message.type == STOP) stop_handler(&incoming_message);
         else if (incoming_message.type == DISCONNECT) disconnect_handler(&incoming_message);
-        else if (incoming_message.type == LIST) 
-        { list_handler(&incoming_message);
-            break; }
+        else if (incoming_message.type == LIST) list_handler(&incoming_message);
         else if (incoming_message.type == CONNECT) connect_handler(&incoming_message);
-        else init_handler(&incoming_message);
+        else if (incoming_message.type == INIT)init_handler(&incoming_message);
     }
 }
