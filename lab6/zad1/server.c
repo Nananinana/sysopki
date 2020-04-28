@@ -20,15 +20,16 @@ serwer usuwa swoją kolejkę i kończy pracę. (kolejki klientów) */
 
 
 int server_queue;
-int first_available_id = 0;
-int clients_count = 0;
-client* clients[MAX_CLIENTS] = {NULL};
+int next_client_id = 0;
+int clients_no = 0;
+client* clients_on_server[MAX_CLIENTS] = {NULL};
 
-client* get_client(int client_id) {
-    for (int i = 0; i < clients_count; i++) 
-        if (clients[i]->id == client_id) 
-            return clients[i];
-
+client* get_client_by_id(int client_id) {
+    for (int i = 0; i < clients_no; i++) 
+    {
+        if (clients_on_server[i]->id == client_id) 
+            return clients_on_server[i];
+    }
     return NULL;
 }
 
@@ -36,39 +37,35 @@ client* get_client(int client_id) {
 //i odsyła ten identyfikator do klienta (komunikacja w kierunku serwer->klient odbywa się za pomocą kolejki klienta).
 
 void init_handler(msg* message) {
-    int queue_id = atoi(message->text);
-
+    clients_no++;
+    int client_queue_id = atoi(message->text);
     client* new_client = calloc(1, sizeof(client));
-    new_client -> id = first_available_id++;
-    new_client -> queue_id = queue_id;
-    new_client -> connected_client_id = -1;
-
-    clients[clients_count++] = new_client;
-
-    msg reply;
-    reply.type = INIT;
-    sprintf(reply.text, "%d", new_client->id);
-    msgsnd(queue_id, &reply, MAX_MSG_SIZE, 0);
+    new_client -> id = next_client_id;
+    new_client -> queue_id = client_queue_id;
+    new_client -> connected_client_id = -1; //is connected? connection id
+    clients_on_server[clients_no] = new_client;
+    next_client_id++;
+    msg msg_to_client;
+    msg_to_client.type = INIT;
+    sprintf(msg_to_client.text, "%d", new_client->id);
+    msgsnd(client_queue_id, &msg_to_client, MAX_MSG_SIZE, 0);  
 }
 
-void list_handler(msg* message) {
-    printf("Got to list function \n");
+void list_clients(msg* message) {
     int client_id = atoi(message->text);
-    client* client = get_client(client_id);
-
-    msg reply;
-    reply.type = LIST;
-    sprintf(reply.text, "");
-
-    for (int i = 0; i < clients_count; i++) 
-        if(clients[i]->connected_client_id == -1) 
-            sprintf(reply.text + strlen(reply.text), "User %d is free\n", clients[i]->id);
+    client* client = get_client_by_id(client_id);
+    msg msg_to_client;
+    msg_to_client.type = LIST;
+    sprintf(msg_to_client.text, "");
+    for (int i = 0; i < clients_no; i++)
+    { 
+        if(clients_on_server[i]->connected_client_id == -1) 
+            sprintf(msg_to_client.text + strlen(msg_to_client.text), "client %d is free\n", clients_on_server[i]->id);
         else 
-            sprintf(reply.text + strlen(reply.text), "User %d is already chatting\n", clients[i]->id);
-        
-    
-    msgsnd(client->queue_id, &reply, MAX_MSG_SIZE, 0);
-    puts(reply.text);
+            sprintf(msg_to_client.text + strlen(msg_to_client.text), "client %d is connected with another client\n", clients_on_server[i]->id);
+    }
+    puts(msg_to_client.text);
+    msgsnd(client->queue_id, &msg_to_client, MAX_MSG_SIZE, 0);
 }
 
 
@@ -78,8 +75,8 @@ void connect_handler(msg* message) {
     int client_id = atoi(strtok(message->text, " "));
     int second_id = atoi(strtok(NULL, " "));
 
-    client* first = get_client(client_id);
-    client* second = get_client(second_id);
+    client* first = get_client_by_id(client_id);
+    client* second = get_client_by_id(second_id);
 
     first->connected_client_id = second->id;
     second->connected_client_id = first->id;
@@ -95,8 +92,8 @@ void connect_handler(msg* message) {
 void disconnect_handler(msg* message) {
     int client_id = atoi(message->text);
 
-    client* first = get_client(client_id);
-    client* second = get_client(first->connected_client_id);
+    client* first = get_client_by_id(client_id);
+    client* second = get_client_by_id(first->connected_client_id);
 
     first->connected_client_id = -1;
     second->connected_client_id = -1;
@@ -110,20 +107,20 @@ void stop_handler(msg* message) {
     int client_id = atoi(message->text);
 
     int client_offset;
-    for (int i = 0; i < clients_count; i++) {
-        if (clients[i]->id == client_id) {
+    for (int i = 0; i < clients_no; i++) {
+        if (clients_on_server[i]->id == client_id) {
             client_offset = i;
             break;
         }
     }
 
-    client* client_to_be_deleted = clients[client_offset];
+    client* client_to_be_deleted = clients_on_server[client_offset];
 
-    for (int i = client_offset; i < clients_count - 1; i++) {
-        clients[i] = clients[i + 1];
+    for (int i = client_offset; i < clients_no - 1; i++) {
+        clients_on_server[i] = clients_on_server[i + 1];
     }
-    clients[clients_count - 1] = NULL;
-    clients_count--;
+    clients_on_server[clients_no - 1] = NULL;
+    clients_no--;
 
     free(client_to_be_deleted);
 }
@@ -131,10 +128,10 @@ void stop_handler(msg* message) {
 void stop_server() {
     msg stop_server;
     stop_server.type = STOP_SERVER;
-    for (int i = 0; i < clients_count; i++) 
-        msgsnd(clients[i]->queue_id, &stop_server, MAX_MSG_SIZE, 0);
+    for (int i = 0; i < clients_no; i++) 
+        msgsnd(clients_on_server[i]->queue_id, &stop_server, MAX_MSG_SIZE, 0);
 
-    while (clients_count > 0) {
+    while (clients_no > 0) {
         msg stop_client;
         msgrcv(server_queue, &stop_client, MAX_MSG_SIZE, STOP, 0);
         stop_handler(&stop_client);
@@ -144,39 +141,15 @@ void stop_server() {
     exit(0);
 }
 
-/*void print_msg(msg* message) {
-    char buffer[MAX_MSG_SIZE * 2];
-    switch (message->type) {
-            case INIT:
-                sprintf(buffer, "New user!");
-                break;
-            case LIST:
-                sprintf(buffer, "Listing:");
-                break;
-            case CONNECT:
-                sprintf(buffer, "Connection between users: %s", message->text);
-                break;
-            case DISCONNECT:
-                sprintf(buffer, "User %s disconnected.", message->text);
-                break;
-            case STOP:
-                sprintf(buffer, "User %s quited.", message->text);
-                break;
-        }
-    puts(buffer);
-}*/
-
 int main() {
-//Klucze dla kolejek mają być generowane na podstawie ścieżki $HOME.
     char* path = getpwuid(getuid())->pw_dir;
     key_t queue_key = ftok(path, SERVER_ID); 
-    server_queue = msgget(queue_key, IPC_CREAT | 0666); //tworzy kolejke serwera
+    server_queue = msgget(queue_key, IPC_CREAT | 0666);
     signal(SIGINT, stop_server);
     printf("Server ready, waiting for new clients... \n");
     while (1) {
         msg incoming_message;
         msgrcv(server_queue, &incoming_message, MAX_MSG_SIZE, ANY_MESSAGE, 0);
-        //print_msg(&incoming_message);
         puts("Got message from client: ");
         char to_print[MAX_MSG_SIZE * 2];
         if (incoming_message.type == STOP) 
@@ -195,23 +168,23 @@ int main() {
         }
         else if (incoming_message.type == LIST) 
         {
-            list_handler(&incoming_message);
             sprintf(to_print, "LIST - listing clients:", incoming_message.text);
             puts(to_print);
+            list_clients(&incoming_message);
             continue;
         }
         else if (incoming_message.type == CONNECT) 
         {
-            connect_handler(&incoming_message);
-            sprintf(to_print, "CONNECT - connecting clients %s", incoming_message.text);
+            sprintf(to_print, "CONNECT - connecting to client %s", incoming_message.text);
             puts(to_print);
+            connect_handler(&incoming_message);
             continue;
         }
         if (incoming_message.type == INIT)
         {
-            sprintf(to_print, "INIT - new client");
-            puts(to_print);
             init_handler(&incoming_message);
+            sprintf(to_print, "INIT - new client joined the server");
+            puts(to_print);
             continue;
         }  
     }
