@@ -45,7 +45,7 @@ void init_handler(msg* message) {
 
     clients[clients_count++] = new_client;
 
-    message reply;
+    msg reply;
     reply.type = INIT;
     sprintf(reply.text, "%d", new_client->id);
     msgsnd(queue_id, &reply, MAX_MSG_SIZE, 0);
@@ -55,7 +55,7 @@ void list_handler(msg* message) {
     int client_id = atoi(message->text);
     client* client = get_client(client_id);
 
-    message reply;
+    msg reply;
     reply.type = LIST;
     sprintf(reply.text, "");
 
@@ -83,7 +83,7 @@ void connect_handler(msg* message) {
     first->connected_client_id = second->id;
     second->connected_client_id = first->id;
 
-    message reply;
+    msg reply;
     reply.type = CONNECT;
     sprintf(reply.text, "%d", first->queue_id);
     msgsnd(second->queue_id, &reply, MAX_MSG_SIZE, 0);
@@ -100,7 +100,7 @@ void disconnect_handler(msg* message) {
     first->connected_client_id = -1;
     second->connected_client_id = -1;
 
-    message reply;
+    msg reply;
     reply.type = DISCONNECT;
     msgsnd(second->queue_id, &reply, MAX_MSG_SIZE, 0);
 }
@@ -173,7 +173,7 @@ int main() {
     puts("Server turned ON, waiting for users!");
 
     while (1) {
-        msg msg;
+        msg message;
         msgrcv(server_queue, &message, MAX_MSG_SIZE, -TYPES_COUNT, 0);
         print_action(&message);
 
