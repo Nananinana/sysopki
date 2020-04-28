@@ -33,7 +33,7 @@ void stop_client() {
 void get_replies(union sigval sv) {
     (void)sv;
     msg reply;
-    while (msgrcv(client_queue, &reply, MAX_MSG_SIZE, -ANY_MESSAGE, IPC_NOWAIT) !=
+    while (msgrcv(client_queue, &reply, MAX_MSG_SIZE, ANY_MESSAGE, IPC_NOWAIT) !=
            -1) {
         if (reply.type == CONNECT) {
             other_queue = atoi(reply.text);

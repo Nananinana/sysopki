@@ -12,7 +12,7 @@
 #define CONNECT 5L
 #define INIT 6L
 #define SEND 7L
-#define ANY_MESSAGE 7L
+#define ANY_MESSAGE -7L
 
 typedef struct {
     long type;
