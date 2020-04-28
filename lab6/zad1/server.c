@@ -36,7 +36,7 @@ client* get_client_by_id(int client_id) {
 //o otrzymaniu takiego komunikatu, serwer otwiera kolejkę klienta, przydziela klientowi identyfikator (np. numer w kolejności zgłoszeń) 
 //i odsyła ten identyfikator do klienta (komunikacja w kierunku serwer->klient odbywa się za pomocą kolejki klienta).
 
-void init_handler(msg* message) {
+void init_client(msg* message) {
     clients_no++;
     int client_queue_id = atoi(message->text);
     client* new_client = calloc(1, sizeof(client));
@@ -61,9 +61,9 @@ void list_clients(msg* message) {
         if(clients_on_server[i]->connected_client_id == -1) 
             sprintf(msg_to_client.text + strlen(msg_to_client.text), "client %d is free\n", clients_on_server[i]->id);
         else 
-            sprintf(msg_to_client.text + strlen(msg_to_client.text), "client %d is connected with another client\n", clients_on_server[i]->id);
-    puts(msg_to_client.text);
+            sprintf(msg_to_client.text + strlen(msg_to_client.text), "client %d is connected with\n", clients_on_server[i]->id);
     msgsnd(client->queue_id, &msg_to_client, MAX_MSG_SIZE, 0);
+    puts(msg_to_client.text);
 }
 
 
@@ -180,7 +180,7 @@ int main() {
         }
         if (incoming_message.type == INIT)
         {
-            init_handler(&incoming_message);
+            init_client(&incoming_message);
             sprintf(to_print, "INIT - new client joined the server");
             puts(to_print);
             continue;
