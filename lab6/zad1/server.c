@@ -57,7 +57,7 @@ void list_handler(msg* message) {
 
     msg reply;
     reply.type = LIST;
-    sprintf(reply.text, " ");
+    sprintf(reply.text, "");
 
     for (int i = 0; i < clients_count; i++) 
         if(clients[i]->connected_client_id == -1) 
