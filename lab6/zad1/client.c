@@ -33,7 +33,7 @@ void stop_client() {
 void get_replies(union sigval sv) {
     (void)sv;
     msg reply;
-    while (msgrcv(client_queue, &reply, MAX_MSG_SIZE, -TYPES_COUNT, IPC_NOWAIT) !=
+    while (msgrcv(client_queue, &reply, MAX_MSG_SIZE, -ANY_MESSAGE, IPC_NOWAIT) !=
            -1) {
         if (reply.type == CONNECT) {
             other_queue = atoi(reply.text);
@@ -71,7 +71,7 @@ void set_timer() {
 int main() {
     char *home_path = getpwuid(getuid())->pw_dir;
 
-    key_t server_queue_key = ftok(home_path, SERVER_KEY_ID);
+    key_t server_queue_key = ftok(home_path, SERVER_ID);
     server_queue = msgget(server_queue_key, 0666);
 
     key_t client_queue_key = ftok(home_path, getpid());

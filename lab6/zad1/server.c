@@ -166,33 +166,21 @@ void print_action(msg* message) {
 }
 
 int main() {
-    char* home_path = getpwuid(getuid())->pw_dir;
-    key_t server_queue_key = ftok(home_path, SERVER_KEY_ID); 
-    server_queue = msgget(server_queue_key, IPC_CREAT | 0666); //uzyskanie dostępu do istniejącej kolejki.
+//Klucze dla kolejek mają być generowane na podstawie ścieżki $HOME.
+    char* path = getpwuid(getuid())->pw_dir;
+    key_t queue_key = ftok(path, SERVER_ID); 
+    server_queue = msgget(queue_key, IPC_CREAT | 0666); //tworzy kolejke serwera
     signal(SIGINT, stop_server);
-    puts("Server turned ON, waiting for users!");
-
+    printf("Server ready, waiting for new clients... \n");
     while (1) {
-        msg message;
-        msgrcv(server_queue, &message, MAX_MSG_SIZE, -TYPES_COUNT, 0);
-        print_action(&message);
-
-        switch (message.type) {
-            case INIT:
-                init_handler(&message);
-                break;
-            case LIST:
-                list_handler(&message);
-                break;
-            case CONNECT:
-                connect_handler(&message);
-                break;
-            case DISCONNECT:
-                disconnect_handler(&message);
-                break;
-            case STOP:
-                stop_handler(&message);
-                break;
+        msg incoming_message;
+        msgrcv(server_queue, &incoming_message, MAX_MSG_SIZE, -ANY_MESSAGE, 0);
+        print_action(&incoming_message);
+        if (incoming_message.type == STOP) stop_handler(&incoming_message);
+        else if (incoming_message.type == DISCONNECT) disconnect_handler(&incoming_message);
+        else if (incoming_message.type == LIST) disconnect_handler(&list_handler);
+        else if (incoming_message.type == CONNECT) disconnect_handler(&connect_handler);
+        else init_handler(&incoming_message);
         }
     }
 }

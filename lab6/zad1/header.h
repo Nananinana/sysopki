@@ -12,7 +12,7 @@
 #define CONNECT 5L
 #define INIT 6L
 #define SEND 7L
-#define TYPES_COUNT 7L
+#define ANY_MESSAGE 7L
 
 typedef struct {
     long type;
@@ -27,6 +27,6 @@ typedef struct {
 
 #endif
 
-/*Klucze dla kolejek mają być generowane na podstawie ścieżki $HOME.
+/*
  Małe liczby do wygenerowania kluczy oraz rodzaje komunikatów mają być zdefiniowane we wspólnym pliku nagłówkowym. 
 Dla uproszczenia można założyć, że długość komunikatu jest ograniczona pewną stałą (jej definicja powinna znaleźć się w pliku nagłówkowym). */
