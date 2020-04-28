@@ -181,7 +181,7 @@ int main() {
         if (incoming_message.type == STOP) 
         {
             printf("STOP \n");
-            printf ("User %s has disconnected.", incoming_message.text")
+            printf ("User %s has disconnected.", incoming_message.text);
             stop_handler(&incoming_message);
             continue;
         }
