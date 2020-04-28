@@ -178,10 +178,11 @@ int main() {
         msgrcv(server_queue, &incoming_message, MAX_MSG_SIZE, ANY_MESSAGE, 0);
         //print_msg(&incoming_message);
         puts("Got message from client: ");
+        char to_print[MAX_MSG_SIZE * 2];
         if (incoming_message.type == STOP) 
         {
-            puts("STOP \n");
-            puts("User %s has disconnected.", incoming_message.text);
+            sprintf(to_print, "STOP \n client %s has disconnected", incoming_message.text )
+            puts(to_print);
             stop_handler(&incoming_message);
             continue;
         }
