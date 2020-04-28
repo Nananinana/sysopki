@@ -177,7 +177,7 @@ int main() {
         msg incoming_message;
         msgrcv(server_queue, &incoming_message, MAX_MSG_SIZE, ANY_MESSAGE, 0);
         //print_msg(&incoming_message);
-        printf("Got message from client: ");
+        puts("Got message from client: ");
         if (incoming_message.type == STOP) 
         {
             printf("STOP \n");
