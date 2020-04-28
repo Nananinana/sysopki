@@ -144,7 +144,7 @@ void stop_server() {
     exit(0);
 }
 
-void print_action(msg* message) {
+/*void print_msg(msg* message) {
     char buffer[MAX_MSG_SIZE * 2];
     switch (message->type) {
             case INIT:
@@ -164,7 +164,7 @@ void print_action(msg* message) {
                 break;
         }
     puts(buffer);
-}
+}*/
 
 int main() {
 //Klucze dla kolejek mają być generowane na podstawie ścieżki $HOME.
@@ -176,9 +176,12 @@ int main() {
     while (1) {
         msg incoming_message;
         msgrcv(server_queue, &incoming_message, MAX_MSG_SIZE, ANY_MESSAGE, 0);
-        print_action(&incoming_message);
+        //print_msg(&incoming_message);
+        printf("Got message from client: ");
         if (incoming_message.type == STOP) 
         {
+            printf("STOP \n");
+            printf ("User %s has disconnected.", incoming_message.text")
             stop_handler(&incoming_message);
             continue;
         }
