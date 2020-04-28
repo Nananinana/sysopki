@@ -181,7 +181,7 @@ int main() {
         char to_print[MAX_MSG_SIZE * 2];
         if (incoming_message.type == STOP) 
         {
-            sprintf(to_print, "STOP \n client %s has disconnected", incoming_message.text);
+            sprintf(to_print, "STOP - client %s has disconnected", incoming_message.text);
             puts(to_print);
             stop_handler(&incoming_message);
             continue;
