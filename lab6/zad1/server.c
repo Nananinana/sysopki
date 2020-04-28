@@ -61,7 +61,7 @@ void list_clients(msg* message) {
         if(clients_on_server[i]->connected_client_id == -1) 
             sprintf(msg_to_client.text + strlen(msg_to_client.text), "client %d is free\n", clients_on_server[i]->id);
         else 
-            sprintf(msg_to_client.text + strlen(msg_to_client.text), "client %d is connected with\n", clients_on_server[i]->id);
+            sprintf(msg_to_client.text + strlen(msg_to_client.text), "client %d \n", clients_on_server[i]->id);
     msgsnd(client->queue_id, &msg_to_client, MAX_MSG_SIZE, 0);
     puts(msg_to_client.text);
 }
