@@ -200,19 +200,19 @@ int main() {
         {
             init_handler(&incoming_message);
         }
-        else if (incoming_message.type == LIST) 
+        if (incoming_message.type == LIST) 
         {
             list_handler(&incoming_message);
         }
-        else if (incoming_message.type == CONNECT) 
+        if (incoming_message.type == CONNECT) 
         {
             connect_handler(&incoming_message);
         }
-        else if (incoming_message.type == DISCONNECT) 
+        if (incoming_message.type == DISCONNECT) 
         {
             disconnect_handler(&incoming_message);
         }
-        else if (incoming_message.type == STOP) 
+        if (incoming_message.type == STOP) 
         {
             stop_handler(&incoming_message);
         }
