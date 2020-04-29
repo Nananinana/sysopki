@@ -97,23 +97,23 @@ int main()
             msg_to_send.type = LIST;
             sprintf(msg_to_send.text, "%d", id);
         }
-        if (strncmp(command, "CONNECT", strlen("CONNECT")) == 0)) {
+        if (strncmp(command, "CONNECT", strlen("CONNECT")) == 0) {
             msg_to_send.type = CONNECT;
             (void)strtok(command, " ");
             int client2_id = atoi(strtok(NULL, " "));
             sprintf(msg_to_send.text, "%d %d", id, client2_id);
         }
-        if (strncmp(command, "SEND", strlen("SEND")) == 0) && other_queue != -1) {
+        if ((strncmp(command, "SEND", strlen("SEND")) == 0) && other_queue != -1) {
             msg_to_send.type = SEND;
             sprintf(msg_to_send.text, "%s", strchr(command, ' ') + 1);
             send_to_client = 1;
         }
-        if (strncmp(command, "DISCONNECT", strlen("DISCONNECT"))) {
+        if (strncmp(command, "DISCONNECT", strlen("DISCONNECT")) == 0) {
             msg_to_send.type = DISCONNECT;
             sprintf(msg_to_send.text, "%d", id);
             other_queue = -1;
         }
-        if (strncmp(command, "STOP", strlen("STOP"))) {
+        if (strncmp(command, "STOP", strlen("STOP")) == 0) {
             stop_client();
         }
         if (msg_to_send.type != -1) {
