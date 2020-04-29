@@ -20,20 +20,6 @@ int queue;
 int connected_client_queue = -1;
 int server_queue;
 
-void set_timer() 
-{
-    timer_t timer;
-    struct sigevent event;
-    event.sigev_notify = SIGEV_THREAD;
-    event.sigev_notify_function = get_msg_from_queue;
-    event.sigev_notify_attributes = NULL;
-    event.sigev_value.sival_ptr = NULL;
-    timer_create(CLOCK_REALTIME, &event, &timer);
-    struct timespec ten_ms = {0, 10000000};
-    struct itimerspec timer_value = {ten_ms, ten_ms};
-    timer_settime(timer, 0, &timer_value, NULL);
-}
-
 void stop_client() 
 {
     msg msg_to_server;
@@ -57,12 +43,27 @@ void get_msg_from_queue(union sigval sv)
             connected_client_queue = -1;
         else if (incoming_message.type == SEND) 
             printf(incoming_message.text);
-        else if (incoming_message.type == STOP_SERVER) {
+        else if (incoming_message.type == STOP_SERVER)
             stop_client();
         else
             puts(reply.text);
-    }
 }
+
+void set_timer() 
+{
+    timer_t timer;
+    struct sigevent event;
+    event.sigev_notify = SIGEV_THREAD;
+    event.sigev_notify_function = get_msg_from_queue;
+    event.sigev_notify_attributes = NULL;
+    event.sigev_value.sival_ptr = NULL;
+    timer_create(CLOCK_REALTIME, &event, &timer);
+    struct timespec ten_ms = {0, 10000000};
+    struct itimerspec timer_value = {ten_ms, ten_ms};
+    timer_settime(timer, 0, &timer_value, NULL);
+}
+
+
 
 int main() 
 {
