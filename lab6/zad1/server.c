@@ -24,7 +24,8 @@ client* clients_on_server[MAX_CLIENTS] = {NULL};
 int clients_no = 0;
 int next_client_id = 0;
 
-void init_client(msg* incoming_message) {
+void init_client(msg* incoming_message) 
+{
     int client_queue_id = atoi(incoming_message->text);
     client* new_client = calloc(1, sizeof(client));
     new_client -> id = next_client_id;
@@ -39,7 +40,8 @@ void init_client(msg* incoming_message) {
     msgsnd(client_queue_id, &msg_to_client, MAX_MSG_SIZE, 0);  
 }
 
-client* get_client_by_id(int client_id) {
+client* get_client_by_id(int client_id) 
+{
     for (int i = 0; i < clients_no; i++) 
     {
         if (clients_on_server[i]->id == client_id) 
@@ -48,7 +50,8 @@ client* get_client_by_id(int client_id) {
     return NULL;
 }
 
-void connect_clients(msg* incoming_message) {
+void connect_clients(msg* incoming_message) 
+{
     int client1_id = atoi(strtok(incoming_message->text, " "));
     client* client1 = get_client_by_id(client1_id);
     int client2_id = atoi(strtok(NULL, " "));    
@@ -63,7 +66,8 @@ void connect_clients(msg* incoming_message) {
     msgsnd(client1->queue_id, &msg_to_client, MAX_MSG_SIZE, 0);
 }
 
-void disconnect_clients(msg* incoming_message) {
+void disconnect_clients(msg* incoming_message) 
+{
     int client1_id = atoi(incoming_message->text);
     client* client1 = get_client_by_id(client1_id);
     client* client2 = get_client_by_id(client1->connected_to_client);
@@ -74,12 +78,13 @@ void disconnect_clients(msg* incoming_message) {
     msgsnd(client2->queue_id, &msg_to_client, MAX_MSG_SIZE, 0);
 }
 
-void list_clients(msg* incoming_message) { //something wrong here
+void list_clients(msg* incoming_message) 
+{ 
     int client_id = atoi(incoming_message->text);
     client* client = get_client_by_id(client_id);
     msg msg_to_client;
     msg_to_client.type = LIST;
-    sprintf(msg_to_client.text, "/n ");
+    sprintf(msg_to_client.text, " ");
     for (int i = 0; i < clients_no; i++)
     {
         if(clients_on_server[i]->connected_to_client == -1) 
