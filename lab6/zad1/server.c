@@ -79,12 +79,13 @@ void list_clients(msg* incoming_message) { //something wrong here
     client* client = get_client_by_id(client_id);
     msg msg_to_client;
     msg_to_client.type = LIST;
+    sprintf(msg_to_client.text, "/n ");
     for (int i = 0; i < clients_no; i++)
     {
         if(clients_on_server[i]->connected_to_client == -1) 
-            sprintf(msg_to_client.text, "client %d is free\n", clients_on_server[i]->id);
+            sprintf(msg_to_client.text + strlen(msg_to_client.text), msg_to_client.text, "client %d is free\n", clients_on_server[i]->id);
         else 
-            sprintf(msg_to_client.text, "client %d is connected with another client\n", clients_on_server[i]->id);
+            sprintf(msg_to_client.text + strlen(msg_to_client.text), msg_to_client.text, "client %d is connected with another client\n", clients_on_server[i]->id);
     }
     msgsnd(client->queue_id, &msg_to_client, MAX_MSG_SIZE, 0);
     puts(msg_to_client.text);
@@ -152,7 +153,7 @@ int main() {
         }
         else if (incoming_message.type == LIST) 
         {
-            sprintf(to_print, "LIST - listing clients:", incoming_message.text);
+            sprintf(to_print, "LIST - listing clients:");
             puts(to_print);
             list_clients(&incoming_message);
             continue;
