@@ -46,7 +46,7 @@ void get_msg_from_queue(union sigval sv)
         else if (incoming_message.type == STOP_SERVER)
             stop_client();
         else
-            puts(reply.text);
+            puts(incoming_message.text);
     }
 }
 
