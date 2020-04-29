@@ -17,54 +17,51 @@
 
 int id;
 int queue;
+int connected_client_queue = -1;
 int server_queue;
-int other_queue = -1;
 
-void stop_client() {
-    msg message;
-    message.type = STOP;
-    sprintf(message.text, "%d", id);
-
-    msgsnd(server_queue, &message, MAX_MSG_SIZE, 0);
-
-    puts("Deleting queue...");
-    msgctl(queue, IPC_RMID, NULL);
-    exit(0);
-}
-
-void get_replies(union sigval sv) {
-    (void)sv;
-    msg reply;
-    while (msgrcv(queue, &reply, MAX_MSG_SIZE, ANY_MESSAGE, IPC_NOWAIT) !=
-           -1) {
-        if (reply.type == CONNECT) {
-            other_queue = atoi(reply.text);
-        } else if (reply.type == SEND) {
-            printf("MESSAGE: %s", reply.text);
-        } else if (reply.type == DISCONNECT) {
-            other_queue = -1;
-        } else if (reply.type == STOP_SERVER) {
-            stop_client();
-        } else {
-            puts(reply.text);
-        }
-    }
-}
-
-
-void sigint_handler() { stop_client(); }
-
-void set_timer() {
+void set_timer() 
+{
     timer_t timer;
     struct sigevent event;
     event.sigev_notify = SIGEV_THREAD;
-    event.sigev_notify_function = get_replies;
+    event.sigev_notify_function = get_msg_from_queue;
     event.sigev_notify_attributes = NULL;
     event.sigev_value.sival_ptr = NULL;
     timer_create(CLOCK_REALTIME, &event, &timer);
     struct timespec ten_ms = {0, 10000000};
     struct itimerspec timer_value = {ten_ms, ten_ms};
     timer_settime(timer, 0, &timer_value, NULL);
+}
+
+void stop_client() 
+{
+    msg msg_to_server;
+    msg_to_server.type = STOP;
+    sprintf(msg_to_server.text, "%d", id);
+    msgsnd(server_queue, &msg_to_server, MAX_MSG_SIZE, 0);
+    msgctl(queue, IPC_RMID, NULL);
+    puts("Client queue deleted");
+    exit(0);
+}
+
+void get_msg_from_queue(union sigval sv) 
+{
+    (void)sv;
+    msg incoming_message;
+    while (msgrcv(queue, &incoming_message, MAX_MSG_SIZE, ANY_MESSAGE, IPC_NOWAIT) != -1) 
+    {
+        if (incoming_message.type == CONNECT)
+            connected_client_queue = atoi(incoming_message.text);
+        else if (incoming_message.type == DISCONNECT) 
+            connected_client_queue = -1;
+        else if (incoming_message.type == SEND) 
+            printf(incoming_message.text);
+        else if (incoming_message.type == STOP_SERVER) {
+            stop_client();
+        else
+            puts(reply.text);
+    }
 }
 
 int main() 
@@ -103,7 +100,7 @@ int main()
             int client2_id = atoi(strtok(NULL, " "));
             sprintf(msg_to_send.text, "%d %d", id, client2_id);
         }
-        if ((strncmp(command, "SEND", strlen("SEND")) == 0) && other_queue != -1) {
+        if ((strncmp(command, "SEND", strlen("SEND")) == 0) && connected_client_queue != -1) {
             msg_to_send.type = SEND;
             sprintf(msg_to_send.text, "%s", strchr(command, ' ') + 1);
             send_to_client = 1;
@@ -111,13 +108,13 @@ int main()
         if (strncmp(command, "DISCONNECT", strlen("DISCONNECT")) == 0) {
             msg_to_send.type = DISCONNECT;
             sprintf(msg_to_send.text, "%d", id);
-            other_queue = -1;
+            connected_client_queue = -1;
         }
         if (strncmp(command, "STOP", strlen("STOP")) == 0) {
             stop_client();
         }
         if (msg_to_send.type != -1) {
-            int where_to_send = send_to_client ? other_queue : server_queue;
+            int where_to_send = send_to_client ? connected_client_queue : server_queue;
             msgsnd(where_to_send, &msg_to_send, MAX_MSG_SIZE, 0);
         }
     }
