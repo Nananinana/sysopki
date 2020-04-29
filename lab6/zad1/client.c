@@ -51,9 +51,6 @@ void get_replies(union sigval sv) {
     }
 }
 
-int starts_with(char *s, char *prefix) {
-    return strncmp(s, prefix, strlen(prefix)) == 0;
-}
 
 void sigint_handler() { stop_client(); }
 
@@ -100,23 +97,23 @@ int main()
             msg_to_send.type = LIST;
             sprintf(msg_to_send.text, "%d", id);
         }
-        if (starts_with(command, "CONNECT")) {
+        if (strncmp(command, "CONNECT", strlen("CONNECT")) == 0)) {
             msg_to_send.type = CONNECT;
             (void)strtok(command, " ");
             int client2_id = atoi(strtok(NULL, " "));
             sprintf(msg_to_send.text, "%d %d", id, client2_id);
         }
-        if (starts_with(command, "SEND") && other_queue != -1) {
+        if (strncmp(command, "SEND", strlen("SEND")) == 0) && other_queue != -1) {
             msg_to_send.type = SEND;
             sprintf(msg_to_send.text, "%s", strchr(command, ' ') + 1);
             send_to_client = 1;
         }
-        if (starts_with(command, "DISCONNECT")) {
+        if (strncmp(command, "DISCONNECT", strlen("DISCONNECT"))) {
             msg_to_send.type = DISCONNECT;
             sprintf(msg_to_send.text, "%d", id);
             other_queue = -1;
         }
-        if (starts_with(command, "STOP")) {
+        if (strncmp(command, "STOP", strlen("STOP"))) {
             stop_client();
         }
         if (msg_to_send.type != -1) {
