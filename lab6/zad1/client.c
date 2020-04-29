@@ -95,7 +95,8 @@ int main()
         msg msg_to_send;
         msg_to_send.type = -1;
         bool send_to_client = 0;
-        if (starts_with(command, "LIST")) {
+        if (strncmp(command, "LIST", strlen("LIST")) == 0) 
+        {
             msg_to_send.type = LIST;
             sprintf(msg_to_send.text, "%d", id);
         }
