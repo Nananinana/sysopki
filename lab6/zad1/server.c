@@ -119,7 +119,7 @@ void handle_sigint() {
     {
         msg stop_client_msg;
         msgrcv(server_queue, &stop_client_msg, MAX_MSG_SIZE, STOP, 0);
-        stop_client_msg(&stop_client_msg);
+        stop_client(&stop_client_msg);
     }
     msgctl(server_queue, IPC_RMID, NULL);
     exit(0);
