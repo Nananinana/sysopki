@@ -4,36 +4,38 @@
 #include <pwd.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdbool.h> 
 #include <signal.h>
 #include <string.h>
 #include <sys/msg.h>
 #include <sys/types.h>
 
+
 #include "header.h"
 
 //Klient bezpośrednio po uruchomieniu tworzy kolejkę z unikalnym kluczem IPC i wysyła jej klucz komunikatem do serwera (komunikat INIT). 
 
-int own_id;
-int client_queue;
+int id;
+int queue;
 int server_queue;
 int other_queue = -1;
 
 void stop_client() {
     msg message;
     message.type = STOP;
-    sprintf(message.text, "%d", own_id);
+    sprintf(message.text, "%d", id);
 
     msgsnd(server_queue, &message, MAX_MSG_SIZE, 0);
 
     puts("Deleting queue...");
-    msgctl(client_queue, IPC_RMID, NULL);
+    msgctl(queue, IPC_RMID, NULL);
     exit(0);
 }
 
 void get_replies(union sigval sv) {
     (void)sv;
     msg reply;
-    while (msgrcv(client_queue, &reply, MAX_MSG_SIZE, ANY_MESSAGE, IPC_NOWAIT) !=
+    while (msgrcv(queue, &reply, MAX_MSG_SIZE, ANY_MESSAGE, IPC_NOWAIT) !=
            -1) {
         if (reply.type == CONNECT) {
             other_queue = atoi(reply.text);
@@ -68,74 +70,58 @@ void set_timer() {
     timer_settime(timer, 0, &timer_value, NULL);
 }
 
-int main() {
-    char *home_path = getpwuid(getuid())->pw_dir;
-
-    key_t server_queue_key = ftok(home_path, SERVER_ID);
+int main() 
+{
+    char *path = getpwuid(getuid())->pw_dir;
+    key_t server_queue_key = ftok(path, SERVER_ID);
     server_queue = msgget(server_queue_key, 0666);
-
-    key_t client_queue_key = ftok(home_path, getpid());
-    client_queue = msgget(client_queue_key, IPC_CREAT | 0666);
-
+    key_t queue_key = ftok(path, getpid());
+    queue = msgget(queue_key, IPC_CREAT | 0666);
     signal(SIGINT, sigint_handler);
-
-    msg init;
-    init.type = INIT;
-    sprintf(init.text, "%d", client_queue);
-    msgsnd(server_queue, &init, MAX_MSG_SIZE, 0);
-
-    //Po otrzymaniu identyfikatora, klient może wysłać zlecenie do serwera(zlecenia są czytane ze standardowego wyjścia w postaci typ_komunikatu).
-
-    msg init_ack;
-    msgrcv(client_queue, &init_ack, MAX_MSG_SIZE, INIT, 0);
-    own_id = atoi(init_ack.text);
-
+    msg init_msg_to_server;
+    init_msg_to_server.type = INIT;
+    sprintf(init_msg_to_server.text, "%d", queue);
+    msgsnd(server_queue, &init_msg_to_server, MAX_MSG_SIZE, 0);
+    msg init_server_response;
+    msgrcv(queue, &init_server_response, MAX_MSG_SIZE, INIT, 0);
+    id = atoi(init_server_response.text);
     set_timer();
-    char line[MAX_MSG_SIZE];
+    printf("\n Your id: %d\n", id);
+    printf("Type a command:\n LIST / CONNECT [id] / SEND [message] / DISCONNECT / STOP \n");
+    char command[MAX_MSG_SIZE];
 
-    printf("Your options:\n'list' - list all users\n'connect [id]' - connect with specific user\n'send [message]' - send message to user that you are connected with\n'disconnect' - disconnect from chat\n'exit' - exit from app\n");
-    printf("\nown_id: %d\n", own_id);
-
-    while (fgets(line, sizeof(line), stdin)) {
-        msg message;
-        message.type = -1;
-        int is_msg_to_client = 0;
-
-        if (starts_with(line, "list")) {
-            message.type = LIST;
-            sprintf(message.text, "%d", own_id);
+    while (fgets(command, sizeof(command), stdin)) 
+    {
+        msg msg_to_send;
+        msg_to_send.type = -1;
+        bool send_to_client = 0;
+        if (starts_with(command, "LIST")) {
+            msg_to_send.type = LIST;
+            sprintf(msg_to_send.text, "%d", id);
         }
-
-        if (starts_with(line, "connect")) {
-            message.type = CONNECT;
-
-            (void)strtok(line, " ");
-            int second_id = atoi(strtok(NULL, " "));
-            sprintf(message.text, "%d %d", own_id, second_id);
+        if (starts_with(command, "CONNECT")) {
+            msg_to_send.type = CONNECT;
+            (void)strtok(command, " ");
+            int client2_id = atoi(strtok(NULL, " "));
+            sprintf(msg_to_send.text, "%d %d", id, client2_id);
         }
-
-        if (starts_with(line, "send") && other_queue != -1) {
-            message.type = SEND;
-
-            sprintf(message.text, "%s", strchr(line, ' ') + 1);
-            is_msg_to_client = 1;
+        if (starts_with(command, "SEND") && other_queue != -1) {
+            msg_to_send.type = SEND;
+            sprintf(msg_to_send.text, "%s", strchr(command, ' ') + 1);
+            send_to_client = 1;
         }
-
-        if (starts_with(line, "disconnect")) {
-            message.type = DISCONNECT;
-            sprintf(message.text, "%d", own_id);
+        if (starts_with(command, "DISCONNECT")) {
+            msg_to_send.type = DISCONNECT;
+            sprintf(msg_to_send.text, "%d", id);
             other_queue = -1;
         }
-
-        if (starts_with(line, "exit")) {
+        if (starts_with(command, "STOP")) {
             stop_client();
         }
-
-        if (message.type != -1) {
-            int destination = is_msg_to_client ? other_queue : server_queue;
-            msgsnd(destination, &message, MAX_MSG_SIZE, 0);
+        if (msg_to_send.type != -1) {
+            int where_to_send = send_to_client ? other_queue : server_queue;
+            msgsnd(where_to_send, &msg_to_send, MAX_MSG_SIZE, 0);
         }
     }
-
     stop_client();
 }

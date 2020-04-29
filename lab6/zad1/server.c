@@ -1,12 +1,12 @@
-#include <pwd.h>
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <pwd.h>
+#include <time.h>
+#include <unistd.h>
+#include <signal.h>
 #include <string.h>
 #include <sys/msg.h>
 #include <sys/types.h>
-#include <unistd.h>
-
 #include "header.h"
 
 /*Serwer może wysłać do klientów komunikaty:
@@ -84,7 +84,7 @@ void list_clients(msg* incoming_message)
     client* client = get_client_by_id(client_id);
     msg msg_to_client;
     msg_to_client.type = LIST;
-    sprintf(msg_to_client.text, " ");
+    sprintf(msg_to_client.text, "");
     for (int i = 0; i < clients_no; i++)
     {
         if(clients_on_server[i]->connected_to_client == -1) 
@@ -131,7 +131,8 @@ void handle_sigint() {
     exit(0);
 }
 
-int main() {
+int main() 
+{
     char* path = getpwuid(getuid())->pw_dir;
     key_t queue_key = ftok(path, SERVER_ID); 
     server_queue = msgget(queue_key, IPC_CREAT | 0666);

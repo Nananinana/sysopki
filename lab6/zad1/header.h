@@ -3,7 +3,7 @@
 #define HEADER_H
 
 #define MAX_CLIENTS 7
-#define MAX_MSG_SIZE 256 //?
+#define MAX_MSG_SIZE 256
 #define SERVER_ID 1
 #define STOP_SERVER 1L
 #define STOP 2L
@@ -14,19 +14,17 @@
 #define SEND 7L
 #define ANY_MESSAGE -7L
 
-typedef struct {
+typedef struct 
+{
     long type;
     char text[MAX_MSG_SIZE];
 } msg;
 
-typedef struct { 
+typedef struct 
+{ 
     int id;
     int queue_id;
     int connected_to_client;
 } client;
 
 #endif
-
-/*
- Małe liczby do wygenerowania kluczy oraz rodzaje komunikatów mają być zdefiniowane we wspólnym pliku nagłówkowym. 
-Dla uproszczenia można założyć, że długość komunikatu jest ograniczona pewną stałą (jej definicja powinna znaleźć się w pliku nagłówkowym). */
