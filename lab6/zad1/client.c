@@ -9,8 +9,6 @@
 #include <string.h>
 #include <sys/msg.h>
 #include <sys/types.h>
-
-
 #include "header.h"
 
 //Klient bezpośrednio po uruchomieniu tworzy kolejkę z unikalnym kluczem IPC i wysyła jej klucz komunikatem do serwera (komunikat INIT). 

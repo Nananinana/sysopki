@@ -5,12 +5,12 @@ server:
 	$(CC) $(FLAGS) -o server server.c
 
 client:
-	$(CC) $(FLAGS) -o client client.c
+	$(CC) $(FLAGS) -o client client.c -lrt
 
 test:
 	make clean
 	$(CC) $(FLAGS) -o server server.c 
-	$(CC) $(FLAGS) -o client client.c
+	$(CC) $(FLAGS) -o client client.c -lrt
 	./server
 
 clean:
