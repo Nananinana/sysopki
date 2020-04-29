@@ -47,6 +47,7 @@ void get_msg_from_queue(union sigval sv)
             stop_client();
         else
             puts(reply.text);
+    }
 }
 
 void set_timer() 
