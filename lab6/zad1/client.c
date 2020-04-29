@@ -74,7 +74,7 @@ int main()
     server_queue = msgget(server_queue_key, 0666);
     key_t queue_key = ftok(path, getpid());
     queue = msgget(queue_key, IPC_CREAT | 0666);
-    signal(SIGINT, sigint_handler);
+    signal(SIGINT, stop_client);
     msg init_msg_to_server;
     init_msg_to_server.type = INIT;
     sprintf(init_msg_to_server.text, "%d", queue);

@@ -166,9 +166,9 @@ int main()
         }
         else if (incoming_message.type == CONNECT) 
         {
-            sprintf(to_print, "CONNECT - connecting clients: %s", incoming_message.text);
-            puts(to_print);
             connect_clients(&incoming_message);
+            sprintf(to_print, "CONNECT - connected clients: %s", incoming_message.text);
+            puts(to_print);
             continue;
         }
         if (incoming_message.type == INIT)
