@@ -11,7 +11,7 @@
 #include <mqueue.h>
 #include "header.h"
 
-int server_queue;
+mqd_t server_queue;
 client* clients_on_server[MAX_CLIENTS] = {NULL};
 int clients_no = 0;
 int next_client_id = 0;
