@@ -7,17 +7,9 @@
 #include <string.h>
 #include <sys/msg.h>
 #include <sys/types.h>
+#include <fcntl.h>
+
 #include "header.h"
-
-/*Serwer może wysłać do klientów komunikaty:
-inicjujący pracę klienta w trybie chatu (kolejka klientów)
-wysyłający odpowiedzi do klientów (kolejki klientów)
-informujący klientów o zakończeniu pracy serwera - po wysłaniu takiego sygnału i odebraniu wiadomości STOP od wszystkich klientów 
-serwer usuwa swoją kolejkę i kończy pracę. (kolejki klientów) */
-
-//Dla uproszczenia można przyjąć, że serwer przechowuje informacje o klientach w statycznej tablicy 
-//(rozmiar tablicy ogranicza liczbę klientów, którzy mogą się zgłosić do serwera).
-
 
 int server_queue;
 client* clients_on_server[MAX_CLIENTS] = {NULL};
