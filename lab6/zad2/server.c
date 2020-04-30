@@ -74,7 +74,7 @@ void list_clients(char* msg_text)
     for (int i = 0; i < clients_no; i++) 
     {
         sprintf(msg_to_client + strlen(msg_to_client), "%d: %d\n", clients_on_server[i]->id,
-        clients[i]->connected_client_id == -1);
+        clients_on_server[i]->connected_client_id == -1);
     }
     send_to_queue(client->queue_id, LIST, msg_to_client);
 }
