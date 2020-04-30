@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/msg.h>
 #include <sys/types.h>
+#include <fcntl.h>
 #include <mqueue.h>
 #include "header.h"
 
