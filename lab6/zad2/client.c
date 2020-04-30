@@ -19,7 +19,7 @@ void stop_client()
 {
     char msg_to_server[MAX_MSG_SIZE + 1] = {0};
     sprintf(msg_to_server, "%d", id);
-    send_msg(server_queue, STOP, msg_to_server);
+    send_to_queue(server_queue, STOP, msg_to_server);
     mq_unlink(filename);
     puts("Client queue deleted");
     exit(0);

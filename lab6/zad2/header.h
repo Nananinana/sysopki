@@ -7,7 +7,6 @@
 #define MAX_CLIENTS 7
 #define MAX_MSG_SIZE 8192
 #define MAX_FILENAME_SIZE 16
-//#define SERVER_ID 1
 
 #define STOP_SERVER 1L
 #define STOP 2L
@@ -34,7 +33,7 @@ void send_to_queue(mqd_t where_to_send, char type, char* msg) {
     char* buffer = calloc(2 + msg_size, sizeof(char));
     buffer[0] = type;
     sprintf(buffer + 1, "%s", msg);
-    mq_send(where_to_send, buffer, msg_size + 1, TYPES_COUNT - type + 1);
+    mq_send(where_to_send, buffer, msg_size + 1, ANY_MESSAGE - type + 1);
 }
 
 typedef struct 
