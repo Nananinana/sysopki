@@ -2,7 +2,7 @@ CC = gcc
 FLAGS = -std=c99 -Wall -pthread -g
 
 server:
-	$(CC) $(FLAGS) -o server server.c
+	$(CC) $(FLAGS) -o server server. -lrt
 
 client:
 	$(CC) $(FLAGS) -o client client.c -lrt

@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <mqueue.h>
 #include "header.h"
+//	gcc -pthread -o"FreeRTOS_Posix" $(OBJS) $(USER_OBJS) $(LIBS) -lrt
 
 mqd_t server_queue;
 client* clients_on_server[MAX_CLIENTS] = {NULL};
