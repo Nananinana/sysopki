@@ -36,7 +36,7 @@ void set_sembuf()
     semop(semaphore_id,received_order, 3);
 }
 
-set_back_sembuf()
+void set_back_sembuf()
 {
     sembuf *back = calloc(2, sizeof(sembuf));
 
