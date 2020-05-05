@@ -33,7 +33,7 @@ void set_sembuf()
     received_order[2].sem_op = 1;
     received_order[2].sem_flg = 0;
 
-    semop(semaphore_id,*received_order, 3);
+    semop(semaphore_id,received_order, 3);
 }
 
 void receive_order()
