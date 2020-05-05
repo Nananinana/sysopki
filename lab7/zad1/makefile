@@ -1,15 +1,19 @@
-CC=gcc -Wall
+all: program worker1 worker2 worker3
 
-all: build test clean
+program: program.c common.h
+	gcc -Wall -g program.c -o program
 
-build:
-	$(CC) -o main main.c
-	$(CC) -o worker_1 worker_1.c shared.c
-	$(CC) -o worker_2 worker_2.c shared.c
-	$(CC) -o worker_3 worker_3.c shared.c
+worker1:worker1.c common.h
+	gcc -Wall -g worker1.c -o worker1
 
-test:
-	./main
+worker2:worker2.c common.h
+	gcc -Wall -g worker2.c -o worker2
+
+worker3:worker3.c common.h
+	gcc -Wall -g worker3.c -o worker3
 
 clean:
-	rm -f main worker_1 worker_2 worker_3
+	 rm -f *.o *.a *.so *.tmp main
+
+test:
+	./program
