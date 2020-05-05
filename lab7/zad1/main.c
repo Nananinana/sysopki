@@ -34,7 +34,7 @@ void create_shared_memory() {
     key_t memory_key = ftok(getenv("HOME"), 1);
     memory_id = shmget(memory_key, sizeof(orders), IPC_CREAT | 0666);
     if (memory_id < 0) {
-        printf("Can't create shared memory, memory_id is less than 0 %d\n");
+        printf("Can't create shared memory, memory_id is less than 0\n");
         exit(-1);
     }
 }
@@ -43,7 +43,7 @@ void create_semaphore() {
     key_t semaphore_key = ftok(getenv("HOME"), 0);
     semaphore_id = semget(semaphore_key, 6, IPC_CREAT | 0666);
     if (semaphore_id < 0) {
-        printf("Can't create semaphore, semaphor_id is less than 0 %d\n");
+        printf("Can't create semaphore, semaphor_id is less than 0\n");
         exit(-1);
     }
     union semaphore_no sem_no;
