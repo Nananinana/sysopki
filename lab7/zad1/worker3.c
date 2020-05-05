@@ -39,10 +39,10 @@ void send_order()
 
     semop(semaphore_id, load, 4);
 
-    orders *ord = shmat(memory_id, NULL, 0);
+    int orders[MAX_ORDERS] = shmat(memory_id, NULL, 0);
 
     int index = (semctl(semaphore_id, 4, GETVAL, NULL) - 1) % MAX_ORDERS;
-    ord->values[index] *= 3;
+    orders[index] *= 3;
     int orders_to_prepare = semctl(semaphore_id, 3, GETVAL, NULL);
     int orders_to_send = semctl(semaphore_id, 5, GETVAL, NULL);
     printf("[%d %ld] Wyslalem zamowienie o wielkosci: %d. Liczba zamowien do przygotowania: %d. Liczba zamowien do wyslania: %d.\n",

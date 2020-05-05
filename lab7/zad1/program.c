@@ -32,7 +32,7 @@ void sig_handler(int signal_no) {
 
 void create_shared_memory() {
     key_t memory_key = ftok(getenv("HOME"), 1);
-    memory_id = shmget(memory_key, sizeof(orders), IPC_CREAT | 0666);
+    memory_id = shmget(memory_key, MAX_ORDERS*sizeof(int), IPC_CREAT | 0666);
     if (memory_id < 0) {
         printf("Can't create shared memory, memory_id is less than 0\n");
         exit(-1);
@@ -52,7 +52,12 @@ void create_semaphore() {
         semctl(semaphore_id, i, SETVAL, sem_no);
 }
 
-void start_workers() {
+int main()
+{
+    signal(SIGINT, sig_handler);
+    create_semaphore();
+    create_shared_memory();
+    
     for (int i = 0; i < WORKER1_NO; i++) {
         pid_t new_worker1_pid = fork();
         if (new_worker1_pid == 0)
@@ -73,17 +78,9 @@ void start_workers() {
     }
     for (int i = 0; i < WORKER1_NO + WORKER2_NO + WORKER3_NO; i++)
         wait(NULL);
-}
 
-int main()
-{
-    //printf("????");
-    //signal(SIGINT, sig_handler);
-    create_semaphore();
-    create_shared_memory();
-    start_workers();
     semctl(semaphore_id, 0, IPC_RMID, NULL);
     shmctl(memory_id, IPC_RMID, NULL);
-    //system("make clean");
+    system("make clean");
     return 0;
 }

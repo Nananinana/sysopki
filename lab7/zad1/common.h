@@ -33,10 +33,10 @@ union semaphore_no {
     struct seminfo *__buf;
 };
 
-typedef struct {
+/*typedef struct {
     int values[MAX_ORDERS];  //do zmiany
 } orders;
-
+*/
 int get_semaphore() {
     key_t semaphore_key = ftok(getenv("HOME"), 0);
     int semaphore_id = semget(semaphore_key, 0, 0);
