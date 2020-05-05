@@ -12,4 +12,4 @@ test:
 	./program
 
 clean:
-	rm -f program worker_1 worker_2 worker_3
+	rm -f program worker1 worker2 worker3
