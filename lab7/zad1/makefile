@@ -3,10 +3,10 @@ CC=gcc -Wall
 all: build test clean
 
 build:
-	$(CC) -o program program.c
-	$(CC) -o worker1 worker1.c
-	$(CC) -o worker2 worker2.c
-	$(CC) -o worker3 worker3.c
+	$(CC) -o program program.c common.h
+	$(CC) -o worker1 worker1.c common.h
+	$(CC) -o worker2 worker2.c common.h
+	$(CC) -o worker3 worker3.c common.h
 
 test:
 	./program
