@@ -20,13 +20,6 @@ int semaphore_id;
 int memory_id;
 pid_t worker_pids[WORKER1_NO + WORKER2_NO + WORKER3_NO];
 
-union semaphore_no {
-    int value;
-    struct semid_ds *buf;
-    unsigned short *array;
-    struct seminfo *__buf;
-};
-
 void sig_handler(int signal_no) {
     int workers_no = WORKER1_NO + WORKER2_NO + WORKER3_NO;
     for (int i = 0; i < workers_no; i++)
@@ -63,19 +56,19 @@ void start_workers() {
     for (int i = 0; i < WORKER1_NO; i++) {
         pid_t new_worker1_pid = fork();
         if (new_worker1_pid == 0)
-            execlp("./worker_1", "worker_1", NULL);
+            execlp("./worker1", "worker1", NULL);
         worker_pids[i] = new_worker1_pid;
     }
     for (int i = 0; i < WORKER2_NO; i++) {
         pid_t new_worker2_pid = fork();
         if (new_worker2_pid == 0)
-            execlp("./worker_2", "worker_2", NULL);
+            execlp("./worker2", "worker2", NULL);
         worker_pids[i + WORKER1_NO] = new_worker2_pid;
     }
     for (int i = 0; i < WORKER3_NO; i++) {
         pid_t new_worker3_pid = fork();
         if (new_worker3_pid == 0)
-            execlp("./worker_3", "worker_3", NULL);
+            execlp("./worker3", "worker3", NULL);
         worker_pids[i + WORKER1_NO + WORKER2_NO] = new_worker3_pid;
     }
     for (int i = 0; i < WORKER1_NO + WORKER2_NO + WORKER3_NO; i++)

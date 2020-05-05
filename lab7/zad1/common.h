@@ -26,6 +26,13 @@ int get_shared_memory();
 
 //int orders[MAX_ORDERS];
 
+union semaphore_no {
+    int value;
+    struct semid_ds *buf;
+    unsigned short *array;
+    struct seminfo *__buf;
+};
+
 typedef struct {
     int values[MAX_ORDERS];  //do zmiany
 } orders;
