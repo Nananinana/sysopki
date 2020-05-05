@@ -66,7 +66,6 @@ void pack_order()
 int main()
 {
     srand(time(NULL));
-
     semaphore_id = get_semaphore();
     memory_id = get_shared_memory();
     while (1) {

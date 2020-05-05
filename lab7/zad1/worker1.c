@@ -37,7 +37,7 @@ void add_order()
     int *orders = calloc(MAX_ORDERS, sizeof(int));
     orders = shmat(memory_id, NULL, 0);
     int index = (semctl(semaphore_id, 1, GETVAL, NULL) - 1) % MAX_ORDERS;
-    srand((unsigned) time(&t));
+    srand(time(NULL));
     int value=rand()%100;
     orders[index] = value;
     int orders_to_prepare = semctl(semaphore_id, 3, GETVAL, NULL) + 1;
