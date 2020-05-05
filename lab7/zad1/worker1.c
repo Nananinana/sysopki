@@ -36,6 +36,21 @@ void set_sembuf()
     semop(semaphore_id,received_order, 3);
 }
 
+set_back_sembuf()
+{
+    sembuf *back = calloc(2, sizeof(sembuf));
+
+    back[0].sem_num = 0;
+    back[0].sem_op = -1;
+    back[0].sem_flg = 0;
+
+    back[1].sem_num = 3;
+    back[1].sem_op = 1;
+    back[1].sem_flg = 0;
+
+    semop(semaphore_id, back, 2);
+}
+
 void receive_order()
 {
     set_sembuf();
@@ -48,18 +63,6 @@ void receive_order()
     orders[order_idx] = order_value;
     printf("[%d %ld] Dodalem liczbe: %d. Liczba zamowien do przygotowania: %d. Liczba zamowien do wyslania: %d.\n", getpid(), time(NULL), order_value, to_prepare_no, to_send_no);
     shmdt(orders);
-
-    sembuf *back = calloc(2, sizeof(sembuf));
-
-    back[0].sem_num = 0;
-    back[0].sem_op = -1;
-    back[0].sem_flg = 0;
-
-    back[1].sem_num = 3;
-    back[1].sem_op = 1;
-    back[1].sem_flg = 0;
-
-    semop(semaphore_id, back, 2);
 }
 
 int main()
