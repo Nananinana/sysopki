@@ -15,11 +15,11 @@
 int semaphore_id;
 int memory_id;
 
-typedef struct sembuf operation;
+typedef struct sembuf sembuf;
 
 void add_order()
 {
-    sembuf *load = calloc(3, sizeof(operation));
+    sembuf *load = calloc(3, sizeof(sembuf));
     load[0].sem_num = 0;
     load[0].sem_op = 0;
     load[0].sem_flg = 0;
@@ -45,7 +45,7 @@ void add_order()
 
     shmdt(ord);
 
-    sembuf *back = calloc(2, sizeof(operation));
+    sembuf *back = calloc(2, sizeof(sembuf));
 
     back[0].sem_num = 0;
     back[0].sem_op = -1;
@@ -65,7 +65,7 @@ int main()
     memory_id = get_shared_memory();
 
     while (1) {
-        sleep(rand_time);
+        usleep(rand_time);
         if (semctl(semaphore_id, 3, GETVAL, NULL) + semctl(semaphore_id, 5, GETVAL, NULL) < MAX_ORDERS)
             add_order();
     }

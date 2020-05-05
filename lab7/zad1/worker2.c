@@ -10,16 +10,16 @@
 #include <errno.h>
 #include <time.h>
 
-#include "shared.h"
+#include "common.h"
 
 int semaphore_id;
 int memory_id;
 
-typedef struct sembuf operation;
+typedef struct sembuf sembuf;
 
 void pack_order()
 {
-    sembuf *load = calloc(4, sizeof(operation));
+    sembuf *load = calloc(4, sizeof(sembuf));
 
     load[0].sem_num = 0;
     load[0].sem_op = 0;
@@ -50,7 +50,7 @@ void pack_order()
 
     shmdt(ord);
 
-    sembuf *back = calloc(2, sizeof(operation));
+    sembuf *back = calloc(2, sizeof(sembuf));
 
     back[0].sem_num = 0;
     back[0].sem_op = -1;
@@ -70,7 +70,7 @@ int main()
     semaphore_id = get_semaphore();
     memory_id = get_shared_memory();
     while (1) {
-        sleep(rand_time);
+        usleep(rand_time);
         if (semctl(semaphore_id, 3, GETVAL, NULL) > 0) 
             pack_order();
     }

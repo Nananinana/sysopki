@@ -20,7 +20,7 @@ int semaphore_id;
 int memory_id;
 pid_t worker_pids[WORKER1_NO + WORKER2_NO + WORKER3_NO];
 
-void sig_handler(int signal_no) {
+/*void sig_handler(int signal_no) {
     int workers_no = WORKER1_NO + WORKER2_NO + WORKER3_NO;
     for (int i = 0; i < workers_no; i++)
         kill(worker_pids[i], SIGINT);
@@ -28,7 +28,7 @@ void sig_handler(int signal_no) {
     shmctl(memory_id, IPC_RMID, NULL);
     system("make clean");
     exit(0);
-}
+}*/
 
 void create_shared_memory() {
     key_t memory_key = ftok(getenv("HOME"), 1);
@@ -77,12 +77,13 @@ void start_workers() {
 
 int main()
 {
-    signal(SIGINT, sig_handler);
+    //printf("????");
+    //signal(SIGINT, sig_handler);
     create_semaphore();
     create_shared_memory();
     start_workers();
     semctl(semaphore_id, 0, IPC_RMID, NULL);
     shmctl(memory_id, IPC_RMID, NULL);
-    system("make clean");
+    //system("make clean");
     return 0;
 }
