@@ -46,10 +46,10 @@ void send_order()
     int orders_to_prepare = semctl(semaphore_id, 3, GETVAL, NULL);
     int orders_to_send = semctl(semaphore_id, 5, GETVAL, NULL);
     printf("[%d %ld] Wyslalem zamowienie o wielkosci: %d. Liczba zamowien do przygotowania: %d. Liczba zamowien do wyslania: %d.\n",
-           getpid(), time(NULL), ord->values[index], orders_to_prepare, orders_to_send);
-    ord->values[index] = 0;
+           getpid(), time(NULL), orders[index], orders_to_prepare, orders_to_send);
+    orders[index] = 0;
 
-    shmdt(ord);
+    shmdt(orders);
     sembuf *back = calloc(1, sizeof(sembuf));
 
     back[0].sem_num = 0;
