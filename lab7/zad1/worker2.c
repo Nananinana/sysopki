@@ -69,7 +69,7 @@ int main()
     semaphore_id = get_semaphore();
     memory_id = get_shared_memory();
     while (1) {
-        sleep(rand_time);
+        usleep(rand_time);
         if (semctl(semaphore_id, 3, GETVAL, NULL) > 0) 
             pack_order();
     }
