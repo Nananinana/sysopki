@@ -63,6 +63,7 @@ void receive_order()
     orders[order_idx] = order_value;
     printf("[%d %ld] Dodalem liczbe: %d. Liczba zamowien do przygotowania: %d. Liczba zamowien do wyslania: %d.\n", getpid(), time(NULL), order_value, to_prepare_no, to_send_no);
     shmdt(orders);
+    set_back_sembuf();
 }
 
 int main()
