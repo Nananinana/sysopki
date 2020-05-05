@@ -37,7 +37,8 @@ void add_order()
     int *orders = calloc(MAX_ORDERS, sizeof(int));
     orders = shmat(memory_id, NULL, 0);
     int index = (semctl(semaphore_id, 1, GETVAL, NULL) - 1) % MAX_ORDERS;
-    int value = rand_int;
+    srand((unsigned) time(&t));
+    int value=rand()%100;
     orders[index] = value;
     int orders_to_prepare = semctl(semaphore_id, 3, GETVAL, NULL) + 1;
     int orders_to_send = semctl(semaphore_id, 5, GETVAL, NULL);
@@ -66,7 +67,7 @@ int main()
     memory_id = get_shared_memory();
 
     while (1) {
-        usleep(rand_time);
+        sleep(4000);
         if (semctl(semaphore_id, 3, GETVAL, NULL) + semctl(semaphore_id, 5, GETVAL, NULL) < MAX_ORDERS)
             add_order();
     }
