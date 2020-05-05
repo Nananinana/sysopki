@@ -20,7 +20,14 @@ int semaphore_id;
 int memory_id;
 pid_t worker_pids[WORKER1_NO + WORKER2_NO + WORKER3_NO];
 
-/*void sig_handler(int signal_no) {
+union semaphore_no {
+    int value;
+    struct semid_ds *buf;
+    unsigned short *array;
+    struct seminfo *__buf;
+};
+
+void sig_handler(int signal_no) {
     int workers_no = WORKER1_NO + WORKER2_NO + WORKER3_NO;
     for (int i = 0; i < workers_no; i++)
         kill(worker_pids[i], SIGINT);
@@ -28,7 +35,7 @@ pid_t worker_pids[WORKER1_NO + WORKER2_NO + WORKER3_NO];
     shmctl(memory_id, IPC_RMID, NULL);
     system("make clean");
     exit(0);
-}*/
+}
 
 void create_shared_memory() {
     key_t memory_key = ftok(getenv("HOME"), 1);
