@@ -67,7 +67,7 @@ int main()
     memory_id = get_shared_memory();
 
     while (1) {
-        sleep(4000);
+        sleep(rand_time);
         if (semctl(semaphore_id, 3, GETVAL, NULL) + semctl(semaphore_id, 5, GETVAL, NULL) < MAX_ORDERS)
             add_order();
     }

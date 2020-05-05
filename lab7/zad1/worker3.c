@@ -66,7 +66,7 @@ int main()
     semaphore_id = get_semaphore();
     memory_id = get_shared_memory();
     while (1) {
-        sleep(4000);
+        sleep(rand_time);
         if (semctl(semaphore_id, 5, GETVAL, NULL) > 0)
             send_order();
     }
