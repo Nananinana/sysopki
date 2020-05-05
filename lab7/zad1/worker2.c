@@ -39,16 +39,16 @@ void pack_order()
 
     semop(semaphore_id, load, 4);
 
-    orders *ord = shmat(memory_id, NULL, 0);
-
+    int *orders = calloc(MAX_ORDERS, sizeof(int));
+    orders = shmat(memory_id, NULL, 0);
     int index = (semctl(semaphore_id, 2, GETVAL, NULL) - 1) % MAX_ORDERS;
-    ord->values[index] *= 2;
+    orders[index] *= 2;
     int orders_to_prepare = semctl(semaphore_id, 3, GETVAL, NULL);
     int orders_to_send = semctl(semaphore_id, 5, GETVAL, NULL) + 1;
     printf("[%d %ld] Przygotowalem zamowienie o wielkosci: %d. Liczba zamowien do przygotowania: %d. Liczba zamowien do wyslania: %d.\n",
-           getpid(), time(NULL), ord->values[index], orders_to_prepare, orders_to_send);
+           getpid(), time(NULL), value, orders_to_prepare, orders_to_send);
 
-    shmdt(ord);
+    shmdt(orders);
 
     sembuf *back = calloc(2, sizeof(sembuf));
 

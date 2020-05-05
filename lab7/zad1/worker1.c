@@ -34,16 +34,17 @@ void add_order()
 
     semop(semaphore_id, load, 3);
 
-    orders *ord = shmat(memory_id, NULL, 0);
+    int *orders = calloc(MAX_ORDERS, sizeof(int));
+    orders = shmat(memory_id, NULL, 0);
     int index = (semctl(semaphore_id, 1, GETVAL, NULL) - 1) % MAX_ORDERS;
     int value = rand_int;
-    ord->values[index] = value;
+    orders[index] = value;
     int orders_to_prepare = semctl(semaphore_id, 3, GETVAL, NULL) + 1;
     int orders_to_send = semctl(semaphore_id, 5, GETVAL, NULL);
     printf("[%d %ld] Dodalem liczbe: %d. Liczba zamowien do przygotowania: %d. Liczba zamowien do wyslania: %d.\n",
            getpid(), time(NULL), value, orders_to_prepare, orders_to_send);
 
-    shmdt(ord);
+    shmdt(orders);
 
     sembuf *back = calloc(2, sizeof(sembuf));
 
