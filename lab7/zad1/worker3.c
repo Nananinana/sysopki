@@ -17,9 +17,9 @@ int memory_id;
 
 typedef struct sembuf sembuf;
 
-void send_order()
+void set_sembuf()
 {
-    sembuf *load = calloc(4, sizeof(sembuf)); //?????
+    sembuf *load = calloc(4, sizeof(sembuf));
 
     load[0].sem_num = 0;
     load[0].sem_op = 0;
@@ -38,19 +38,10 @@ void send_order()
     load[3].sem_flg = 0;
 
     semop(semaphore_id, load, 4);
+}
 
-    int *orders = calloc(MAX_ORDERS, sizeof(int));
-    orders = shmat(memory_id, NULL, 0);
-
-    int index = (semctl(semaphore_id, 4, GETVAL, NULL) - 1) % MAX_ORDERS;
-    orders[index] *= 3;
-    int orders_to_prepare = semctl(semaphore_id, 3, GETVAL, NULL);
-    int orders_to_send = semctl(semaphore_id, 5, GETVAL, NULL);
-    printf("[%d %ld] Wyslalem zamowienie o wielkosci: %d. Liczba zamowien do przygotowania: %d. Liczba zamowien do wyslania: %d.\n",
-           getpid(), time(NULL), orders[index], orders_to_prepare, orders_to_send);
-    orders[index] = 0;
-
-    shmdt(orders);
+set_back_sembuf()
+{
     sembuf *back = calloc(1, sizeof(sembuf));
 
     back[0].sem_num = 0;
@@ -58,6 +49,21 @@ void send_order()
     back[0].sem_flg = 0;
 
     semop(semaphore_id, back, 1);
+}
+
+void send_order()
+{
+    set_sembuf();
+    int *orders = calloc(MAX_ORDERS, sizeof(int));
+    int order_idx = (semctl(semaphore_id, 4, GETVAL, NULL) - 1) % MAX_ORDERS;
+    int to_prepare_no = semctl(semaphore_id, 3, GETVAL, NULL);
+    int to_send_no = semctl(semaphore_id, 5, GETVAL, NULL);
+    orders = shmat(memory_id, NULL, 0);
+    orders[order_idx] *= 3;
+    printf("[%d %ld] Wyslalem zamowienie o wielkosci: %d. Liczba zamowien do przygotowania: %d. Liczba zamowien do wyslania: %d.\n", getpid(), time(NULL), orders[order_idx], to_prepare_no, to_send_no);
+    orders[order_idx] = 0;
+    shmdt(orders);
+    set_back_sembuf();
 }
 
 int main()
