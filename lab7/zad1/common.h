@@ -15,8 +15,6 @@
 
 #define MAX_ORDERS 10
 
-int get_semaphore_id();
-int get_memory_id();
 typedef struct sembuf operation;
 
 union semaphore_no {
