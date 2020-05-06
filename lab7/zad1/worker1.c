@@ -32,11 +32,11 @@ void get_access_to_memory() {
 void close_memory_access() {
     operation *stop_receiving = calloc(2, sizeof(operation));
     stop_receiving[0].sem_num = 0;
-    stop_receiving[0].sem_op = -1;
     stop_receiving[0].sem_flg = 0;
+    stop_receiving[0].sem_op = -1;    
     stop_receiving[1].sem_num = 3;
-    stop_receiving[1].sem_op = 1;
     stop_receiving[1].sem_flg = 0;
+    stop_receiving[1].sem_op = 1;
     semop(semaphore_id, stop_receiving, 2);
 }
 

@@ -12,47 +12,36 @@
 
 #include "common.h"
 
+typedef struct sembuf operation;
 int semaphore_id;
 int memory_id;
 
-typedef struct sembuf sembuf;
-
 void get_access_to_memory()
 {
-    sembuf *load = calloc(4, sizeof(sembuf));
-
-    load[0].sem_num = 0;
-    load[0].sem_op = 0;
-    load[0].sem_flg = 0;
-
-    load[1].sem_num = 0;
-    load[1].sem_op = 1;
-    load[1].sem_flg = 0;
-
-    load[2].sem_num = 2;
-    load[2].sem_op = 1;
-    load[2].sem_flg = 0;
-
-    load[3].sem_num = 3;
-    load[3].sem_op = -1;
-    load[3].sem_flg = 0;
-
-    semop(semaphore_id, load, 4);
+    operation *packing_operation = calloc(4, sizeof(operation));
+    packing_operation[0].sem_num = packing_operation[1].sem_num = 0;
+    packing_operation[0].sem_flg = packing_operation[1].sem_flg = 0;
+    packing_operation[0].sem_op = 0;
+    packing_operation[1].sem_op = 1;
+    packing_operation[2].sem_num = 2;
+    packing_operation[2].sem_flg = 0;
+    packing_operation[2].sem_op = 1;
+    packing_operation[3].sem_num = 3;
+    packing_operation[3].sem_flg = 0;
+    packing_operation[3].sem_op = -1;
+    semop(semaphore_id, packing_operation, 4);
 }
 
 void close_memory_access()
 {
-    sembuf *back = calloc(2, sizeof(sembuf));
-
-    back[0].sem_num = 0;
-    back[0].sem_op = -1;
-    back[0].sem_flg = 0;
-
-    back[1].sem_num = 5;
-    back[1].sem_op = 1;
-    back[1].sem_flg = 0;
-
-    semop(semaphore_id, back, 2);
+    operation *stop_packing = calloc(2, sizeof(operation));
+    stop_packing[0].sem_num = 0;
+    stop_packing[0].sem_flg = 0;
+    stop_packing[0].sem_op = -1;
+    stop_packing[1].sem_num = 5;
+    stop_packing[1].sem_flg = 0;
+    stop_packing[1].sem_op = 1;
+    semop(semaphore_id, stop_packing, 2);
 }
 
 void pack_order()

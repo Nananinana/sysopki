@@ -12,43 +12,33 @@
 
 #include "common.h"
 
+typedef struct sembuf operation;
 int semaphore_id;
 int memory_id;
 
-typedef struct sembuf sembuf;
-
 void get_access_to_memory()
 {
-    sembuf *load = calloc(4, sizeof(sembuf));
-
-    load[0].sem_num = 0;
-    load[0].sem_op = 0;
-    load[0].sem_flg = 0;
-
-    load[1].sem_num = 0;
-    load[1].sem_op = 1;
-    load[1].sem_flg = 0;
-
-    load[2].sem_num = 4;
-    load[2].sem_op = 1;
-    load[2].sem_flg = 0;
-
-    load[3].sem_num = 5;
-    load[3].sem_op = -1;
-    load[3].sem_flg = 0;
-
-    semop(semaphore_id, load, 4);
+    operation *sending_operation = calloc(4, sizeof(operation));
+    sending_operation[0].sem_num = sending_operation[1].sem_num = 0;
+    sending_operation[0].sem_flg = sending_operation[1].sem_flg = 0;
+    sending_operation[0].sem_op = 0;
+    sending_operation[1].sem_op = 1;
+    sending_operation[2].sem_num = 4;
+    sending_operation[2].sem_flg = 0;
+    sending_operation[2].sem_op = 1;
+    sending_operation[3].sem_num = 5;
+    sending_operation[3].sem_flg = 0;
+    sending_operation[3].sem_op = -1;
+    semop(semaphore_id, sending_operation, 4);
 }
 
 void close_memory_access()
 {
-    sembuf *back = calloc(1, sizeof(sembuf));
-
-    back[0].sem_num = 0;
-    back[0].sem_op = -1;
-    back[0].sem_flg = 0;
-
-    semop(semaphore_id, back, 1);
+    operation *stop_sending = calloc(1, sizeof(operation));
+    stop_sending[0].sem_num = 0;
+    stop_sending[0].sem_flg = 0;
+    stop_sending[0].sem_op = -1;
+    semop(semaphore_id, stop_sending, 1);
 }
 
 void send_order()
