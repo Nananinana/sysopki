@@ -40,7 +40,7 @@ void set_sembuf()
     semop(semaphore_id, load, 4);
 }
 
-set_back_sembuf()
+void set_back_sembuf()
 {
     sembuf *back = calloc(1, sizeof(sembuf));
 
