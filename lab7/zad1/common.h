@@ -13,13 +13,6 @@
 #include <sys/msg.h>
 #include <sys/shm.h>
 #define MAX_ORDERS 5
-#define min_sleep 100
-#define max_sleep 1000
-//#define MIN_VAL 1
-//#define MAX_VAL 100
-
-//#define rand_int (rand() % (MAX_VAL - MIN_VAL + 1) + MIN_VAL) //change
-#define rand_time ((rand() % (max_sleep - min_sleep + 1) + min_sleep) * 1000) //change
 
 int get_semaphore();
 int get_shared_memory();
