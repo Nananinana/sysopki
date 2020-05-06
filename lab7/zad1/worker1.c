@@ -12,48 +12,36 @@
 
 #include "common.h"
 
+typedef struct sembuf operation;
 int semaphore_id;
 int memory_id;
 
-typedef struct sembuf sembuf;
-
-void set_sembuf()
-{
+void get_access_to_memory() { 
     srand(time(NULL));
-    sembuf *received_order = calloc(3, sizeof(sembuf));
-    received_order[0].sem_num = received_order[1].sem_num = 0;
-    received_order[0].sem_op = 0;
-    received_order[0].sem_flg = 0;
-
-    received_order[1].sem_num = 0;
-    received_order[1].sem_op = 1;
-    received_order[1].sem_flg = 0;
-
-    received_order[2].sem_num = 1;
-    received_order[2].sem_op = 1;
-    received_order[2].sem_flg = 0;
-
-    semop(semaphore_id,received_order, 3);
+    operation *receive_operation = calloc(3, sizeof(operation));
+    receive_operation[0].sem_num = receive_operation[1].sem_num = 0;
+    receive_operation[0].sem_flg = receive_operation[1].sem_flg = 0;
+    receive_operation[0].sem_op = 0;
+    receive_operation[1].sem_op = 1;
+    receive_operation[2].sem_num = 1;
+    receive_operation[2].sem_flg = 0;
+    receive_operation[2].sem_op = 1;
+    semop(semaphore_id,receive_operation, 3);
 }
 
-void set_back_sembuf()
-{
-    sembuf *back = calloc(2, sizeof(sembuf));
-
-    back[0].sem_num = 0;
-    back[0].sem_op = -1;
-    back[0].sem_flg = 0;
-
-    back[1].sem_num = 3;
-    back[1].sem_op = 1;
-    back[1].sem_flg = 0;
-
-    semop(semaphore_id, back, 2);
+void close_memory_access() {
+    operation *stop_receiving = calloc(2, sizeof(operation));
+    stop_receiving[0].sem_num = 0;
+    stop_receiving[0].sem_op = -1;
+    stop_receiving[0].sem_flg = 0;
+    stop_receiving[1].sem_num = 3;
+    stop_receiving[1].sem_op = 1;
+    stop_receiving[1].sem_flg = 0;
+    semop(semaphore_id, stop_receiving, 2);
 }
 
-void receive_order()
-{
-    set_sembuf();
+void receive_order() {
+    get_access_to_memory();
     int *orders = calloc(MAX_ORDERS, sizeof(int));
     int order_idx = (semctl(semaphore_id, 1, GETVAL, NULL) - 1) % MAX_ORDERS;
     int order_value = rand()%100;
@@ -63,15 +51,13 @@ void receive_order()
     orders[order_idx] = order_value;
     printf("[%d %ld] Dodalem liczbe: %d. Liczba zamowien do przygotowania: %d. Liczba zamowien do wyslania: %d.\n", getpid(), time(NULL), order_value, to_prepare_no, to_send_no);
     shmdt(orders);
-    set_back_sembuf();
+    close_memory_access();
 }
 
-int main()
-{
+int main() {
     srand(time(NULL));
-    semaphore_id = get_semaphore();
-    memory_id = get_shared_memory();
-
+    semaphore_id = get_semaphore_id();
+    memory_id = get_memory_id();
     while (1) {
         usleep(500000);
         if (semctl(semaphore_id, 3, GETVAL, NULL) + semctl(semaphore_id, 5, GETVAL, NULL) < MAX_ORDERS)
