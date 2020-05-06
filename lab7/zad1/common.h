@@ -12,10 +12,12 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/shm.h>
+
 #define MAX_ORDERS 5
 
 int get_semaphore_id();
 int get_memory_id();
+typedef struct sembuf operation;
 
 union semaphore_no {
     int value;            //Value for SETVAL 

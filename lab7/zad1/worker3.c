@@ -12,7 +12,6 @@
 
 #include "common.h"
 
-typedef struct sembuf operation;
 int semaphore_id;
 int memory_id;
 
