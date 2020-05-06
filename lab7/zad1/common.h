@@ -13,7 +13,7 @@
 #include <sys/msg.h>
 #include <sys/shm.h>
 
-#define MAX_ORDERS 5
+#define MAX_ORDERS 10
 
 int get_semaphore_id();
 int get_memory_id();

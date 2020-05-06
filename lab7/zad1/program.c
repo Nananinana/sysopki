@@ -12,9 +12,9 @@
 
 #include "common.h"
 
-#define WORKER1_NO 3
-#define WORKER2_NO 3
-#define WORKER3_NO 3
+#define WORKER1_NO 4
+#define WORKER2_NO 4
+#define WORKER3_NO 4
 
 int semaphore_id;
 int memory_id;
