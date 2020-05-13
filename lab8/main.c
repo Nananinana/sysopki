@@ -197,7 +197,6 @@ int main(int argc, char *argv[])
         printf("Thread number %d , thread time: %lf microseconds\n", i, *returned_value);
         fprintf(times_file, "Thread number: %d, thread time: %lf microseconds\n", i, *thread_time);
         */
-    }
 
     clock_gettime(CLOCK_REALTIME, &end_time);
     double full_time = (end_time.tv_sec - start_time.tv_sec) * 1000000 + (end_time.tv_nsec - start_time.tv_nsec) / 1000.0;
