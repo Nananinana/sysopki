@@ -10,17 +10,16 @@
 
 #define MAX_SIZE 256
 
+int threads_count;
+int **histogram;
+
 int width;
 int height;
 int **picture;
 
-
-int threads_count;
-int **histogram;
-
-struct arg_struct
+struct thread_info
 {
-    int arg1;
+    int thread_number;
     char *mode;
 };
 
@@ -113,26 +112,21 @@ void *interleaved(int index)
 }
 void *write_to_histogram(void *arg)
 {
-    struct arg_struct *args = arg;
+    struct thread_info *args = arg;
     if (strcmp(args->mode, "sign") == 0)
-    {
-        return sign(args->arg1);
-    }
+        return sign(args->thread_number);
     else if (strcmp(args->mode, "block") == 0)
-    {
-        return block(args->arg1);
-    }
+        return block(args->thread_number);
     else if (strcmp(args->mode, "interleaved") == 0)
-    {
-        return interleaved(args->arg1);
-    }
+        return interleaved(args->thread_number);
     else
     {
         printf("unknow mode\n");
-        exit(EXIT_FAILURE);
+        exit(-1);
     }
 }
-void save_histogram(char *file_name) {
+
+void save_histogram_to_file(char *file_name) {
     FILE *output_file = fopen(file_name, "w");
     if (output_file == NULL) 
     {
@@ -155,59 +149,60 @@ void save_histogram(char *file_name) {
 
 int main(int argc, char *argv[])
 {
-
+    if (argc != 5)
+    {
+        printf("Wrong number of arguments!\n");
+        exit(-1);
+    }
     threads_count = atoi(argv[1]);
     char *mode = argv[2];
-    char *input_file = argv[3];
-    char *output_file = argv[4];
-    char buffer[256];
-    load_picture_from_file(input_file);
-
-    FILE *txt = fopen("Times.txt", "a");
-    fprintf(txt, "Mode: %s | threads: %d\n", mode, threads_count);
-
+    char *input_file_name = argv[3];
+    char *output_file_name = argv[4];
+    load_picture_from_file(input_file_name);
     histogram = calloc(threads_count, sizeof(int *));
-    for (int i = 0; i < threads_count; i++)
-        histogram[i] = calloc(256, sizeof(int));
-
-    struct timespec start, end;
-    clock_gettime(CLOCK_REALTIME, &start);
-
-    pthread_t *thread_ids = calloc(threads_count, sizeof(pthread_t));
-    struct arg_struct *args = calloc(threads_count, sizeof(struct arg_struct));
-    for (int i = 0; i < threads_count; i++)
-    {
-        struct arg_struct arg;
-        arg.arg1 = i;
-        arg.mode = mode;
-
-        args[i] = arg;
-
-        pthread_create(&thread_ids[i], NULL, write_to_histogram, (void *)&args[i]);
+    for (int i = 0; i < threads_count; i++) {
+        histogram[i] = calloc(MAX_SIZE, sizeof(int));
     }
 
-    for (int i = 0; i < threads_count; i++)
-    {
-        double *y;
-        pthread_join(thread_ids[i], (void *)&y);
-        printf("Thread %d ------- %lf microseconds\n", i, *y);
-        fprintf(txt, "Thread %d ------- %lf microseconds\n", i, *y);
+    FILE *times_file = fopen("Times.txt", "a");
+    fprintf(times_file, "Mode: %s , number of threads: %d\n", mode, threads_count);
+    struct timespec start_time, end_time;
+    clock_gettime(CLOCK_REALTIME, &start_time);
+
+    pthread_t *threads = calloc(threads_count, sizeof(pthread_t));
+    struct thread_info *threads_info = calloc(threads_count, sizeof(struct thread_info));
+    for (int i = 0; i < threads_count; i++) {
+        struct thread_info info;
+        info.thread_number = i;
+        info.mode = mode;
+        threads_info[i] = info;
+        pthread_create(&threads[i], NULL, write_to_histogram, (void *)&threads_info[i]);
+        //perform thread?
     }
 
-    clock_gettime(CLOCK_REALTIME, &end);
-    double time = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000.0;
-    printf("\nFULL TIME: %f\n", time);
-    fprintf(txt, "FULL TIME: %f\n\n", time);
+    for (int i = 0; i < threads_count; i++) {
+        double *returned_value;
+        pthread_join(threads[i], (void *)&returned_value);
+        //printf("Thread number %d ------- %lf microseconds\n", i, *returned_value);
+        fprintf(times_file, "Thread number %d ------- %lf microseconds\n", i, *returned_value);
+    }
 
-    save_histogram(output_file);
+    clock_gettime(CLOCK_REALTIME, &end_time);
+    double full_time = (end_time.tv_sec - start_time.tv_sec) * 1000000 + (end_time.tv_nsec - start_time.tv_nsec) / 1000.0;
+    //printf("\nFULL TIME: %f\n", full_time);
+    fprintf(times_file, "Full time: %f\n\n", full_time);
+    save_histogram_to_file(output_file_name);
 
-    // clean
-    for (int i = 0; i < height; i++)
+    for (int i = 0; i < height; i++) {
         free(picture[i]);
+    }
     free(picture);
-    for (int i = 0; i < threads_count; i++)
+    for (int i = 0; i < threads_count; i++) {
         free(histogram[i]);
+    }
     free(histogram);
-    fclose(txt);
+    fclose(times_file);
+    free(threads);
+    free(threads_info);
     return 0;
 }
