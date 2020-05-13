@@ -8,14 +8,14 @@
 #include <math.h>
 #include <time.h>
 
-#define MAX_LINE_LENGTH 128
+#define MAX_SIZE 256
 
 int width;
 int height;
 int **picture;
 
 
-int threads;
+int threads_count;
 int **histogram;
 
 struct arg_struct
@@ -24,104 +24,40 @@ struct arg_struct
     char *mode;
 };
 
-/*void get_dimensions(char *buffer) {
-    char *rest = buffer;
-    char *new_height;    
-    new_height = strtok_r(rest, " \t\r\n", &rest);
-    height = atoi(new_height);
-    char *new_width;
-    new_width = strtok_r(rest, " \t\r\n", &rest);
-    width = atoi(new_width);
-}
 
-./*void load_row_to_array(char *line, int r)
-{
-    char *i;
-    char *rest = line;
-    for (int col = 0; col < width; col++)
-    {
-        i = strtok_r(rest, " \t\r\n", &rest);
-        image[r][col] = atoi(i);
-    }
-}*/
-void load_image_to_array(char *filename)
-{
+void load_picture_from_file(char *file_name) {
     int value;
-    FILE *pgm_file = fopen(filename, "r");
+    FILE *pgm_file = fopen(file_name, "r");
     if (pgm_file == NULL) 
     {
         printf("Cant open file \n");
         exit(-1);
     }
-    /*
-    char buffer[MAX_LINE_LENGTH + 1];
-    // skip header
-    fgets(buffer, MAX_LINE_LENGTH, f);
-    // skip comments
-    */
-
-    while (getc(pgm_file) != '\n'); //skip to the end of line
+    while (getc(pgm_file) != '\n'); //skip header
     while (getc(pgm_file) == '#') //skip comments
         while (getc(pgm_file) != '\n');
-    /*
-    do
-    {
-        fgets(buffer, MAX_LINE_LENGTH, f);
-    } while (buffer[0] == '#');
-    */
     fseek(pgm_file, -1, SEEK_CUR);
-
     fscanf(pgm_file, "%d %d", &width, &height);
-    //fscanf(pgm_file, "%d", &max_val);
-    printf("%d  %d\n", width, height);
+    printf("width: %d, height:  %d\n", width, height);
 
     picture = calloc(height, sizeof(int *));
-    for(int i = 0; i < height; i++){
+    for(int i = 0; i < height; i++)
         picture[i] = calloc(width, sizeof(int));
-    }
     for (int row = 0; row < height; row++)
     {
-        for (int col = 0; col < width; col++)
+        for (int column = 0; column < width; column++)
         {
             fscanf(pgm_file, "%d", &value);
-            picture[row][col] = value;
-        }
+            picture[row][column] = value;  }
     }
-
     fclose(pgm_file);
 }
-
-/*
-    get_dimensions(buffer);
-    // skip M
-    fgets(buffer, MAX_LINE_LENGTH, f);
-
-    picture = calloc(height, sizeof(int *));
-    for (int i = 0; i < height; i++)
-        image[i] = calloc(width, sizeof(int));
-
-    char *line = NULL;
-    size_t len = 0;
-    for (int r = 0; r < height; r++)
-    {
-        getline(&line, &len, f);
-        char *i;
-        char *rest = line;
-        for (int col = 0; col < width; col++)
-        {
-            i = strtok_r(rest, " \t\r\n", &rest);
-            image[r][col] = atoi(i);
-        }
-        //load_row_to_array(line, r);
-    }
-    fclose(f);
-}*/
 
 void *sign(int index)
 {
     struct timespec start, end;
     clock_gettime(CLOCK_REALTIME, &start);
-    int size = 255 / threads;
+    int size = 255 / threads_count;
     for (int w = 0; w < height; w++)
     {
         for (int c = 0; c < width; c++)
@@ -143,7 +79,7 @@ void *block(int index)
 {
     struct timespec start, end;
     clock_gettime(CLOCK_REALTIME, &start);
-    int size = width / threads;
+    int size = width / threads_count;
     for (int col = index * size; col < (index + 1) * size; col++)
     {
         for (int w = 0; w < height; w++)
@@ -162,7 +98,7 @@ void *interleaved(int index)
     struct timespec start, end;
     clock_gettime(CLOCK_REALTIME, &start);
 
-    for (int col = index; col < width; col += threads)
+    for (int col = index; col < width; col += threads_count)
     {
         for (int w = 0; w < height; w++)
         {
@@ -196,44 +132,50 @@ void *write_to_histogram(void *arg)
         exit(EXIT_FAILURE);
     }
 }
-void save_histogram(char *output_file)
-{
-    FILE *f = fopen(output_file, "w");
-
-    for (int i = 0; i < 256; i++)
+void save_histogram(char *file_name) {
+    FILE *output_file = fopen(file_name, "w");
+    if (output_file == NULL) 
     {
-        int sum = 0;
-        for (int j = 0; j < threads; j++)
-        {
-            sum += histogram[j][i];
-        }
-        fprintf(f, "%d -> %d\n", i, sum);
+        printf("Cant open file \n");
+        exit(-1);
     }
-    fclose(f);
+    fprintf(output_file, "gray scale - count\n");
+    int count;
+    for (int i = 0; i < MAX_SIZE; i++)
+    {
+        count = 0;
+        for (int j = 0; j < threads_count; j++)
+        {
+            count += histogram[j][i];
+        }
+        fprintf(output_file, "%d - %d\n", i, count);
+    }
+    fclose(output_file);
 }
+
 int main(int argc, char *argv[])
 {
 
-    threads = atoi(argv[1]);
+    threads_count = atoi(argv[1]);
     char *mode = argv[2];
     char *input_file = argv[3];
     char *output_file = argv[4];
     char buffer[256];
-    load_image_to_array(input_file);
+    load_picture_from_file(input_file);
 
     FILE *txt = fopen("Times.txt", "a");
-    fprintf(txt, "Mode: %s | threads: %d\n", mode, threads);
+    fprintf(txt, "Mode: %s | threads: %d\n", mode, threads_count);
 
-    histogram = calloc(threads, sizeof(int *));
-    for (int i = 0; i < threads; i++)
+    histogram = calloc(threads_count, sizeof(int *));
+    for (int i = 0; i < threads_count; i++)
         histogram[i] = calloc(256, sizeof(int));
 
     struct timespec start, end;
     clock_gettime(CLOCK_REALTIME, &start);
 
-    pthread_t *thread_ids = calloc(threads, sizeof(pthread_t));
-    struct arg_struct *args = calloc(threads, sizeof(struct arg_struct));
-    for (int i = 0; i < threads; i++)
+    pthread_t *thread_ids = calloc(threads_count, sizeof(pthread_t));
+    struct arg_struct *args = calloc(threads_count, sizeof(struct arg_struct));
+    for (int i = 0; i < threads_count; i++)
     {
         struct arg_struct arg;
         arg.arg1 = i;
@@ -244,7 +186,7 @@ int main(int argc, char *argv[])
         pthread_create(&thread_ids[i], NULL, write_to_histogram, (void *)&args[i]);
     }
 
-    for (int i = 0; i < threads; i++)
+    for (int i = 0; i < threads_count; i++)
     {
         double *y;
         pthread_join(thread_ids[i], (void *)&y);
@@ -263,7 +205,7 @@ int main(int argc, char *argv[])
     for (int i = 0; i < height; i++)
         free(picture[i]);
     free(picture);
-    for (int i = 0; i < threads; i++)
+    for (int i = 0; i < threads_count; i++)
         free(histogram[i]);
     free(histogram);
     fclose(txt);
