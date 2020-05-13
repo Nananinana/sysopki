@@ -1,0 +1,81 @@
+Mode: sign , number of threads: 1
+Thread number: 0, thread time: 2083.827000 microseconds
+Full time: 2855.982000
+
+Mode: sign , number of threads: 2
+Thread number: 0, thread time: 2862.833000 microseconds
+Thread number: 1, thread time: 11778.312000 microseconds
+Full time: 11980.795000
+
+Mode: sign , number of threads: 4
+Thread number: 0, thread time: 2325.253000 microseconds
+Thread number: 1, thread time: 9926.112000 microseconds
+Thread number: 2, thread time: 2316.829000 microseconds
+Thread number: 3, thread time: 15706.487000 microseconds
+Full time: 24350.638000
+
+Mode: sign , number of threads: 8
+Thread number: 0, thread time: 19285.485000 microseconds
+Thread number: 1, thread time: 19200.120000 microseconds
+Thread number: 2, thread time: 22643.830000 microseconds
+Thread number: 3, thread time: 13239.846000 microseconds
+Thread number: 4, thread time: 2392.881000 microseconds
+Thread number: 5, thread time: 31562.872000 microseconds
+Thread number: 6, thread time: 45654.521000 microseconds
+Thread number: 7, thread time: 2539.703000 microseconds
+Full time: 50803.938000
+
+Mode: block , number of threads: 1
+Thread number: 0, thread time: 1248.802000 microseconds
+Full time: 3206.027000
+
+Mode: block , number of threads: 2
+Thread number: 0, thread time: 632.183000 microseconds
+Thread number: 1, thread time: 645.489000 microseconds
+Full time: 2460.045000
+
+Mode: block , number of threads: 4
+Thread number: 0, thread time: 352.180000 microseconds
+Thread number: 1, thread time: 394.222000 microseconds
+Thread number: 2, thread time: 315.193000 microseconds
+Thread number: 3, thread time: 391.505000 microseconds
+Full time: 9298.837000
+
+Mode: block , number of threads: 8
+Thread number: 0, thread time: 222.422000 microseconds
+Thread number: 1, thread time: 177.166000 microseconds
+Thread number: 2, thread time: 146.881000 microseconds
+Thread number: 3, thread time: 177.096000 microseconds
+Thread number: 4, thread time: 237.237000 microseconds
+Thread number: 5, thread time: 166.388000 microseconds
+Thread number: 6, thread time: 200.093000 microseconds
+Thread number: 7, thread time: 149.852000 microseconds
+Full time: 6408.488000
+
+Mode: interleaved , number of threads: 1
+Thread number: 0, thread time: 1303.423000 microseconds
+Full time: 2152.799000
+
+Mode: interleaved , number of threads: 2
+Thread number: 0, thread time: 529.071000 microseconds
+Thread number: 1, thread time: 671.755000 microseconds
+Full time: 2395.120000
+
+Mode: interleaved , number of threads: 4
+Thread number: 0, thread time: 298.851000 microseconds
+Thread number: 1, thread time: 290.468000 microseconds
+Thread number: 2, thread time: 411.612000 microseconds
+Thread number: 3, thread time: 439.723000 microseconds
+Full time: 5972.318000
+
+Mode: interleaved , number of threads: 8
+Thread number: 0, thread time: 240.850000 microseconds
+Thread number: 1, thread time: 163.330000 microseconds
+Thread number: 2, thread time: 162.257000 microseconds
+Thread number: 3, thread time: 138.612000 microseconds
+Thread number: 4, thread time: 196.973000 microseconds
+Thread number: 5, thread time: 144.298000 microseconds
+Thread number: 6, thread time: 291.970000 microseconds
+Thread number: 7, thread time: 154.552000 microseconds
+Full time: 6617.748000
+
