@@ -110,18 +110,19 @@ void *interleaved(int index)
     *time = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000.0;
     return (void *)time;
 }
-void *write_to_histogram(void *arg)
+
+void *perform_thread(void *info)
 {
-    struct thread_info *args = arg;
-    if (strcmp(args->mode, "sign") == 0)
-        return sign(args->thread_number);
-    else if (strcmp(args->mode, "block") == 0)
-        return block(args->thread_number);
-    else if (strcmp(args->mode, "interleaved") == 0)
-        return interleaved(args->thread_number);
+    struct thread_info *t_info = info;
+    if (strcmp(t_info->mode, "sign") == 0)
+        return sign(t_info->thread_number);
+    else if (strcmp(t_info->mode, "block") == 0)
+        return block(t_info->thread_number);
+    else if (strcmp(t_info->mode, "interleaved") == 0)
+        return interleaved(t_info->thread_number);
     else
     {
-        printf("unknow mode\n");
+        printf("Wrong command. Mode can be sign, block or interleaved\n");
         exit(-1);
     }
 }
@@ -145,6 +146,16 @@ void save_histogram_to_file(char *file_name) {
         fprintf(output_file, "%d - %d\n", i, count);
     }
     fclose(output_file);
+}
+
+void print_thread_time(pthread_t *threads, FILE *times_file)
+{
+    for (int i = 0; i < threads_count; i++) { //print time?
+        double *thread_time;
+        pthread_join(threads[i], (void *)&thread_time);
+        printf("Thread number %d , thread time: %lf microseconds\n", i, *returned_value);
+        fprintf(times_file, "Thread number: %d, thread time: %lf microseconds\n", i, *thread_time);
+    }
 }
 
 int main(int argc, char *argv[])
@@ -176,20 +187,21 @@ int main(int argc, char *argv[])
         info.thread_number = i;
         info.mode = mode;
         threads_info[i] = info;
-        pthread_create(&threads[i], NULL, write_to_histogram, (void *)&threads_info[i]);
-        //perform thread?
+        pthread_create(&threads[i], NULL, perform_thread, (void *)&threads_info[i]);
     }
 
-    for (int i = 0; i < threads_count; i++) {
-        double *returned_value;
-        pthread_join(threads[i], (void *)&returned_value);
-        //printf("Thread number %d ------- %lf microseconds\n", i, *returned_value);
-        fprintf(times_file, "Thread number %d ------- %lf microseconds\n", i, *returned_value);
+    print_thread_time(threads, times_file);
+        /*
+        double *thread_time;
+        pthread_join(threads[i], (void *)&thread_time);
+        printf("Thread number %d , thread time: %lf microseconds\n", i, *returned_value);
+        fprintf(times_file, "Thread number: %d, thread time: %lf microseconds\n", i, *thread_time);
+        */
     }
 
     clock_gettime(CLOCK_REALTIME, &end_time);
     double full_time = (end_time.tv_sec - start_time.tv_sec) * 1000000 + (end_time.tv_nsec - start_time.tv_nsec) / 1000.0;
-    //printf("\nFULL TIME: %f\n", full_time);
+    printf("\nFull time: %f\n", full_time);
     fprintf(times_file, "Full time: %f\n\n", full_time);
     save_histogram_to_file(output_file_name);
 
