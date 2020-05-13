@@ -8,14 +8,13 @@
 #include <math.h>
 #include <time.h>
 
-#define MAX_SIZE 256
+#define MAX_PIXEL_NUM 255
 
 int threads_count;
 int **histogram;
-
 int width;
 int height;
-int **picture;
+int **picture_array;
 
 struct thread_info
 {
@@ -23,8 +22,8 @@ struct thread_info
     char *mode;
 };
 
-
 void load_picture_from_file(char *file_name) {
+
     int value;
     FILE *pgm_file = fopen(file_name, "r");
     if (pgm_file == NULL) 
@@ -39,80 +38,97 @@ void load_picture_from_file(char *file_name) {
     fscanf(pgm_file, "%d %d", &width, &height);
     printf("width: %d, height:  %d\n", width, height);
 
-    picture = calloc(height, sizeof(int *));
+    picture_array = calloc(height, sizeof(int *));
     for(int i = 0; i < height; i++)
-        picture[i] = calloc(width, sizeof(int));
+        picture_array[i] = calloc(width, sizeof(int));
     for (int row = 0; row < height; row++)
     {
         for (int column = 0; column < width; column++)
         {
             fscanf(pgm_file, "%d", &value);
-            picture[row][column] = value;  }
+            picture_array[row][column] = value;  }
     }
     fclose(pgm_file);
 }
 
-void *sign(int index)
-{
-    struct timespec start, end;
-    clock_gettime(CLOCK_REALTIME, &start);
-    int size = 255 / threads_count;
-    for (int w = 0; w < height; w++)
+void save_histogram_to_file(char *file_name) {
+    FILE *output_file = fopen(file_name, "w");
+    if (output_file == NULL) 
     {
-        for (int c = 0; c < width; c++)
-        {
-            if (picture[w][c] / size == index)
-            {
-                histogram[index][picture[w][c]]++;
-            }
-        }
+        printf("Cant open file \n");
+        exit(-1);
     }
-
-    clock_gettime(CLOCK_REALTIME, &end);
-    double *time = malloc(sizeof(double));
-    *time = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000.0;
-    return (void *)time;
+    fprintf(output_file, "gray scale - count\n");
+    int count;
+    for (int i = 0; i < MAX_PIXEL_NUM+1; i++)
+    {
+        count = 0;
+        for (int j = 0; j < threads_count; j++)
+        {
+            count += histogram[j][i];
+        }
+        fprintf(output_file, "%d - %d\n", i, count);
+    }
+    fclose(output_file);
 }
 
-void *block(int index)
-{
-    struct timespec start, end;
-    clock_gettime(CLOCK_REALTIME, &start);
-    int size = width / threads_count;
-    for (int col = index * size; col < (index + 1) * size; col++)
-    {
-        for (int w = 0; w < height; w++)
-        {
-            histogram[index][picture[w][col]]++;
-        }
+void print_threads_time(pthread_t *threads, FILE *times_file) {
+    for (int i = 0; i < threads_count; i++) {
+        double *thread_time;
+        pthread_join(threads[i], (void *)&thread_time);
+        printf("Thread number %d , thread time: %lf microseconds\n", i, *thread_time);
+        fprintf(times_file, "Thread number: %d, thread time: %lf microseconds\n", i, *thread_time);
     }
-
-    clock_gettime(CLOCK_REALTIME, &end);
-    double *time = malloc(sizeof(double));
-    *time = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000.0;
-    return (void *)time;
-}
-void *interleaved(int index)
-{
-    struct timespec start, end;
-    clock_gettime(CLOCK_REALTIME, &start);
-
-    for (int col = index; col < width; col += threads_count)
-    {
-        for (int w = 0; w < height; w++)
-        {
-            histogram[index][picture[w][col]]++;
-        }
-    }
-
-    clock_gettime(CLOCK_REALTIME, &end);
-    double *time = malloc(sizeof(double));
-    *time = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000.0;
-    return (void *)time;
 }
 
-void *perform_thread(void *info)
-{
+void *sign(int thread_number) {
+    struct timespec start_time, end_time;
+    clock_gettime(CLOCK_REALTIME, &start_time);
+    int thread_chunk = (MAX_PIXEL_NUM) / threads_count;
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            if (picture_array[i][j] / thread_chunk == thread_number)
+                histogram[thread_number][picture_array[i][j]]++;
+        }
+    }
+    clock_gettime(CLOCK_REALTIME, &end_time);
+    double *thread_time = malloc(sizeof(double));
+    *thread_time = (end_time.tv_sec - start_time.tv_sec) * 1000000 + (end_time.tv_nsec - start_time.tv_nsec) / 1000.0;
+    return (void *)thread_time;
+}
+
+void *block(int thread_number) {
+    struct timespec start_time, end_time;
+    clock_gettime(CLOCK_REALTIME, &start_time);
+    int thread_chunk = width / threads_count;
+    for (int column = thread_number * thread_chunk; column < (thread_number + 1) * thread_chunk; column++) {
+        for (int i = 0; i < height; i++) {
+            histogram[thread_number][picture_array[i][column]]++;
+        }
+    }
+    clock_gettime(CLOCK_REALTIME, &end_time);
+    double *thread_time = malloc(sizeof(double));
+    *thread_time = (end_time.tv_sec - start_time.tv_sec) * 1000000 + (end_time.tv_nsec - start_time.tv_nsec) / 1000.0;
+    return (void *)thread_time;
+}
+
+void *interleaved(int thread_number) {
+    struct timespec start_time, end_time;
+    clock_gettime(CLOCK_REALTIME, &start_time); 
+    for (int column = thread_number; column < width; column += threads_count) {
+        for (int i = 0; i < height; i++) {
+            histogram[thread_number][picture_array[i][column]]++;
+        }
+    }
+    clock_gettime(CLOCK_REALTIME, &end_time);
+    double *thread_time = malloc(sizeof(double));
+    *thread_time = (end_time.tv_sec - start_time.tv_sec) * 1000000 + (end_time.tv_nsec - start_time.tv_nsec) / 1000.0;
+    return (void *)thread_time;
+}
+
+void *perform_thread(void *info) {
     struct thread_info *t_info = info;
     if (strcmp(t_info->mode, "sign") == 0)
         return sign(t_info->thread_number);
@@ -127,39 +143,10 @@ void *perform_thread(void *info)
     }
 }
 
-void save_histogram_to_file(char *file_name) {
-    FILE *output_file = fopen(file_name, "w");
-    if (output_file == NULL) 
-    {
-        printf("Cant open file \n");
-        exit(-1);
-    }
-    fprintf(output_file, "gray scale - count\n");
-    int count;
-    for (int i = 0; i < MAX_SIZE; i++)
-    {
-        count = 0;
-        for (int j = 0; j < threads_count; j++)
-        {
-            count += histogram[j][i];
-        }
-        fprintf(output_file, "%d - %d\n", i, count);
-    }
-    fclose(output_file);
-}
 
-void print_thread_time(pthread_t *threads, FILE *times_file)
-{
-    for (int i = 0; i < threads_count; i++) { //print time?
-        double *thread_time;
-        pthread_join(threads[i], (void *)&thread_time);
-        printf("Thread number %d , thread time: %lf microseconds\n", i, *thread_time);
-        fprintf(times_file, "Thread number: %d, thread time: %lf microseconds\n", i, *thread_time);
-    }
-}
 
-int main(int argc, char *argv[])
-{
+
+int main(int argc, char *argv[]) {
     if (argc != 5)
     {
         printf("Wrong number of arguments!\n");
@@ -172,7 +159,7 @@ int main(int argc, char *argv[])
     load_picture_from_file(input_file_name);
     histogram = calloc(threads_count, sizeof(int *));
     for (int i = 0; i < threads_count; i++) {
-        histogram[i] = calloc(MAX_SIZE, sizeof(int));
+        histogram[i] = calloc(MAX_PIXEL_NUM+1, sizeof(int));
     }
 
     FILE *times_file = fopen("Times.txt", "a");
@@ -190,14 +177,7 @@ int main(int argc, char *argv[])
         pthread_create(&threads[i], NULL, perform_thread, (void *)&threads_info[i]);
     }
 
-    print_thread_time(threads, times_file);
-        /*
-        double *thread_time;
-        pthread_join(threads[i], (void *)&thread_time);
-        printf("Thread number %d , thread time: %lf microseconds\n", i, *returned_value);
-        fprintf(times_file, "Thread number: %d, thread time: %lf microseconds\n", i, *thread_time);
-        */
-
+    print_threads_time(threads, times_file);
     clock_gettime(CLOCK_REALTIME, &end_time);
     double full_time = (end_time.tv_sec - start_time.tv_sec) * 1000000 + (end_time.tv_nsec - start_time.tv_nsec) / 1000.0;
     printf("\nFull time: %f\n", full_time);
@@ -205,9 +185,9 @@ int main(int argc, char *argv[])
     save_histogram_to_file(output_file_name);
 
     for (int i = 0; i < height; i++) {
-        free(picture[i]);
+        free(picture_array[i]);
     }
-    free(picture);
+    free(picture_array);
     for (int i = 0; i < threads_count; i++) {
         free(histogram[i]);
     }
