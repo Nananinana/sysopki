@@ -49,7 +49,10 @@ void load_image_to_array(char *filename)
     int value;
     FILE *pgm_file = fopen(filename, "r");
     if (pgm_file == NULL) 
-        error("Cant open file \n");
+    {
+        printf("Cant open file \n");
+        exit(-1);
+    }
     /*
     char buffer[MAX_LINE_LENGTH + 1];
     // skip header
@@ -68,7 +71,7 @@ void load_image_to_array(char *filename)
     */
     fseek(pgm_file, -1, SEEK_CUR);
 
-    fscanf(gm_file, "%d %d", &width, &height);
+    fscanf(pgm_file, "%d %d", &width, &height);
     //fscanf(pgm_file, "%d", &max_val);
     printf("%d  %d\n", width, height);
 
@@ -123,9 +126,9 @@ void *sign(int index)
     {
         for (int c = 0; c < width; c++)
         {
-            if (image[w][c] / size == index)
+            if (picture[w][c] / size == index)
             {
-                histogram[index][image[w][c]]++;
+                histogram[index][picture[w][c]]++;
             }
         }
     }
@@ -145,7 +148,7 @@ void *block(int index)
     {
         for (int w = 0; w < height; w++)
         {
-            histogram[index][image[w][col]]++;
+            histogram[index][picture[w][col]]++;
         }
     }
 
@@ -163,7 +166,7 @@ void *interleaved(int index)
     {
         for (int w = 0; w < height; w++)
         {
-            histogram[index][image[w][col]]++;
+            histogram[index][picture[w][col]]++;
         }
     }
 
@@ -258,8 +261,8 @@ int main(int argc, char *argv[])
 
     // clean
     for (int i = 0; i < height; i++)
-        free(image[i]);
-    free(image);
+        free(picture[i]);
+    free(picture);
     for (int i = 0; i < threads; i++)
         free(histogram[i]);
     free(histogram);
