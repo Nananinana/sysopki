@@ -153,7 +153,7 @@ void print_thread_time(pthread_t *threads, FILE *times_file)
     for (int i = 0; i < threads_count; i++) { //print time?
         double *thread_time;
         pthread_join(threads[i], (void *)&thread_time);
-        printf("Thread number %d , thread time: %lf microseconds\n", i, *returned_value);
+        printf("Thread number %d , thread time: %lf microseconds\n", i, *thread_time);
         fprintf(times_file, "Thread number: %d, thread time: %lf microseconds\n", i, *thread_time);
     }
 }
