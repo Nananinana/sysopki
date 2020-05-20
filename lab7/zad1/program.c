@@ -32,7 +32,7 @@ void sig_handler(int signal_no) {
 
 void create_shared_memory() {
     key_t memory_key = ftok(getenv("HOME"), 1);
-    memory_id = shmget(memory_key, MAX_ORDERS*sizeof(int), IPC_CREAT | 0666);
+    memory_id = shmget(memory_key, MAX_ORDERS*sizeof(int), IPC_CREAT | 0666); //0666 - read and write permission for everyone
     if (memory_id < 0) {
         printf("Can't create shared memory, memory_id is less than 0\n");
         exit(-1);

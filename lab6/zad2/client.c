@@ -37,7 +37,7 @@ void register_msg()
     mq_notify(queue, &sigevent);
 }
 
-void proceed_msg(union sigval sv) //zmien na ify?
+void proceed_msg(union sigval sv)
 { 
     (void)sv;
     register_msg();
@@ -66,14 +66,6 @@ void proceed_msg(union sigval sv) //zmien na ify?
         }
     }
 }
-
-/*void set_nonblocking() 
-{
-    struct mq_attr attr;
-    mq_getattr(queue, &attr);
-    attr.mq_flags = O_NONBLOCK;
-    mq_setattr(queue, &attr, NULL);
-}*/
 
 int main() 
 {
