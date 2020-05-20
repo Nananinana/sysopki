@@ -19,7 +19,6 @@ int chairs_no;
 int first_empty_chair = 0;
 int empty_chairs;
 int next_client_to_shave = 0;
-int shaved_clients = 0;
 bool is_asleep = 0;
 
 void *client() {
@@ -51,6 +50,7 @@ void *client() {
 }
 
 void *golibroda() {
+    int shaved_clients = 0;
     while (shaved_clients<clients_no)
     {
         pthread_mutex_lock(&mutex);
