@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -Werror -std=c11 -g -pthread
+CFLAGS = -Wall -g -pthread
 
 all: 
 	make clean
