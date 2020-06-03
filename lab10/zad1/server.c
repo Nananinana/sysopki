@@ -1,424 +1,308 @@
-#include "common.h"
+#define _POSIX_C_SOURCE 200112L
+#define MAX_PLAYERS 20
+#define MAX_BACKLOG 10
+#define MAX_MESSAGE_LENGTH 256
+#include <netdb.h>
+#include <poll.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <time.h>
+#include <unistd.h>
+#include <errno.h>
 
-sem_t semaf;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+typedef struct
+{
+    char *name;
+    int fd;
+    int online;
+} client;
 
-struct client_info{
-    char name[32];
-    int desc;
-    int playing_with;
-    int is_working;
-    int ping;
-};
+client *clients[MAX_PLAYERS] = {NULL};
+int clients_count = 0;
 
-struct client_info *clients;
-int fill;
-int undesc;
-int netdesc;
-int epoldesc;
-char path[10];
-pthread_t pthread_id;
-
-
-
-int add_client(struct client_info client){
-    if(fill<MAX_CLIENTS){
-        clients[fill++]=client;
-        return 0;
-    }
-   
-    for(int i=0;i<MAX_CLIENTS;i++){
-        if(clients[i].is_working!=CONNECT){
-            clients[i]=client;
-            return 0;
-        }
-    }
-    return ERROR;
+int get_rival(int index)
+{
+    if (index % 2 == 0)
+        return index + 1;
+    else
+        return index - 1;
 }
 
+int add_client(char *name, int fd)
+{
+    for (int i = 0; i < MAX_PLAYERS; i++)
+    {
+        if (clients[i] != NULL && strcmp(clients[i]->name, name) == 0)
+        {
+            return -1;
+        }
+    }
+    int index = -1;
+    for (int i = 0; i < MAX_PLAYERS; i += 2)
+    {
+        if (clients[i] != NULL && clients[i + 1] == NULL)
+        {
+            index = i + 1;
+            break;
+        }
+    }
+    if (index == -1)
+    {
+        for (int i = 0; i < MAX_PLAYERS; i++)
+        {
+            if (clients[i] == NULL)
+            {
+                index = i;
+                break;
+            }
+        }
+    }
 
+    if (index != -1)
+    {
+        client *new_client = calloc(1, sizeof(client));
+        new_client->name = calloc(MAX_MESSAGE_LENGTH, sizeof(char));
+        strcpy(new_client->name, name);
+        new_client->fd = fd;
+        new_client->online = 1;
 
-int find_client_using_name(char *name){
-    for(int i=0;i<MAX_CLIENTS;i++){
-        if(clients[i].is_working==CONNECT && strcmp(name, clients[i].name)==0)
+        clients[index] = new_client;
+        clients_count++;
+    }
+
+    return index;
+}
+
+void exit_on_error(char *mess)
+{
+    printf("ERROR: %s\n", mess);
+    printf("ERRNO: %d\n", errno);
+    exit(1);
+}
+
+int get_by_name(char *name)
+{
+    for (int i = 0; i < MAX_PLAYERS; i++)
+    {
+        if (clients[i] != NULL && strcmp(clients[i]->name, name) == 0)
+        {
             return i;
-    }
-    return ERROR;
-}
-
-
-int find_client_using_desc(int desc){
-    for(int i=0;i<MAX_CLIENTS;i++){
-        if(clients[i].is_working==CONNECT && clients[i].desc==desc)
-        return i;
-    }
-    return ERROR;
-}
-
-int find_free_client(int desc){
-    for(int i=0;i<MAX_CLIENTS;i++){
-        if(clients[i].is_working==CONNECT && clients[i].playing_with==-1 && clients[i].desc!=desc)
-        return i;
-    }
-    return ERROR;
-}
-void sig_handler(int num){
-    exit(0);
-}
-
-void exit_handler(void){
-    printf("closing server\n");
-    struct message msg;
-
-    pthread_cancel(pthread_id);
-
-    for(int i=0;i<MAX_CLIENTS;i++){
-        if(clients[i].is_working==CONNECT){
-            
-            msg.type=DISCONNECT;
-            write(clients[i].desc, &msg, msg_size);
-            read(clients[i].desc,&msg,msg_size);
-
-            if(shutdown(clients[i].desc, SHUT_RDWR)==-1)
-                perror("server: shutdown cl socket error");
-
-            if(close(clients[i].desc)==-1)
-                perror("server: close cl socket error");
         }
     }
+    return -1;
+}
+void free_client(int index)
+{
+    free(clients[index]->name);
+    free(clients[index]);
+    clients[index] = NULL;
+    clients_count--;
+    int rival = get_rival(index);
+    if (clients[rival] != NULL)
+    {
+        printf("Removing rival: %s\n", clients[rival]->name);
+        free(clients[rival]->name);
+        free(clients[rival]);
+        clients[rival] = NULL;
+        clients_count--;
+    }
+}
+void remove_client(char *name)
+{
+    int index = -1;
+    for (int i = 0; i < MAX_PLAYERS; i++)
+    {
+        if (clients[i] != NULL && strcmp(clients[i]->name, name) == 0)
+        {
+            index = i;
+        }
+    }
+    printf("Removing client: %s\n", name);
+    free_client(index);
+}
+void check_clients_alive()
+{
+    for (int i = 0; i < MAX_PLAYERS; i++)
+    {
+        if (clients[i] != NULL && !clients[i]->online)
+        {
+            remove_client(clients[i]->name);
+        }
+    }
+}
+void send_ping_to_all_clients()
+{
+    for (int i = 0; i < MAX_PLAYERS; i++)
+    {
+        if (clients[i] != NULL)
+        {
+            send(clients[i]->fd, "ping: ", MAX_MESSAGE_LENGTH, 0);
+            clients[i]->online = 0;
+        }
+    }
+}
+void ping()
+{
+    while (1)
+    {
+        printf("*PINGING*\n");
+        pthread_mutex_lock(&mutex);
+        check_clients_alive();
+        send_ping_to_all_clients();
+        pthread_mutex_unlock(&mutex);
+        sleep(3);
+    }
+}
 
-    if(shutdown(undesc, SHUT_RDWR)==-1)
-        perror("server: shutdown socket un error");
-
-    if(shutdown(netdesc, SHUT_RDWR)==-1)
-        perror("server: shutdown socket net  error");
-    
-    sem_destroy(&semaf);
-    close(netdesc);
-    close(undesc);
+int init_local_socket(char *path)
+{
+    int local_socket = socket(AF_UNIX, SOCK_STREAM, 0);
+    struct sockaddr_un local_sockaddr;
+    memset(&local_sockaddr, 0, sizeof(struct sockaddr_un));
+    local_sockaddr.sun_family = AF_UNIX;
+    strcpy(local_sockaddr.sun_path, path);
     unlink(path);
-    free(clients);
+    bind(local_socket, (struct sockaddr *)&local_sockaddr,
+         sizeof(struct sockaddr_un));
+    listen(local_socket, MAX_BACKLOG);
+    return local_socket;
 }
 
+int init_network_socket(char *port)
+{
+    struct addrinfo *info;
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;
+    getaddrinfo(NULL, port, &hints, &info);
+    int network_socket =
+        socket(info->ai_family, info->ai_socktype, info->ai_protocol);
+    bind(network_socket, info->ai_addr, info->ai_addrlen);
+    listen(network_socket, MAX_BACKLOG);
+    freeaddrinfo(info);
 
-void connect_procedure(int desc, int client_id, int second_client){
-        
-    struct message msg;
-    clients[second_client].playing_with=client_id;
-    clients[client_id].playing_with=second_client;
-    msg.other = rand() % 1;
-
-    strcpy(msg.name,clients[second_client].name);
-    msg.msg=O;
-    msg.type=CONNECT;
-    if(write(clients[client_id].desc,&msg, msg_size)==-1)
-        perror("server: send info 1 error");
-    
-    strcpy(msg.name,clients[client_id].name);
-    msg.msg=X;
-    if(write(clients[second_client].desc,&msg, msg_size)==-1)
-        perror("server: send info 2 error");
-    
-
+    return network_socket;
 }
 
-void unexpected_client_exit(int connected_client){
-    struct message msg1;
-    msg1.msg=WAITING_FOR_PLAYER;
-    msg1.type=CONNECT;
-    msg1.other=ERROR;
-    if(write(clients[connected_client].desc, &msg1, msg_size)==-1)
-        perror("server: send waiting for player error");
-    
-    int second_client = find_free_client(clients[connected_client].desc);
-
-    if(second_client != ERROR)
-        connect_procedure(clients[connected_client].desc, connected_client, second_client);
-}
-
-
-void disconnect_client(int i){
-    
-    struct epoll_event epv;
-    epv.data.fd=clients[i].desc;
-    if(epoll_ctl(epoldesc,EPOLL_CTL_DEL,clients[i].desc,&epv)==-1)
-        perror("server: epoll unix ctl error");
-    
-    if(shutdown(clients[i].desc, SHUT_RDWR)==-1)
-        perror("server: shutdown socket error");
-
-    if(close(clients[i].desc)==-1)
-        perror("server: close socket error");
-
-}
-
-
-void disconnect_ping(int i){
-
-     clients[i].is_working=DISCONNECT;
-
-    int connected_client = clients[i].playing_with;
-    if(connected_client !=-1){
-        clients[connected_client].playing_with=-1;
-        
-        if(clients[connected_client].is_working==CONNECT){ 
-            unexpected_client_exit(connected_client);  
+int check_messages(int local_socket, int network_socket)
+{
+    struct pollfd *fds = calloc(2 + clients_count, sizeof(struct pollfd));
+    fds[0].fd = local_socket;
+    fds[0].events = POLLIN;
+    fds[1].fd = network_socket;
+    fds[1].events = POLLIN;
+    pthread_mutex_lock(&mutex);
+    for (int i = 0; i < clients_count; i++)
+    {
+        fds[i + 2].fd = clients[i]->fd;
+        fds[i + 2].events = POLLIN;
+    }
+    pthread_mutex_unlock(&mutex);
+    poll(fds, clients_count + 2, -1);
+    int retval;
+    // check for message
+    for (int i = 0; i < clients_count + 2; i++)
+    {
+        if (fds[i].revents & POLLIN)
+        {
+            retval = fds[i].fd;
+            break;
         }
     }
+    if (retval == local_socket || retval == network_socket)
+    {
+        retval = accept(retval, NULL, NULL);
+    }
+    free(fds);
 
-    struct epoll_event epv;
-    epv.data.fd=clients[i].desc;
-    if(epoll_ctl(epoldesc,EPOLL_CTL_DEL,clients[i].desc,&epv)==-1)
-        perror("server: epoll unix ctl error");
-
-    if(close(clients[i].desc)==-1)
-        perror("server: close socket error");
+    return retval;
 }
 
-void *pingping(int arg){
-    struct message msg1;
-    msg1.type=PING;
+int main(int argc, char *argv[])
+{
+    if (argc != 3)
+        exit_on_error("./server [port] [path]");
+    char *port = argv[1];
+    char *socket_path = argv[2];
+    srand(time(NULL));
+    int local_socket = init_local_socket(socket_path);
+    int network_socket = init_network_socket(port);
 
-    while(1){
+    pthread_t t;
+    pthread_create(&t, NULL, (void *(*)(void *))ping, NULL);
+    while (1)
+    {
+        int client_fd = check_messages(local_socket, network_socket);
+        char buffer[MAX_MESSAGE_LENGTH + 1];
+        recv(client_fd, buffer, MAX_MESSAGE_LENGTH, 0);
+        printf("%s\n", buffer);
+        char *command = strtok(buffer, ":");
+        char *arg = strtok(NULL, ":");
+        char *name = strtok(NULL, ":");
+        pthread_mutex_lock(&mutex);
+        if (strcmp(command, "add") == 0)
+        {
+            int index = add_client(name, client_fd);
 
-        for(int i=0;i<MAX_CLIENTS;i++){
-
-            sem_wait(&semaf);
-            if(clients[i].is_working==CONNECT){
-
-                if(clients[i].ping==0){
-                    clients[i].ping=1;
-                    if(write(clients[i].desc, &msg1, msg_size)==-1){
-                       if(errno==EPIPE)
-                            disconnect_ping(i);
-                        else 
-                            perror("server: sendto ping error");
-                    }
-                   
-                }
-                else{
-                   disconnect_ping(i);
-                }
+            if (index == -1)
+            {
+                send(client_fd, "add:name_taken", MAX_MESSAGE_LENGTH, 0);
+                close(client_fd);
             }
-            sem_post(&semaf);
-            sleep(1);
-        }   
-    }
-}
+            else if (index % 2 == 0)
+            {
+                send(client_fd, "add:no_enemy", MAX_MESSAGE_LENGTH, 0);
+            }
+            else
+            {
+                int random_num = rand() % 100;
+                int first, second;
+                if (random_num % 2 == 0)
+                {
+                    first = index;
+                    second = get_rival(index);
+                }
+                else
+                {
+                    second = index;
+                    first = get_rival(index);
+                }
 
-
-//================================== m a i n ==================
-
-int main(int argc, char ** argv){
-    if(argc<3){
-        printf("server: wrong number of arguments\n");
-        return 1;
-    }
-    
-    signal(SIGINT,sig_handler);
-    atexit(exit_handler);
-
-    // sockety ===========================
-
-    strcpy(path,argv[2]);
-    int portno;
-    sscanf(argv[1], "%d", &portno);
-    struct sockaddr_in netaddr;
-    netaddr.sin_family = AF_INET;
-    netaddr.sin_port = htons(portno);
-    struct in_addr inaddr;
-    inet_pton(AF_INET,"127.0.0.1",&inaddr);
-    netaddr.sin_addr = inaddr;
-
-
-    struct sockaddr_un unixaddr;
-    unixaddr.sun_family=AF_UNIX;
-    strcpy(unixaddr.sun_path,argv[2]);
-
-    netdesc = socket(AF_INET, SOCK_STREAM,0);
-    if(netdesc ==-1)
-        perror("server: make socket inet");
-
-    undesc = socket(AF_UNIX, SOCK_STREAM,0);
-    if(undesc==-1)
-        perror("server: make socket unix");
-
-
-    if(bind(netdesc, (struct sockaddr *) &netaddr, sizeof(netaddr))==-1)
-        perror("server: bind socket inet");
-
-    if(bind(undesc, (struct sockaddr *) &unixaddr, sizeof(unixaddr))==-1)
-        perror("server: bind socket unix");
-
-
-    listen(netdesc,MAX_CLIENTS);
-    listen(undesc,MAX_CLIENTS);
-
-    // epoll =============================
-
-    epoldesc = epoll_create1(0);
-    if(epoldesc==-1)
-        perror("server: epol create error");
-    
-
-    struct epoll_event epoll_ev,epoll_ev2;
-    epoll_ev.events=EPOLLIN ;
-    epoll_ev2.events=EPOLLIN ;
-    union epoll_data epoll_da,epoll_da2;
-    epoll_da.fd=undesc;
-    epoll_ev.data=epoll_da;
-    
-    if(epoll_ctl(epoldesc,EPOLL_CTL_ADD,undesc,&epoll_ev)==-1)
-        perror("server: epoll unix ctl error");
-
-    epoll_da2.fd=netdesc;
-    epoll_ev2.data=epoll_da2;
-    if(epoll_ctl(epoldesc,EPOLL_CTL_ADD,netdesc,&epoll_ev2)==-1)
-        perror("server: epoll net ctl error");
-
-
-    
-
-
-
-// main loop ==========================================================
-
-    clients = (struct client_info *)calloc(MAX_CLIENTS, sizeof(struct client_info));
-    struct message received;
-    fill=0;
-
-    // pthreads ============================
-    sem_init(&semaf,0,1);
-    pthread_create(&pthread_id,NULL,(void *)pingping,0);
-    pthread_detach(pthread_id);
-
-
-
-    struct epoll_event event;
-
-    while(1){
-        epoll_wait(epoldesc,&event,1,-1);
-
-        if(event.data.fd==undesc || event.data.fd==netdesc){
-            
-            int client_desc = accept(event.data.fd,NULL,NULL); 
-            if(client_desc == -1)
-                perror("server: accept connection error");
-            
-            struct epoll_event epoll_cli;
-            epoll_cli.events=EPOLLIN  ;
-            epoll_cli.data.fd=client_desc;
-            if(epoll_ctl(epoldesc,EPOLL_CTL_ADD,client_desc,&epoll_cli)==-1)
-                perror("server: epoll client ctl error");
-            
-            struct client_info new_client;
-            struct message msg2;
-            strcpy(new_client.name,"");
-            new_client.desc=client_desc;
-            new_client.is_working=CONNECT;
-            new_client.playing_with=-1;
-            new_client.ping=0;
-            sem_wait(&semaf);
-            if(add_client(new_client)==ERROR){
-                printf("cannot add client - array full\n");
-                msg2.msg=ERROR;
-            } 
-            sem_post(&semaf);           
-            
-            msg2.type=GIVE_NAME;
-            if(write(client_desc,&msg2, msg_size)==-1)
-                perror("server: send first mag to client error");
-
-            received.type=-1;
-
+                send(clients[first]->fd, "add:O",
+                     MAX_MESSAGE_LENGTH, 0);
+                send(clients[second]->fd, "add:X",
+                     MAX_MESSAGE_LENGTH, 0);
+            }
         }
-        else{
-            recv(event.data.fd,&received, msg_size , MSG_DONTWAIT);
+        if (strcmp(command, "move") == 0)
+        {
+            int move = atoi(arg);
+            int player = get_by_name(name);
 
-    // CONNECT
-            if(received.type==CONNECT){
-
-                sem_wait(&semaf);
-                int client_id = find_client_using_desc(event.data.fd);
-                struct message msg;
-
-                if(find_client_using_name(received.name) == ERROR){
-                    strcpy(clients[client_id].name,received.name);
-
-                    int second_client = find_free_client(clients[client_id].desc);
-
-                    if(second_client == ERROR){
-                        
-                        msg.msg=WAITING_FOR_PLAYER;
-                        msg.type=CONNECT;
-                        if(write(clients[client_id].desc,&msg, msg_size)==-1)
-                            perror("server: send waiting for player error");
-
-                    }
-                    else
-                        connect_procedure(event.data.fd,client_id,second_client);
-
-                }
-                else{
-                    msg.msg=ERROR;
-                    msg.type=CONNECT;
-                    clients[client_id].is_working=DISCONNECT;
-                    if(write(clients[client_id].desc,&msg, msg_size)==-1)
-                        perror("server: send name in use error");
-                }
-                received.type=-1;
-                sem_post(&semaf);
-                    
-
+            sprintf(buffer, "move:%d", move);
+            send(clients[get_rival(player)]->fd, buffer, MAX_MESSAGE_LENGTH,
+                 0);
+        }
+        if (strcmp(command, "quit") == 0)
+        {
+            remove_client(name);
+        }
+        if (strcmp(command, "pong") == 0)
+        {
+            int player = get_by_name(name);
+            if (player != -1)
+            {
+                clients[player]->online = 1;
             }
-    // DISCONNECT        
-            else if(received.type==DISCONNECT){
-                sem_wait(&semaf);
-                int from_client = find_client_using_name(received.name);
-                clients[from_client].is_working=DISCONNECT;
-
-
-                int connected_client = clients[from_client].playing_with;
-                if(connected_client !=-1){
-                    clients[connected_client].playing_with=-1;
-                    
-                    if(received.other==CTRLC && clients[connected_client].is_working==CONNECT){
-                        unexpected_client_exit(connected_client);  
-                    }
-                }
-                
-                disconnect_client(from_client);
-                sem_post(&semaf);
-                received.type=-1;
-
-            }
-    // MOVE        
-            else if(received.type==MOVE){
-                
-                sem_wait(&semaf);
-                int from_client = find_client_using_name(received.name);
-                if(from_client==-1)
-                    printf("server: find name error\n");
-
-                int to_client = clients[from_client].playing_with;
-                if(to_client!=-1){
-                
-                    struct message msg;
-                    msg.type=MOVE;
-                    msg.msg=received.msg;
-                    msg.other=received.other;
-                    if(write(clients[to_client].desc,&msg, msg_size)==-1)
-                        perror("server: send move error");
-                }
-                sem_post(&semaf);
-                received.type=-1;
-
-            }
-            else if(received.type==PING){
-                sem_wait(&semaf);
-                int from_client = find_client_using_name(received.name);
-                clients[from_client].ping=0;
-                sem_post(&semaf);
-            }
-        } 
-    }    
+        }
+        pthread_mutex_unlock(&mutex);
+    }
+    return 0;
 }
