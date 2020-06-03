@@ -1,392 +1,391 @@
-Skip to content
-Search or jump to…
+#include "common.h"
 
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@Nananinana 
-Learn Git and GitHub without any code!
-Using the Hello World guide, you’ll start a branch, write comments, and open a pull request.
+int game[3][3];
+int place=0;
+char name[32];
+int my_sign;
+int not_my_sign;
+int serverdesc;
+int epoldesc;
+char path[108];
 
 
-surjak
-/
-SysOpy
-1
-161
- Code
- Issues 0
- Pull requests 0 Actions
- Projects 0
- Wiki
- Security 0
- Insights
-SysOpy/lab10/zad1/client.c
-@surjak surjak zad1
-3464759 15 days ago
-361 lines (324 sloc)  8.18 KB
-  
-#define _POSIX_C_SOURCE 200112L
-#define MAX_MESSAGE_LENGTH 256
-#include <netdb.h>
-#include <pthread.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <sys/un.h>
+int make_socket_net(char *arg){
+    int portno;
+    sscanf(arg, "%d", &portno);
+    struct sockaddr_in netaddr;
+    netaddr.sin_family = AF_INET;
+    netaddr.sin_port = htons(portno);
+    struct in_addr inaddr;
+    inet_pton(AF_INET,"127.0.0.1",&inaddr);
+    netaddr.sin_addr = inaddr;
 
-int server_socket;
-int is_client_O;
-char buffer[MAX_MESSAGE_LENGTH + 1];
-char *name;
-typedef enum
-{
-    FREE,
-    O,
-    X
-} object;
+    
+    int netdesc = socket(AF_INET, SOCK_STREAM,0);
+    if(netdesc ==-1)
+        perror("client: make socket inet");
+    
+    int connect_status = connect(netdesc, (struct sockaddr *)&netaddr, sizeof(netaddr));
+    if(connect_status == -1){
+        perror("client: connect network error");
+        exit(-1);
+    }
 
-typedef struct
-{
-    int move;
-    object objects[9];
-
-} Board;
-
-int move(Board *board, int position)
-{
-    if (position < 0 || position > 9 || board->objects[position] != FREE)
-        return 0;
-    board->objects[position] = board->move ? O : X;
-    board->move = !board->move;
-    return 1;
+    return netdesc;
 }
 
-object check_winner(Board *board)
-{
-    object column = FREE;
-    for (int x = 0; x < 3; x++)
-    {
-        object first = board->objects[x];
-        object second = board->objects[x + 3];
-        object third = board->objects[x + 6];
-        if (first == second && first == third && first != FREE)
-            column = first;
+int make_socket_local(char *arg){
+    strcpy(path,arg);
+
+    struct sockaddr_un unixaddr;
+    unixaddr.sun_family=AF_UNIX;
+    strcpy(unixaddr.sun_path,path);
+
+    int undesc = socket(AF_UNIX, SOCK_STREAM,0);
+    if(undesc==-1)
+        perror("client: make socket unix");
+    
+    int connect_status = connect(undesc, (struct sockaddr *)&unixaddr, sizeof(unixaddr));
+    if(connect_status == -1){
+        perror("client: connect local error");
+        exit(-1);
     }
-    if (column != FREE)
-        return column;
-
-    object row = FREE;
-    for (int y = 0; y < 3; y++)
-    {
-        object first = board->objects[3 * y];
-        object second = board->objects[3 * y + 1];
-        object third = board->objects[3 * y + 2];
-        if (first == second && first == third && first != FREE)
-            row = first;
-    }
-    if (row != FREE)
-        return row;
-
-    object lower_diagonal = FREE;
-
-    object first = board->objects[0];
-    object second = board->objects[4];
-    object third = board->objects[8];
-    if (first == second && first == third && first != FREE)
-        lower_diagonal = first;
-    if (lower_diagonal != FREE)
-        return lower_diagonal;
-    object upper_diagonal = FREE;
-    first = board->objects[2];
-    second = board->objects[4];
-    third = board->objects[6];
-    if (first == second && first == third && first != FREE)
-        upper_diagonal = first;
-    return upper_diagonal;
+    
+    return undesc;
 }
-Board board;
 
-typedef enum
-{
-    GAME_STARTING,
-    WAITING,
-    WAITING_FOR_MOVE,
-    MOVE_RIVAL,
-    MOVE,
-    QUIT
-} State;
+/////////////////////
 
-State state = GAME_STARTING;
-char *command, *arg;
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+void print_game(){
+    for(int i=0;i<3;i++){
+        char line[7];
+        int p=0;
+        for(int j=0;j<3;j++){
+            int sign = game[i][j];
 
-void quit()
-{
-    char buffer[MAX_MESSAGE_LENGTH + 1];
-    sprintf(buffer, "quit: :%s", name);
-    send(server_socket, buffer, MAX_MESSAGE_LENGTH, 0);
+            if(sign==FREE)
+                line[p]='_';
+            else if(sign==X)
+                line[p]='X';
+            else 
+                line[p]='O';
+
+            line[++p]=' ';
+            p++;
+        }
+        printf("%s\n",line);
+    }
+}
+
+
+int check_winner(){
+    
+    for(int i=0;i<3;i++){
+        int suma=game[0][i]+game[1][i]+game[2][i];
+        int suma2=game[i][0]+game[i][1]+game[i][2];
+        if(suma==3*my_sign || suma2==3*my_sign)
+            return WINNER;
+    }
+    if(game[0][0]+game[1][1]+game[2][2]==3*my_sign)
+        return WINNER;
+    if(game[0][2]+game[1][1]+game[2][0]==3*my_sign)
+        return WINNER;
+    
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            if(game[i][j]==FREE)
+                return NOT_WINNER;
+        }
+    }
+
+    return REMIS; 
+}
+
+void disconnect(){
+    printf("disconnect with server\n");
+    
+    if(shutdown(serverdesc, SHUT_RDWR)==-1)
+        perror("server: shutdown socket error");
+
+    if(close(serverdesc)==-1)
+        perror("server: close socket error");
+
     exit(0);
 }
 
-void check_game()
-{
-    int win = 0;
-    object winner = check_winner(&board);
-    if (winner != FREE)
-    {
-        if ((is_client_O && winner == O) || (!is_client_O && winner == X))
-        {
-            printf("WIN!\n");
-        }
-        else
-        {
-            printf("LOST!\n");
-        }
-
-        win = 1;
-    }
-
-    int draw = 1;
-    for (int i = 0; i < 9; i++)
-    {
-        if (board.objects[i] == FREE)
-        {
-            draw = 0;
-            break;
-        }
-    }
-
-    if (draw && !win)
-    {
-        printf("DRAW\n");
-    }
-
-    if (win || draw)
-    {
-        state = QUIT;
-    }
-}
-void split(char *reply)
-{
-    command = strtok(reply, ":");
-    arg = strtok(NULL, ":");
-}
-Board new_board()
-{
-    Board board = {1,
-                   {FREE}};
-    return board;
-}
-void draw()
-{
-    char symbol;
-    for (int y = 0; y < 3; y++)
-    {
-        for (int x = 0; x < 3; x++)
-        {
-            if (board.objects[y * 3 + x] == FREE)
-            {
-                symbol = y * 3 + x + 1 + '0';
-            }
-            else if (board.objects[y * 3 + x] == O)
-            {
-                symbol = 'O';
-            }
-            else
-            {
-                symbol = 'X';
-            }
-            printf("  %c  ", symbol);
-        }
-        printf("\n_________________________\n");
+void clear_game(){
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++)
+            game[i][j]=FREE;
     }
 }
 
-void play_game()
-{
-    while (1)
-    {
-        if (state == GAME_STARTING)
-        {
-            if (strcmp(arg, "name_taken") == 0)
-            {
-                printf("Name is already taken\n");
-                exit(1);
-            }
-            else if (strcmp(arg, "no_enemy") == 0)
-            {
-                printf("Waiting for rival\n");
-                state = WAITING;
-            }
-            else
-            {
+int write_move(int cell, int sign){
+    if(cell==ERROR)
+        return 0;
 
-                board = new_board();
-                is_client_O = arg[0] == 'O';
-                state = is_client_O ? MOVE : WAITING_FOR_MOVE;
-            }
-        }
-        else if (state == WAITING)
-        {
-            pthread_mutex_lock(&mutex);
-            while (state != GAME_STARTING && state != QUIT)
-            {
-                pthread_cond_wait(&cond, &mutex);
-            }
-            pthread_mutex_unlock(&mutex);
+    int col=-1,row=0;
 
-            board = new_board();
-            is_client_O = arg[0] == 'O';
-            state = is_client_O ? MOVE : WAITING_FOR_MOVE;
-        }
-        else if (state == WAITING_FOR_MOVE)
-        {
-            printf("Waiting for rivals move\n");
+    while(cell>0){
+        col++;
+        cell--;
 
-            pthread_mutex_lock(&mutex);
-            while (state != MOVE_RIVAL && state != QUIT)
-            {
-                pthread_cond_wait(&cond, &mutex);
-            }
-            pthread_mutex_unlock(&mutex);
-        }
-        else if (state == MOVE_RIVAL)
-        {
-            int pos = atoi(arg);
-            move(&board, pos);
-            check_game();
-            if (state != QUIT)
-            {
-                state = MOVE;
-            }
-        }
-        else if (state == MOVE)
-        {
-            draw();
-
-            int pos;
-            do
-            {
-                printf("Next move (%c): ", is_client_O ? 'O' : 'X');
-                scanf("%d", &pos);
-                pos--;
-            } while (!move(&board, pos));
-
-            draw();
-
-            char buffer[MAX_MESSAGE_LENGTH + 1];
-            sprintf(buffer, "move:%d:%s", pos, name);
-            send(server_socket, buffer, MAX_MESSAGE_LENGTH, 0);
-
-            check_game();
-            if (state != QUIT)
-            {
-                state = WAITING_FOR_MOVE;
-            }
-        }
-        else if (state == QUIT)
-        {
-            quit();
+        if(col==3){
+            col=0;
+            row++;
         }
     }
-}
-void init_server_connection(char *type, char *destination)
-{
-
-    if (strcmp(type, "local") == 0)
-    {
-        server_socket = socket(AF_UNIX, SOCK_STREAM, 0);
-
-        struct sockaddr_un local_sockaddr;
-        memset(&local_sockaddr, 0, sizeof(struct sockaddr_un));
-        local_sockaddr.sun_family = AF_UNIX;
-        strcpy(local_sockaddr.sun_path, destination);
-
-        connect(server_socket, (struct sockaddr *)&local_sockaddr,
-                sizeof(struct sockaddr_un));
-    }
-    else
-    {
-        struct addrinfo *info;
-
-        struct addrinfo hints;
-        memset(&hints, 0, sizeof(struct addrinfo));
-        hints.ai_family = AF_UNSPEC;
-        hints.ai_socktype = SOCK_STREAM;
-
-        getaddrinfo("localhost", destination, &hints, &info);
-
-        server_socket =
-            socket(info->ai_family, info->ai_socktype, info->ai_protocol);
-
-        connect(server_socket, info->ai_addr, info->ai_addrlen);
-
-        freeaddrinfo(info);
-    }
-}
-void listen_server()
-{
-    int game_thread_running = 0;
-    while (1)
-    {
-        recv(server_socket, buffer, MAX_MESSAGE_LENGTH, 0);
-        split(buffer);
-
-        pthread_mutex_lock(&mutex);
-        if (strcmp(command, "add") == 0)
-        {
-            state = GAME_STARTING;
-            if (!game_thread_running)
-            {
-                pthread_t t;
-                pthread_create(&t, NULL, (void *(*)(void *))play_game, NULL);
-                game_thread_running = 1;
-            }
-        }
-        else if (strcmp(command, "move") == 0)
-        {
-            state = MOVE_RIVAL;
-        }
-        else if (strcmp(command, "quit") == 0)
-        {
-            state = QUIT;
-            exit(0);
-        }
-        else if (strcmp(command, "ping") == 0)
-        {
-            sprintf(buffer, "pong: :%s", name);
-            send(server_socket, buffer, MAX_MESSAGE_LENGTH, 0);
-        }
-        pthread_cond_signal(&cond);
-        pthread_mutex_unlock(&mutex);
-    }
-}
-int main(int argc, char *argv[])
-{
-    if (argc != 4)
-    {
-        fprintf(stderr, "./client [name] [type] [destination]");
-        return 1;
-    }
-
-    name = argv[1];
-    char *type = argv[2];
-    char *destination = argv[3];
-
-    signal(SIGINT, quit);
-    init_server_connection(type, destination);
-    char buffer[MAX_MESSAGE_LENGTH + 1];
-    sprintf(buffer, "add: :%s", name);
-    send(server_socket, buffer, MAX_MESSAGE_LENGTH, 0);
-
-    listen_server();
+    
+    if(game[row][col]!=FREE)
+        return ERROR;
+    
+    game[row][col]=sign;
+    place++;
     return 0;
 }
 
+
+void ping_fun(){
+    struct message msg4;
+    msg4.type=PING;
+    strcpy(msg4.name,name);
+    write(serverdesc,&msg4,msg_size);
+}
+
+void disconnect_fun(){
+    struct message msg3;
+    msg3.type=DISCONNECT;
+    strcpy(msg3.name,name);
+    write(serverdesc,&msg3,msg_size);
+    disconnect();
+}
+
+void do_move(int serverdesc){
+    print_game();
+    printf("Your move. Choose number from 1 to 9.\n");
+
+    int move;
+    struct message msg,received;
+    struct epoll_event event;
+
+
+    while(1){
+        epoll_wait(epoldesc,&event,1,-1);
+
+        if(event.data.fd==serverdesc){
+
+            read(serverdesc,&received,msg_size);
+            if(received.type==PING){
+               ping_fun();
+            }
+            else if(received.type==DISCONNECT){
+                disconnect_fun();
+            }
+            else if(received.type==CONNECT && received.msg==WAITING_FOR_PLAYER){
+                if(received.other==ERROR){
+                    printf("Second player has left the game.\n");
+                }
+                printf("Waiting for other player...\n");
+                return;
+            }
+        }
+        if(event.data.fd==STDIN_FILENO)
+            break;
+    }
+
+
+    scanf("%d",&move);
+    
+
+    if(move>9 || move <1 || write_move(move,my_sign) == ERROR){
+        printf("Wrong cell number. You have lost your turn\n");
+        move = ERROR;
+    }
+    print_game();
+    place++;
+
+    strcpy(msg.name,name);
+    msg.type=MOVE;
+    msg.msg=move;
+
+    int result=check_winner();
+    if(result==WINNER){
+        printf("CONGRATULATIONS! YOU WON!\n");
+        msg.other=WINNER;
+        write(serverdesc,&msg,sizeof(struct message));
+
+        msg.type=DISCONNECT;
+        write(serverdesc,&msg,sizeof(struct message));
+
+        disconnect();
+    }
+    else if(result==REMIS){
+        printf("CONGRATULATIONS! REMIS!\n");
+        msg.other=REMIS;
+        write(serverdesc,&msg,sizeof(struct message));
+
+        msg.type=DISCONNECT;
+        write(serverdesc,&msg,sizeof(struct message));
+
+        disconnect();
+    }
+    else{
+         write(serverdesc,&msg,sizeof(struct message));     
+    }
+}
+
+
+void sig_handler(int signum){
+    struct message msg;
+    strcpy(msg.name,name);
+    msg.type=DISCONNECT;
+    msg.other=CTRLC;
+    write(serverdesc,&msg,sizeof(struct message));
+
+    disconnect();
+}
+
+
+//                  m a i n 
+
+int main(int argc, char ** argv){
+    if(argc<4){
+        printf("client: wrong number of arguments\n");
+        return 1;
+    }
+
+    signal(SIGINT,sig_handler);
+
+    strcpy(name,argv[1]);
+
+    if(strcmp(argv[2],"network")==0){
+        serverdesc = make_socket_net(argv[3]);
+    }
+    else if(strcmp(argv[2], "local")==0){
+        serverdesc = make_socket_local(argv[3]);
+    }
+    else{
+        perror("client: wrong connection type");
+        return 1;
+    }
+
+    epoldesc = epoll_create1(0);
+    if(epoldesc==-1)
+        perror("server: epol create error");
+    
+
+    struct epoll_event epoll_ev,epoll_ev2;
+    epoll_ev.events=EPOLLIN ;
+    epoll_ev2.events=EPOLLIN ;
+    union epoll_data epoll_da,epoll_da2;
+    epoll_da.fd=serverdesc;
+    epoll_ev.data=epoll_da;
+    
+    if(epoll_ctl(epoldesc,EPOLL_CTL_ADD,serverdesc,&epoll_ev)==-1)
+        perror("server: epoll unix ctl error");
+
+    epoll_da2.fd=STDIN_FILENO;
+    epoll_ev2.data=epoll_da2;
+    if(epoll_ctl(epoldesc,EPOLL_CTL_ADD,STDIN_FILENO,&epoll_ev2)==-1)
+        perror("server: epoll net ctl error");
+
+    struct message received;
+    received.type=-1;
+
+//============================================================
+    while(1){
+        int rcv_status = read(serverdesc,&received,msg_size);
+
+        if(rcv_status==0){
+            disconnect();
+        }
+
+        if(received.type==GIVE_NAME){
+            if(received.msg==ERROR){
+                printf("Cannot add player. Try again later.\n");
+                exit(-1);
+            }
+            struct message msg;
+            strcpy(msg.name,argv[1]);
+            msg.type=CONNECT;
+
+            int send_status = write(serverdesc,&msg,msg_size);
+            if(send_status==-1)
+                perror("client: send name error");
+            received.type=-1;
+        }
+        else if(received.type==CONNECT){
+
+            if(rcv_status==-1)
+                perror("client: receive msg error");
+            else{
+
+                if(received.msg==ERROR){
+                    printf("Player with this name is already connected.\n");
+                    exit(-1);
+                }
+                else if(received.msg==WAITING_FOR_PLAYER){
+                    if(received.other==ERROR){
+                        printf("Second player has left the game.\n");
+                    }
+                    printf("Waiting for other player...\n");
+                }
+                else{
+                    my_sign=received.msg;
+                    
+                    char s;
+                    if(my_sign==O){
+                        s='O';
+                        not_my_sign=X;
+                    }
+                    else{
+                        s='X';
+                        not_my_sign=O;
+                    }
+
+                    printf("Connected with player %s. Your sign is %c.\n",received.name,s);
+                    clear_game();
+                    if(received.other==my_sign){
+                        printf("You have to start.\n");
+                        do_move(serverdesc);
+                    }
+                    
+                }
+                received.type=-1;
+            }
+        }
+        else if(received.type==MOVE){
+
+            write_move(received.msg,not_my_sign);
+            printf("After second player move:\n");
+
+            if(received.other==WINNER){
+                print_game();
+                printf("YOU LOST. TRY AGAIN.\n");
+                struct message msg;
+                strcpy(msg.name,name);
+                msg.type=DISCONNECT;
+                write(serverdesc,&msg,msg_size);
+                disconnect();
+            }
+            else if(received.other==REMIS){
+                print_game();
+                printf("CONGRATULATIONS! REMIS!\n");
+                struct message msg;
+                strcpy(msg.name,name);
+                msg.type=DISCONNECT;
+                write(serverdesc,&msg,msg_size);
+                disconnect();
+            }
+            else         
+                do_move(serverdesc);
+        }
+        else if(received.type==DISCONNECT){
+            disconnect_fun();
+        }
+        else if(received.type==PING){
+            ping_fun();
+        }
+    }
+}   
